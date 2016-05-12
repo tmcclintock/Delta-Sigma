@@ -5,12 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int read_file(FILE *fp,int N, double *data){
-  int i;
-  for(i = 0; i < N; i++)
-    fscanf(fp,"%lf",&data[i]);
-  return 0;
-}
+int read_file(FILE *fp,int N, double *data);
 
 int main(int argc, char **argv){
   FILE *k_fp, *P_fp;
@@ -28,7 +23,6 @@ int main(int argc, char **argv){
   double*k = (double*)malloc((N-1)*sizeof(double));
   read_file(k_fp,N-1,k);
 
-
   P_fp = fopen("test_data/matter_power_lin/p_k.txt","r");
   getline(&line,&len,P_fp); //header line read off
   double*P = (double*)malloc((N-1)*sizeof(double));
@@ -37,3 +31,11 @@ int main(int argc, char **argv){
   free(k),free(P);
   fclose(k_fp),fclose(P_fp);
 }
+
+int read_file(FILE *fp,int N, double *data){
+  int i;
+  for(i = 0; i < N; i++)
+    fscanf(fp,"%lf",&data[i]);
+  return 0;
+}
+

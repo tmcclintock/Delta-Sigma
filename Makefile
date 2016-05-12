@@ -1,4 +1,4 @@
-EXEC = main
+EXEC = main.exe
 OBJS = main.o
 CC = gcc
 INCL = -I/home/tom/code/gsl/include
