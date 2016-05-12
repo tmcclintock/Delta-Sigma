@@ -16,9 +16,9 @@ typedef struct integrand_params{
   double lkmax;
 }integrand_params;
 
-int do_integral(double*xi,double*err,integrand_params*params);
+static int do_integral(double*xi,double*err,integrand_params*params);
 
-double integrand(double lk, void*params);
+static double integrand(double lk, void*params);
 
 int calc_xi_mm_at_r(double R,
 		    double*k,double*P,
@@ -26,8 +26,6 @@ int calc_xi_mm_at_r(double R,
 		    double*xi,
 		    double*err){
   int i,j,l;
-  double answer=0;
-  double lkmin = log(k[0]),lkmax = log(k[N-1]);
 
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,N);
   gsl_spline_init(spline,k,P,N);
@@ -35,19 +33,20 @@ int calc_xi_mm_at_r(double R,
   gsl_integration_workspace * workspace
     = gsl_integration_workspace_alloc(workspace_size);
   
-  integrand_params*params = malloc(sizeof(integrand_params));
+  integrand_params*params=malloc(sizeof(integrand_params));
   params->acc=acc;
   params->spline=spline;
   params->workspace=workspace;
   params->r=R;
-  params->lkmin=lkmin;
-  params->lkmax=lkmax;
+  params->lkmin=log(k[0]);
+  params->lkmax=log(k[N-1]);
   
   do_integral(xi,err,params);
 
   gsl_spline_free(spline),gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   free(params);
+  return 0;
 }
 
 int do_integral(double*xi,double*err,integrand_params*params){
@@ -62,8 +61,8 @@ int do_integral(double*xi,double*err,integrand_params*params){
   double result,abserr;
   int status = gsl_integration_qag(&F,lkmin,lkmax,TOL,TOL/10.,workspace_size,6,
 				   workspace,&result,&abserr);
-  *xi = result;
-  *err= abserr;
+  *xi = result/(2.*PI*PI);
+  *err= abserr/(2.*PI*PI);
   return status;
 }
 
@@ -76,5 +75,5 @@ double integrand(double lk, void*params){
   double k = exp(lk);
   double x  = k*R;
   double P = gsl_spline_eval(spline,k,acc);
-  return k*k*k*P*sin(x)/x/(2.*PI*PI);
+  return k*k*k*P*sin(x)/x;
 }
