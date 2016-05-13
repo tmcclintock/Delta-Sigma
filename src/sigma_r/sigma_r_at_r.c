@@ -26,7 +26,8 @@ typedef struct integrand_params{
 
 static int do_integral(double*sigmar_r,double*err,integrand_params*params);
 
-static double integrand(double r_z, void*params);
+static double integrand_small_scales(double lrz, void*params);
+static double integrand_medium_scales(double lrz, void*params);
 
 int calc_sigma_r_at_r(double Rp,double Mass,double concentration
 		      ,int delta,double*R,double*xi,int NR,
@@ -68,40 +69,53 @@ int calc_sigma_r_at_r(double Rp,double Mass,double concentration
 
 static int do_integral(double*sigma_r,double*err,integrand_params*params){
   gsl_function F;
-  F.function=&integrand;
+  F.function=&integrand_small_scales;
   F.params=params;
   
   double lrmin = params->lrmin;
   double lrmax = params->lrmax;
+  double rmax = exp(lrmax);
+  double rp = params->rperp;
+  double lrz_max = log(sqrt(rmax*rmax - rp*rp));
   gsl_integration_workspace*workspace=params->workspace;
 
-  double result,abserr;
-  int status = gsl_integration_qag(&F,lrmin-10,lrmax,TOL,TOL/10.,
-				   workspace_size,6,workspace,&result,&abserr);
-  *sigma_r = result;
-  *err= abserr;
+  double result1=0,abserr1=0;
+  double result2=0,abserr2=0;
+  double result3=0,abserr3=0;
+
+  int status = gsl_integration_qag(&F,lrmin-10,lrmin,TOL,TOL/10.,workspace_size,6,workspace,&result1,&abserr1);
+
+  F.function=&integrand_medium_scales;
+  if (lrz_max > 0)
+    status |= gsl_integration_qag(&F,lrmin,lrz_max,TOL,TOL/10.,workspace_size,6,workspace,&result2,&abserr2);
+  
+  //F.function=&integrand_large_scales;
+  //status = gsl_integration_qag(&F,lrmax,lrmax+10,TOL,TOL/10.,workspace_size,6,workspace,&result3,&abserr3);
+
+  *sigma_r = result1+result2;
+  *err= abserr1+abserr2;
   return status;
 }
 
-static double integrand(double lrz, void*params){
+static double integrand_small_scales(double lrz, void*params){
   double rz = exp(lrz);
   integrand_params pars=*(integrand_params *)params;
-  gsl_spline*spline = pars.spline;//Xi_hm(R) spline
-  gsl_interp_accel*acc = pars.acc;
   double rp = pars.rperp;
   cosmology cosmo = pars.cosmo;
-  double rmin = exp(pars.lrmin),rmax = exp(pars.lrmax);
   double arg = sqrt(rz*rz+rp*rp);
   double Mass = pars.Mass;
   double concentration = pars.concentration;
   int delta = pars.delta;
   double answer = 0;
+  calc_xi_nfw(&arg,1,Mass,concentration,delta,&answer,cosmo);
+  return rz*answer;
+}
 
-  if(arg>rmax)
-    return answer;
-  else if(arg<rmin){
-    calc_xi_nfw(&arg,1,Mass,concentration,delta,&answer,cosmo);
-    return rz*answer;
-  }else
-    return rz*gsl_spline_eval(spline,arg,acc);
+static double integrand_medium_scales(double lrz, void*params){
+  double rz = exp(lrz);
+  integrand_params pars=*(integrand_params*)params;
+  gsl_spline*spline = pars.spline;//Xi_hm(R) spline
+  gsl_interp_accel*acc = pars.acc;
+  double rp = pars.rperp;
+  return rz*gsl_spline_eval(spline,sqrt(rz*rz+rp*rp),acc);
 }

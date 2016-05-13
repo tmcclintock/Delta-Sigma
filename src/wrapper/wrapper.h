@@ -23,6 +23,7 @@ typedef struct interface_parameters{
   double fmis;
   int delta;
   int*flow_control;
+  int timing;
 }interface_parameters;
 #endif
 

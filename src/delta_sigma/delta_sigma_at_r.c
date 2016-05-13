@@ -26,7 +26,8 @@ typedef struct integrand_params{
 
 static int do_integral(double*delta_sigma,double*err,integrand_params*params);
 
-static double integrand(double R, void*params);
+static double integrand1(double R, void*params);
+static double integrand2(double R, void*params);
 
 static double sigma_r_1halo_analytic(double R,double Mass,double concentration,double om,double H0,int delta);
 
@@ -65,7 +66,7 @@ int calc_delta_sigma_at_r(double Rp,double Mass,double concentration
 
 static int do_integral(double*delta_sigma,double*err,integrand_params*params){
   gsl_function F;
-  F.function=&integrand;
+  F.function=&integrand1;
   F.params=params;
   
   double lrmin = params->lrmin;
@@ -73,32 +74,37 @@ static int do_integral(double*delta_sigma,double*err,integrand_params*params){
   double lRp = params->lrperp;
   gsl_integration_workspace*workspace=params->workspace;
 
-  double result,abserr;
-  int status = gsl_integration_qag(&F,lrmin-10,lRp,TOL,TOL/10.,
-				   workspace_size,6,workspace,&result,&abserr);
-  *delta_sigma = result;
-  *err= abserr;
+  double result1=0,abserr1=0;
+  double result2=0,abserr2=0;
+
+  int status = gsl_integration_qag(&F,lrmin-10,lrmin,TOL,TOL/10.,workspace_size,6,workspace,&result1,&abserr1);
+
+  F.function=&integrand2;
+  status |= gsl_integration_qag(&F,lrmin,lRp,TOL,TOL/10.,workspace_size,6,workspace,&result2,&abserr2);
+
+  *delta_sigma = result1 + result2;
+  *err= abserr1 + abserr2;
   return status;
 }
 
-static double integrand(double lR, void*params){
+double integrand1(double lR, void*params){
   double R = exp(lR);
   integrand_params pars=*(integrand_params *)params;
-  gsl_spline*spline = pars.spline;//Sigma_R(R) spline
-  gsl_interp_accel*acc = pars.acc;
-  double rmin = exp(pars.lrmin);
-  double answer = 0;
   cosmology cosmo = pars.cosmo;
   double Mass = pars.Mass;
   double concentration = pars.concentration;
   int delta = pars.delta;
   double om = cosmo.om;
   double h = cosmo.h;
+  return R*R*sigma_r_1halo_analytic(R,Mass,concentration,om,h*100.,delta);
+}
 
-  if(R<rmin){//fix
-    return R*R*sigma_r_1halo_analytic(R,Mass,concentration,om,h*100.,delta);
-  }else
-    return R*R*gsl_spline_eval(spline,R,acc);
+double integrand2(double lR, void*params){
+  double R = exp(lR);
+  integrand_params pars=*(integrand_params *)params;
+  gsl_spline*spline = pars.spline;//Sigma_R(R) spline
+  gsl_interp_accel*acc = pars.acc;
+  return R*R*gsl_spline_eval(spline,R,acc);
 }
 
 double sigma_r_1halo_analytic(double R,double Mass,double concentration,double om,double H0,int delta){
@@ -110,11 +116,13 @@ double sigma_r_1halo_analytic(double R,double Mass,double concentration,double o
   double rscale = rdelta/c;
   double x = R/rscale;
   double gx = 0;
-  if(x<1)
+  if(x<1){
     gx = (1 - 2./sqrt(1-x*x)*atanh(sqrt((1-x)/(1+x))))/(x*x-1);
-  else if(fabs(x-1.) < 1e-6) // x is approximately equal to 1
-    gx = 1./3.;
-  else if(x>1)
+  }else{// if(x>1){
     gx = (1 - 2./sqrt(x*x-1)* atan(sqrt((x-1)/(1+x))))/(x*x-1);
+  }
+  //else{ // x is approximately equal to 1
+  //  gx = 1./3.;
+  //}
   return 2*rscale*deltac*rhom*gx/(1.e12);//SM h/pc^2
 }

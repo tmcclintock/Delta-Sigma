@@ -26,12 +26,12 @@ int main(int argc, char **argv){
     N++;
   }
   rewind(k_fp);
-  getline(&line,&len,k_fp); //header line read off
+  read = getline(&line,&len,k_fp); //header line read off
   double*k = (double*)malloc((N)*sizeof(double));
   read_file(k_fp,N,k);
 
   P_fp = fopen("test_data/matter_power_nl/p_k.txt","r");
-  getline(&line,&len,P_fp); //header line read off
+  read = getline(&line,&len,P_fp); //header line read off
   double*P = (double*)malloc((N)*sizeof(double));
   read_file(P_fp,N,P);
 
@@ -45,7 +45,7 @@ int main(int argc, char **argv){
   }
   calc_tinker_bias(M,NM,k,P,N,bias_arr,nu_arr,200,*cosmo);
 
-  double Mass = 1e13;
+  double Mass = 1e12;
   double concentration = 4.0*pow(Mass/5.e14,-0.1);//Bad M-c relation
   double bias;
   double nu;
@@ -68,6 +68,8 @@ int main(int argc, char **argv){
   params->delta=200;
   params->lnc=-0.22;
   params->fmis=0.23;
+  params->timing=1; //1 is true
+
   outputs->R=R;
   outputs->xi_1halo=xi_nfw;
   outputs->xi_mm=xi_mm;
@@ -117,9 +119,9 @@ int main(int argc, char **argv){
 }
 
 int read_file(FILE *fp,int N, double *data){
-  int i;
+  int i, garbage;
   for(i = 0; i < N; i++)
-    fscanf(fp,"%lf",&data[i]);
+    garbage = fscanf(fp,"%lf",&data[i]);
   return 0;
 }
 
