@@ -35,16 +35,6 @@ int main(int argc, char **argv){
   double*P = (double*)malloc((N)*sizeof(double));
   read_file(P_fp,N,P);
 
-  int NR = 300;//N;
-  double R[NR];
-  double xi_mm[NR];
-  double err[NR];
-  for(i = 0; i < NR; i++){
-    double dlR = (log(200) - log(0.01))/(float)(NR-1.);
-    R[i] = exp(log(0.01) + i*dlR);
-  }
-  calc_xi_mm(R,NR,k,P,N,xi_mm,err);
-
   int NM = 100;
   double M[NM];
   double bias[NM];
@@ -55,25 +45,20 @@ int main(int argc, char **argv){
   }
   calc_tinker_bias(M,NM,k,P,N,bias,nu,200,*cosmo);
 
-  double Mass = M[NM/2];
-  double test_bias = bias[NM/2];
+  double Mass = 10e14;
   double concentration = 4.0*pow(Mass/5.e14,-0.1);//Bad M-c relation
-  double xi_nfw[NR];
-  calc_xi_nfw(R,NR,Mass,concentration,200,xi_nfw,*cosmo);
 
-  double xi_2halo[NR];
-  calc_xi_2halo(NR,xi_mm,test_bias,xi_2halo);
+  int NR = 300;//N;
+  double Rmin = 0.01, Rmax = 200; //Mpc/h
+  double*R=(double*)malloc(NR*sizeof(double));
+  double*xi_mm=(double*)malloc(NR*sizeof(double));
+  double*xi_nfw=(double*)malloc(NR*sizeof(double));
+  double*xi_2halo=(double*)malloc(NR*sizeof(double));
+  double*xi_hm=(double*)malloc(NR*sizeof(double));
+  double*sigma_r=(double*)malloc(NR*sizeof(double));
+  double*delta_sigma=(double*)malloc(NR*sizeof(double));
 
-  double xi_hm[NR];
-  calc_xi_hm(NR,Mass,xi_nfw,xi_2halo,xi_hm);
-
-  double sigma_r[NR];
-  double sigma_r_err[NR];
-  calc_sigma_r(R,Mass,concentration,200,R,xi_hm,NR,sigma_r,sigma_r_err,*cosmo);
-
-  double delta_sigma[NR];
-  double delta_sigma_err[NR];
-  calc_delta_sigma(R,Mass,concentration,200,R,sigma_r,NR,delta_sigma,delta_sigma_err,*cosmo);
+  //PUT THE CALL TO THE WRAPPER HERE
 
   FILE *xi_mm_out = fopen("output/xi_mm.txt","w");
   FILE *xi_nfw_out = fopen("output/xi_nfw.txt","w");
@@ -102,12 +87,14 @@ int main(int argc, char **argv){
   }
 
   free(k),free(P);
+  free(R),free(xi_mm),free(xi_nfw),free(xi_2halo);
+  free(xi_hm),free(sigma_r),free(delta_sigma);
   free(cosmo);
   fclose(k_fp),fclose(P_fp);
   fclose(xi_mm_out),fclose(Rout);
   fclose(bias_out),fclose(nu_out),fclose(M_out);
   fclose(xi_2h_out),fclose(xi_nfw_out);
-  fclose(xi_hm_out);
+  fclose(xi_hm_out),fclose(sigma_r_out),fclose(delta_sigma_out);
 }
 
 int read_file(FILE *fp,int N, double *data){
