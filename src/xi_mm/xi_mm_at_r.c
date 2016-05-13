@@ -25,7 +25,6 @@ int calc_xi_mm_at_r(double R,
 		    int N,
 		    double*xi,
 		    double*err){
-  int i,j,l;
 
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,N);
   gsl_spline_init(spline,k,P,N);
