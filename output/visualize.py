@@ -21,6 +21,8 @@ xi_mm = np.genfromtxt("xi_mm.txt").T[0]
 xi_nfw = np.genfromtxt("xi_nfw.txt")
 xi_hm = np.genfromtxt("xi_hm.txt")
 sigma_r = np.genfromtxt("sigma_r.txt")
+delta_sigma = np.genfromtxt("delta_sigma.txt")
+
 M = np.genfromtxt("M.txt")
 bias = np.genfromtxt("bias.txt")
 nu = np.genfromtxt("nu.txt")
@@ -40,6 +42,7 @@ if doxinfw:
     plt.loglog(R,xi_mm)
     plt.loglog(R,xi_hm)
     plt.loglog(R,sigma_r)
+    plt.loglog(R,delta_sigma)
     plt.show()
     plt.clf()
 

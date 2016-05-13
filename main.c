@@ -4,6 +4,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include "src/delta_sigma/delta_sigma.h"
 #include "src/sigma_r/sigma_r.h"
 #include "src/xi_hm/xi_hm.h"
 #include "src/xi_mm/xi_mm.h"
@@ -74,17 +75,17 @@ int main(int argc, char **argv){
 
   double delta_sigma[NR];
   double delta_sigma_err[NR];
-  //calc_delta_sigma(R,Mass,concentration,200,R,xi_hm,NR,sigma_r,sigma_r_err,*cosmo);
-
-
+  calc_delta_sigma(R,Mass,concentration,200,R,sigma_r,NR,delta_sigma,delta_sigma_err,*cosmo);
 
   FILE *xi_mm_out = fopen("output/xi_mm.txt","w");
   FILE *xi_nfw_out = fopen("output/xi_nfw.txt","w");
   FILE *xi_hm_out = fopen("output/xi_hm.txt","w");
   FILE *sigma_r_out = fopen("output/sigma_r.txt","w");
+  FILE *delta_sigma_out = fopen("output/delta_sigma.txt","w");
 
   FILE *Rout = fopen("output/R.txt","w");
   for(i = 0; i < NR; i++){
+    fprintf(delta_sigma_out,"%e\n",delta_sigma[i]);
     fprintf(sigma_r_out,"%e\n",sigma_r[i]);
     fprintf(xi_hm_out,"%e\n",xi_hm[i]);
     fprintf(xi_nfw_out,"%e\n",xi_nfw[i]);

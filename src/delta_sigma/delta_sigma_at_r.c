@@ -1,6 +1,6 @@
 #include "delta_sigma_at_r.h"
 
-#define TOL 1e-8
+#define TOL 1e-6
 #define workspace_size 8000
 #define PI 3.141592653589793
 
@@ -24,11 +24,11 @@ typedef struct integrand_params{
   int delta;
 }integrand_params;
 
-static int do_integral(double*sigmar_r,double*err,integrand_params*params);
+static int do_integral(double*delta_sigma,double*err,integrand_params*params);
 
-static double integrand(double r_z, void*params);
+static double integrand(double R, void*params);
 
-static double sigma_r_1halo_analytic(double R,double Mass,double concentration,double om,double H0,double delta);
+static double sigma_r_1halo_analytic(double R,double Mass,double concentration,double om,double H0,int delta);
 
 int calc_delta_sigma_at_r(double Rp,double Mass,double concentration
 		      ,int delta,double*R,double*sigma_r,int NR,
@@ -44,7 +44,7 @@ int calc_delta_sigma_at_r(double Rp,double Mass,double concentration
   params->acc=acc;
   params->spline=spline;
   params->workspace=workspace;
-  params->rperp=log(Rp);
+  params->lrperp=log(Rp);
   params->lrmin=log(R[0]);
   params->lrmax=log(R[NR-1]);
   params->cosmo=cosmo;
@@ -92,15 +92,29 @@ static double integrand(double lR, void*params){
   double Mass = pars.Mass;
   double concentration = pars.concentration;
   int delta = pars.delta;
-
+  double om = cosmo.om;
+  double h = cosmo.h;
 
   if(R<rmin){//fix
-    calc_sigma_r(&R,1,Mass,concentration,delta,&answer,cosmo);
-    return R*R*answer;
+    return R*R*sigma_r_1halo_analytic(R,Mass,concentration,om,h*100.,delta);
   }else
-    return R*R*gsl_spline_eval(spline,arg,acc);
+    return R*R*gsl_spline_eval(spline,R,acc);
 }
 
-static double sigma_r_1halo_analytic(double R,double rscale,double Mass,double om,double H0,double delta){
-
+double sigma_r_1halo_analytic(double R,double Mass,double concentration,double om,double H0,int delta){
+  double c = concentration;
+  double rhom = om*3.*(H0*H0*Mpcperkm*Mpcperkm)/(8.*PI*G)
+    /(H0/100.*H0/100.);//SM h^2/Mpc^3
+  double deltac = (delta/3.)*c*c*c/(log(1.+c)-c/(1.+c));
+  double rdelta = pow(Mass/(4./3.*PI*rhom*delta),1./3.);//Mpc/h
+  double rscale = rdelta/c;
+  double x = R/rscale;
+  double gx = 0;
+  if(x<1)
+    gx = (1 - 2./sqrt(1-x*x)*atanh(sqrt((1-x)/(1+x))))/(x*x-1);
+  else if(fabs(x-1.) < 1e-6) // x is approximately equal to 1
+    gx = 1./3.;
+  else if(x>1)
+    gx = (1 - 2./sqrt(x*x-1)* atan(sqrt((x-1)/(1+x))))/(x*x-1);
+  return 2*rscale*deltac*rhom*gx/(1.e12);//SM h/pc^2
 }
