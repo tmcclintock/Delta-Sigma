@@ -11,22 +11,23 @@ doximm = False
 dobias = False
 dosigmar = False
 
-testpath = "../test_data/matter_power_%s/"
+testpath = "test_data/matter_power_%s/"
+outpath = "output/"
 ps = "nl"
 
 k = np.genfromtxt(testpath%ps+"k_h.txt")
 P = np.genfromtxt(testpath%ps+"p_k.txt")
-R = np.genfromtxt("R.txt")
-xi_mm = np.genfromtxt("xi_mm.txt")
-xi_nfw = np.genfromtxt("xi_nfw.txt")
-xi_2h = np.genfromtxt("xi_2halo.txt")
-xi_hm = np.genfromtxt("xi_hm.txt")
-sigma_r = np.genfromtxt("sigma_r.txt")
-delta_sigma = np.genfromtxt("delta_sigma.txt")
+R = np.genfromtxt(outpath+"R.txt")
+xi_mm = np.genfromtxt(outpath+"xi_mm.txt")
+xi_nfw = np.genfromtxt(outpath+"xi_nfw.txt")
+xi_2h = np.genfromtxt(outpath+"xi_2halo.txt")
+xi_hm = np.genfromtxt(outpath+"xi_hm.txt")
+sigma_r = np.genfromtxt(outpath+"sigma_r.txt")
+delta_sigma = np.genfromtxt(outpath+"delta_sigma.txt")
 
-M = np.genfromtxt("M.txt")
-bias = np.genfromtxt("bias.txt")
-nu = np.genfromtxt("nu.txt")
+M = np.genfromtxt(outpath+"M.txt")
+bias = np.genfromtxt(outpath+"bias.txt")
+nu = np.genfromtxt(outpath+"nu.txt")
 
 if dopowerspec:
     plt.loglog(k,P)

@@ -1,6 +1,6 @@
 #include "sigma_r_at_r.h"
 
-#define TOL 1e-8
+#define TOL 1e-7
 #define workspace_size 8000
 #define PI 3.141592653589793
 

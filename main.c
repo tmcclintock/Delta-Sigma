@@ -37,16 +37,18 @@ int main(int argc, char **argv){
 
   int NM = 100;
   double M[NM];
-  double bias[NM];
-  double nu[NM];
+  double bias_arr[NM];
+  double nu_arr[NM];
   for(i = 0; i < NM; i++){
     double dlM = (16.0 - 12.0)/(float)(NM-1.);
     M[i] = pow(10,(12.0 + i*dlM));
   }
-  calc_tinker_bias(M,NM,k,P,N,bias,nu,200,*cosmo);
+  calc_tinker_bias(M,NM,k,P,N,bias_arr,nu_arr,200,*cosmo);
 
-  double Mass = 10e14;
+  double Mass = 1e13;
   double concentration = 4.0*pow(Mass/5.e14,-0.1);//Bad M-c relation
+  double bias;
+  double nu;
 
   int NR = 300;//N;
   double Rmin = 0.01, Rmax = 200; //Mpc/h
@@ -58,16 +60,33 @@ int main(int argc, char **argv){
   double*sigma_r=(double*)malloc(NR*sizeof(double));
   double*delta_sigma=(double*)malloc(NR*sizeof(double));
 
-  //PUT THE CALL TO THE WRAPPER HERE
+  interface_parameters*params=
+    (interface_parameters*)malloc(sizeof(interface_parameters));
+  wrapper_output*outputs=(wrapper_output*)malloc(sizeof(wrapper_output));
+  params->Mass=Mass;
+  params->concentration=concentration;
+  params->delta=200;
+  params->lnc=-0.22;
+  params->fmis=0.23;
+  outputs->R=R;
+  outputs->xi_1halo=xi_nfw;
+  outputs->xi_mm=xi_mm;
+  outputs->xi_2halo=xi_2halo;
+  outputs->xi_hm=xi_hm;
+  outputs->sigma_r=sigma_r;
+  outputs->delta_sigma=delta_sigma;
+  outputs->bias=&bias;
+  outputs->nu=&nu;
 
+  interface(k,P,N,NR,Rmin,Rmax,*cosmo,params,outputs);
+
+  FILE *Rout = fopen("output/R.txt","w");
   FILE *xi_mm_out = fopen("output/xi_mm.txt","w");
   FILE *xi_nfw_out = fopen("output/xi_nfw.txt","w");
   FILE *xi_2h_out = fopen("output/xi_2halo.txt","w");
   FILE *xi_hm_out = fopen("output/xi_hm.txt","w");
   FILE *sigma_r_out = fopen("output/sigma_r.txt","w");
   FILE *delta_sigma_out = fopen("output/delta_sigma.txt","w");
-
-  FILE *Rout = fopen("output/R.txt","w");
   for(i = 0; i < NR; i++){
     fprintf(delta_sigma_out,"%e\n",delta_sigma[i]);
     fprintf(sigma_r_out,"%e\n",sigma_r[i]);
@@ -81,8 +100,8 @@ int main(int argc, char **argv){
   FILE *nu_out = fopen("output/nu.txt","w");
   FILE *M_out = fopen("output/M.txt","w");
   for(i = 0; i < NM; i++){
-    fprintf(bias_out,"%e\n",bias[i]);
-    fprintf(nu_out,"%e\n",nu[i]);
+    fprintf(bias_out,"%e\n",bias_arr[i]);
+    fprintf(nu_out,"%e\n",nu_arr[i]);
     fprintf(M_out,"%e\n",M[i]);
   }
 

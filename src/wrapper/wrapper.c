@@ -32,12 +32,19 @@ int interface(double*k,double*P,int Nk,int NR,double Rmin,double Rmax,
   }
 
   calc_xi_nfw(R,NR,Mass,concentration,delta,xi_1halo,cosmo);
+  printf("here0\n");fflush(stdout);
   calc_xi_mm(R,NR,k,P,Nk,xi_mm,err);
+  printf("here1\n");fflush(stdout);
   calc_tinker_bias(&Mass,1,k,P,Nk,bias,nu,delta,cosmo);
+  printf("here2\n");fflush(stdout);
   calc_xi_2halo(NR,xi_mm,*bias,xi_2halo);
+  printf("here3\n");fflush(stdout);
   calc_xi_hm(NR,Mass,xi_1halo,xi_2halo,xi_hm);
+  printf("here4\n");fflush(stdout);
   calc_sigma_r(R,Mass,concentration,delta,R,xi_hm,NR,sigma_r,err,cosmo);
+  printf("here5\n");fflush(stdout);
   calc_delta_sigma(R,Mass,concentration,delta,R,sigma_r,NR,delta_sigma,err,cosmo);
+  printf("here6\n");fflush(stdout);
 
   free(err);
   return 0;
