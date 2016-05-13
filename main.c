@@ -72,6 +72,12 @@ int main(int argc, char **argv){
   double sigma_r_err[NR];
   calc_sigma_r(R,Mass,concentration,200,R,xi_hm,NR,sigma_r,sigma_r_err,*cosmo);
 
+  double delta_sigma[NR];
+  double delta_sigma_err[NR];
+  //calc_delta_sigma(R,Mass,concentration,200,R,xi_hm,NR,sigma_r,sigma_r_err,*cosmo);
+
+
+
   FILE *xi_mm_out = fopen("output/xi_mm.txt","w");
   FILE *xi_nfw_out = fopen("output/xi_nfw.txt","w");
   FILE *xi_hm_out = fopen("output/xi_hm.txt","w");
