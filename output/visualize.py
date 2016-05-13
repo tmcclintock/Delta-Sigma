@@ -17,8 +17,9 @@ ps = "nl"
 k = np.genfromtxt(testpath%ps+"k_h.txt")
 P = np.genfromtxt(testpath%ps+"p_k.txt")
 R = np.genfromtxt("R.txt")
-xi_mm = np.genfromtxt("xi_mm.txt").T[0]
+xi_mm = np.genfromtxt("xi_mm.txt")
 xi_nfw = np.genfromtxt("xi_nfw.txt")
+xi_2h = np.genfromtxt("xi_2halo.txt")
 xi_hm = np.genfromtxt("xi_hm.txt")
 sigma_r = np.genfromtxt("sigma_r.txt")
 delta_sigma = np.genfromtxt("delta_sigma.txt")
@@ -41,6 +42,7 @@ if doxinfw:
     plt.loglog(R,xi_nfw)
     plt.loglog(R,xi_mm)
     plt.loglog(R,xi_hm)
+    plt.loglog(R,xi_2h)
     plt.loglog(R,sigma_r)
     plt.loglog(R,delta_sigma)
     plt.show()

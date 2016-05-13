@@ -4,12 +4,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include "src/delta_sigma/delta_sigma.h"
-#include "src/sigma_r/sigma_r.h"
-#include "src/xi_hm/xi_hm.h"
-#include "src/xi_mm/xi_mm.h"
-#include "src/tinker_bias/tinker_bias.h"
-#include "src/cosmology/cosmology.h"
+#include "src/wrapper/wrapper.h"
 
 int read_file(FILE *fp,int N, double *data);
 
@@ -66,8 +61,11 @@ int main(int argc, char **argv){
   double xi_nfw[NR];
   calc_xi_nfw(R,NR,Mass,concentration,200,xi_nfw,*cosmo);
 
+  double xi_2halo[NR];
+  calc_xi_2halo(NR,xi_mm,test_bias,xi_2halo);
+
   double xi_hm[NR];
-  calc_xi_hm(NR,Mass,xi_nfw,xi_mm,test_bias,xi_hm);
+  calc_xi_hm(NR,Mass,xi_nfw,xi_2halo,xi_hm);
 
   double sigma_r[NR];
   double sigma_r_err[NR];
@@ -79,6 +77,7 @@ int main(int argc, char **argv){
 
   FILE *xi_mm_out = fopen("output/xi_mm.txt","w");
   FILE *xi_nfw_out = fopen("output/xi_nfw.txt","w");
+  FILE *xi_2h_out = fopen("output/xi_2halo.txt","w");
   FILE *xi_hm_out = fopen("output/xi_hm.txt","w");
   FILE *sigma_r_out = fopen("output/sigma_r.txt","w");
   FILE *delta_sigma_out = fopen("output/delta_sigma.txt","w");
@@ -88,8 +87,9 @@ int main(int argc, char **argv){
     fprintf(delta_sigma_out,"%e\n",delta_sigma[i]);
     fprintf(sigma_r_out,"%e\n",sigma_r[i]);
     fprintf(xi_hm_out,"%e\n",xi_hm[i]);
+    fprintf(xi_2h_out,"%e\n",xi_2halo[i]);
     fprintf(xi_nfw_out,"%e\n",xi_nfw[i]);
-    fprintf(xi_mm_out,"%e %e\n",xi_mm[i],err[i]);
+    fprintf(xi_mm_out,"%e\n",xi_mm[i]);
     fprintf(Rout,"%e\n",R[i]);
   }
   FILE *bias_out = fopen("output/bias.txt","w");
@@ -106,6 +106,8 @@ int main(int argc, char **argv){
   fclose(k_fp),fclose(P_fp);
   fclose(xi_mm_out),fclose(Rout);
   fclose(bias_out),fclose(nu_out),fclose(M_out);
+  fclose(xi_2h_out),fclose(xi_nfw_out);
+  fclose(xi_hm_out);
 }
 
 int read_file(FILE *fp,int N, double *data){
