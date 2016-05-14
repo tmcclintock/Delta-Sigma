@@ -45,7 +45,7 @@ int main(int argc, char **argv){
   }
   calc_tinker_bias(M,NM,k,P,N,bias_arr,nu_arr,200,*cosmo);
 
-  double Mass = 1e14;
+  double Mass = 1e16;
   double concentration = 4.0*pow(Mass/5.e14,-0.1);//Bad M-c relation
   double bias;
   double nu;
@@ -59,6 +59,7 @@ int main(int argc, char **argv){
   double*xi_hm=(double*)malloc(NR*sizeof(double));
   double*sigma_r=(double*)malloc(NR*sizeof(double));
   double*delta_sigma=(double*)malloc(NR*sizeof(double));
+  double*miscentered_sigma_r=(double*)malloc(NR*sizeof(double));
 
   interface_parameters*params=
     (interface_parameters*)malloc(sizeof(interface_parameters));
@@ -66,7 +67,7 @@ int main(int argc, char **argv){
   params->Mass=Mass;
   params->concentration=concentration;
   params->delta=200;
-  params->lnc=-0.22;
+  params->Rmis=0.35;
   params->fmis=0.23;
   params->timing=1; //1 is true
 
@@ -79,6 +80,7 @@ int main(int argc, char **argv){
   outputs->delta_sigma=delta_sigma;
   outputs->bias=&bias;
   outputs->nu=&nu;
+  outputs->miscentered_sigma_r=miscentered_sigma_r;
 
   interface(k,P,N,NR,Rmin,Rmax,*cosmo,params,outputs);
 
@@ -89,7 +91,10 @@ int main(int argc, char **argv){
   FILE *xi_hm_out = fopen("output/xi_hm.txt","w");
   FILE *sigma_r_out = fopen("output/sigma_r.txt","w");
   FILE *delta_sigma_out = fopen("output/delta_sigma.txt","w");
+  FILE *miscentered_sigma_r_out = fopen("output/miscentered_sigma_r.txt","w");
+
   for(i = 0; i < NR; i++){
+    fprintf(miscentered_sigma_r_out,"%e\n",miscentered_sigma_r[i]);
     fprintf(delta_sigma_out,"%e\n",delta_sigma[i]);
     fprintf(sigma_r_out,"%e\n",sigma_r[i]);
     fprintf(xi_hm_out,"%e\n",xi_hm[i]);

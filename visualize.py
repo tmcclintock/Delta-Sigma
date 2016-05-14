@@ -6,10 +6,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 dopowerspec = False
-doxinfw = True
+doxinfw = False
 doximm = False
 dobias = False
-dosigmar = False
+dosigmar = True
 
 testpath = "test_data/matter_power_%s/"
 outpath = "output/"
@@ -24,6 +24,7 @@ xi_2h = np.genfromtxt(outpath+"xi_2halo.txt")
 xi_hm = np.genfromtxt(outpath+"xi_hm.txt")
 sigma_r = np.genfromtxt(outpath+"sigma_r.txt")
 delta_sigma = np.genfromtxt(outpath+"delta_sigma.txt")
+mis_sigma_r = np.genfromtxt(outpath+"miscentered_sigma_r.txt")
 
 M = np.genfromtxt(outpath+"M.txt")
 bias = np.genfromtxt(outpath+"bias.txt")
@@ -61,5 +62,7 @@ if dobias:
 
 if dosigmar:
     plt.loglog(R,sigma_r)
+    plt.loglog(R,delta_sigma)
+    plt.loglog(R,mis_sigma_r,ls='--')
     plt.show()
     plt.clf()

@@ -14,13 +14,14 @@ int interface(double*k,double*P,int Nk,int NR,double Rmin,double Rmax,
   double*delta_sigma=outputs->delta_sigma;
   double*bias=outputs->bias;
   double*nu=outputs->nu;
+  double*miscentered_sigma_r=outputs->miscentered_sigma_r;
   
   //Used to hold integration errors for some routines
   double*err=(double*)malloc(NR*sizeof(double));
 
   double Mass=params->Mass;
   double concentration=params->concentration;
-  double lnc=params->lnc;
+  double Rmis=params->Rmis;
   double fmis=params->fmis;
   int delta=params->delta;
 
@@ -68,6 +69,14 @@ int interface(double*k,double*P,int Nk,int NR,double Rmin,double Rmax,
     printf("delta_sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();
   }
+  calc_miscentered_sigma_r(R,Mass,concentration,delta,Rmis,R,sigma_r,NR,
+			   miscentered_sigma_r,err,cosmo);
+  if (timing){
+    printf("miscentered_sigma_r time = %f\n",
+	   omp_get_wtime()-time);fflush(stdout);
+    time=omp_get_wtime();
+  }
+
 
   free(err);
   return 0;

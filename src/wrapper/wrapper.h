@@ -12,6 +12,7 @@
 #include "../xi_2halo/xi_2halo.h"
 #include "../xi_mm/xi_mm.h"
 #include "../tinker_bias/tinker_bias.h"
+#include "../miscentered_sigma_r/miscentered_sigma_r.h"
 #include "../cosmology/cosmology.h"
 
 #ifndef INTERFACE
@@ -19,7 +20,7 @@
 typedef struct interface_parameters{
   double Mass;
   double concentration;
-  double lnc;
+  double Rmis;
   double fmis;
   int delta;
   int*flow_control;
@@ -39,6 +40,7 @@ typedef struct wrapper_output{
   double*delta_sigma;
   double*bias;
   double*nu;
+  double*miscentered_sigma_r;
 }wrapper_output;
 #endif
 
