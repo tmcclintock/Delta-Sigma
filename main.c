@@ -50,7 +50,7 @@ int main(int argc, char **argv){
   double bias;
   double nu;
 
-  int NR = 300;//N;
+  int NR = 300;
   double Rmin = 0.01, Rmax = 200; //Mpc/h
   double*R=(double*)malloc(NR*sizeof(double));
   double*xi_mm=(double*)malloc(NR*sizeof(double));

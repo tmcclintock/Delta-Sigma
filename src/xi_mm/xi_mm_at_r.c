@@ -57,9 +57,40 @@ int do_integral(double*xi,double*err,integrand_params*params){
   double lkmax = params->lkmax;
   gsl_integration_workspace*workspace=params->workspace;
 
+  /*
+    Goal: rewrite this integral so that it goes period by period.
+    This way it terminates when enough periods have completed,
+    and it doesn't have to integrate over the whole P(k).
+   */
+
   double result,abserr;
-  int status = gsl_integration_qag(&F,lkmin,lkmax,TOL,TOL/10.,workspace_size,6,
-				   workspace,&result,&abserr);
+  int status;
+  if(1==0){
+  
+    int i=1;
+    double R = params->r;
+    double lk0 = log(PI/R); //The k where sin(x) is 0 first.
+    while(lk0 < lkmin){
+      i++;
+      lk0 = log(i*PI/R);
+    }// Now i is the first root that is greater than lkmin
+
+    status = gsl_integration_qag(&F,lkmin,lk0,TOL,TOL/10.,workspace_size,6,workspace,&result,&abserr);//Result now has the integral from lkmin to lk0
+    double next_result=0, lk1=log((i+1)*PI/R);
+    while(lk1 < lkmax && fabs((result-next_result)/result) > TOL){
+      status |= gsl_integration_qag(&F,lk0,lk1,TOL,TOL/10.,workspace_size,6,workspace,&next_result,&abserr);
+      //if (i<10){printf("%d %e %e %e %e %e %e\n",i,lkmin,lkmax,lk0,lk1,result,next_result);}
+      fflush(stdout);
+      result+=next_result;
+      i++;
+      lk0 = log(i*PI/R);
+      lk1 = log((i+1)*PI/R);
+      //if (i<10){printf("%d %e %e %e %e %e %e\n",i,lkmin,lkmax,lk0,lk1,result,next_result);}
+    }
+  }else{
+    status = gsl_integration_qag(&F,lkmin,lkmax,TOL,TOL/10.,workspace_size,6,workspace,&result,&abserr);
+  }
+  
   *xi = result/(2.*PI*PI);
   *err= abserr/(2.*PI*PI);
   return status;
