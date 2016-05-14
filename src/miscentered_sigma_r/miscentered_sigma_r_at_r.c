@@ -1,7 +1,7 @@
 #include "miscentered_sigma_r_at_r.h"
 
-#define TOL1 1e-4
-#define TOL2 1e-5
+#define TOL1 1e-6
+#define TOL2 1e-7
 #define workspace_size 8000
 #define PI 3.141592653589793
 
@@ -37,7 +37,9 @@ static double P_mc(double Rc,double Rmis){
 static int do_integral(double*sigmar_r,double*err,integrand_params*params);
 
 static double integrand_outer(double Rc,void*params);
-static double integrand_inner(double theta,void*params);
+static double integrand_inner_boundaries(double cos_theta,void*params);
+static double integrand_inner_small_scales(double cos_theta,void*params);
+static double integrand_inner_spline_scales(double cos_theta,void*params);
 
 static double sigma_r_1halo_analytic(double R,double Mass,double concentration,double om,double H0,int delta);
 
@@ -101,7 +103,6 @@ int do_integral(double*mis_sigma_r,double*err,integrand_params*params){
 
   double result,abserr;
   status = gsl_integration_qag(&F,lrmin-10,lrmax,//log(sqrt(rmax*rmax-Rp*Rp)),
-			       //status = gsl_integration_qag(&F,0,sqrt(rmax*rmax-Rp*Rp),
 			       TOL1,TOL1/10.,workspace_size,6,workspace,&result,&abserr);
 
   *mis_sigma_r = result;
@@ -120,27 +121,38 @@ double integrand_outer(double lRc,void*params){
   
   gsl_integration_workspace*workspace=pars->workspace2;
   gsl_function F;
-  F.function = &integrand_inner;
   F.params = pars;
 
-  if ((Rp*Rp + Rc*Rc -2*Rp*Rc) < rmin*rmin)
-
   double result,abserr;
-  int status = gsl_integration_qag(&F,PI,0,TOL2,TOL2/10.,
-				   workspace_size,6,workspace,&result,&abserr);
-  return -Rc*P_mc(Rc,pars->Rmis)*result/PI;
+  int status = 0;
+  if ((Rp*Rp + Rc*Rc + 2*Rp*Rc) < rmin*rmin){
+    //Everything is below rmin
+    F.function = &integrand_inner_small_scales;
+  }else if((Rp*Rp + Rc*Rc - 2*Rp*Rc) > rmin*rmin && (Rp*Rp + Rc*Rc + 2*Rp*Rc) < rmax*rmax){
+    //Everything is on the spline
+    F.function = &integrand_inner_spline_scales;
+  }else if((Rp*Rp + Rc*Rc - 2*Rp*Rc) > rmax*rmax){ 
+    //F.function = &integrand_inner_large_scales;
+    return 0; //Everything is past rmax (end of the spline)
+  }else{
+    F.function = &integrand_inner_boundaries;
+  }
+  //F.function = &integrand_inner_boundaries;
+  status |= gsl_integration_qag(&F,-1,1,TOL2,TOL2/10.,
+				workspace_size,6,workspace,&result,&abserr);
+  return Rc*P_mc(Rc,pars->Rmis)*result/PI;
 }
 
 //This is the function that needs to be broken into three parts
 //Basically this will amount to putting the if statements in the outer integrand.
-double integrand_inner(double theta,void*params){
+double integrand_inner_boundaries(double cos_theta,void*params){
 
   integrand_params*pars = (integrand_params*)params;
 
   double Rp = pars->rperp;
   double Rc = pars->Rc;
   double rmin = pars->rmin,rmax = pars->rmax;
-  double arg = sqrt(Rp*Rp + Rc*Rc + 2*Rp*Rc*cos(theta));
+  double arg = sqrt(Rp*Rp + Rc*Rc + 2*Rp*Rc*cos_theta);
 
   if (arg<rmin){
     double Mass = pars->Mass;
@@ -150,13 +162,38 @@ double integrand_inner(double theta,void*params){
     double om = cosmo.om;
     double h = cosmo.h;
     return sigma_r_1halo_analytic(arg,Mass,concentration,om,h*100.,delta);
-  } else if(arg > rmax){
-    return 0;
-  }else{
+  }else if(arg < rmax){
     gsl_spline*spline = pars->spline;
     gsl_interp_accel*acc = pars->acc;
     return gsl_spline_eval(spline,arg,acc);
+  }else{ //arg > rmax
+     return 0;
   }
+}
+
+double integrand_inner_small_scales(double cos_theta,void*params){
+  integrand_params*pars = (integrand_params*)params;
+  double Rp = pars->rperp;
+  double Rc = pars->Rc;
+  double arg = sqrt(Rp*Rp + Rc*Rc + 2*Rp*Rc*cos_theta);
+
+  double Mass = pars->Mass;
+  double concentration = pars->concentration;
+  int delta = pars->delta;
+  double om = pars->cosmo.om;
+  double h = pars->cosmo.h;
+  return sigma_r_1halo_analytic(arg,Mass,concentration,om,h*100.,delta);
+}
+
+double integrand_inner_spline_scales(double cos_theta,void*params){
+  integrand_params*pars = (integrand_params*)params;
+  double Rp = pars->rperp;
+  double Rc = pars->Rc;
+  double arg = sqrt(Rp*Rp + Rc*Rc + 2*Rp*Rc*cos_theta);
+
+  gsl_spline*spline = pars->spline;
+  gsl_interp_accel*acc = pars->acc;
+  return gsl_spline_eval(spline,arg,acc);
 }
 
 double sigma_r_1halo_analytic(double R,double Mass,double concentration,

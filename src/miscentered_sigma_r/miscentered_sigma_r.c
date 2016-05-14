@@ -9,7 +9,6 @@ int calc_miscentered_sigma_r(double*Rp,double Mass,double concentration,
 #pragma omp for
   for(i = 0; i < NR; i++){
     status |= calc_miscentered_sigma_r_at_r(Rp[i],Mass,concentration,delta,Rmis,R,sigma_r,NR,&mis_sigma_r[i],&err[i],cosmo);
-    //printf("%d %e %e\n",i,Rp[i],mis_sigma_r[i]);
   }
 
   return 0;
