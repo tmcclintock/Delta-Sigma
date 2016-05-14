@@ -115,18 +115,24 @@ double integrand_outer(double lRc,void*params){
   integrand_params*pars = (integrand_params*)params;
   double Rc = exp(lRc);
   pars->Rc=Rc;
+  double Rp = pars->rperp;
+  double rmin = pars->rmin,rmax = pars->rmax;
   
   gsl_integration_workspace*workspace=pars->workspace2;
   gsl_function F;
   F.function = &integrand_inner;
   F.params = pars;
 
+  if ((Rp*Rp + Rc*Rc -2*Rp*Rc) < rmin*rmin)
+
   double result,abserr;
-  int status = gsl_integration_qag(&F,0,PI,TOL2,TOL2/10.,
+  int status = gsl_integration_qag(&F,PI,0,TOL2,TOL2/10.,
 				   workspace_size,6,workspace,&result,&abserr);
-  return Rc*P_mc(Rc,pars->Rmis)*result/PI;
+  return -Rc*P_mc(Rc,pars->Rmis)*result/PI;
 }
 
+//This is the function that needs to be broken into three parts
+//Basically this will amount to putting the if statements in the outer integrand.
 double integrand_inner(double theta,void*params){
 
   integrand_params*pars = (integrand_params*)params;
