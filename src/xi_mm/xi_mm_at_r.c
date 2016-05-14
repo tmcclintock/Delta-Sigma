@@ -1,6 +1,7 @@
 #include "xi_mm_at_r.h"
 
-#define TOL 1e-8
+#define TOL 1e-8  //integral tolerance
+#define TOL2 1e-4 //periodicity tolerance; Xi is right to 0.01%
 #define workspace_size 8000
 #define PI 3.141592653589793
 
@@ -55,6 +56,7 @@ int do_integral(double*xi,double*err,integrand_params*params){
 
   double lkmin = params->lkmin;
   double lkmax = params->lkmax;
+  double kmin = exp(lkmin), kmax = exp(lkmax);
   gsl_integration_workspace*workspace=params->workspace;
 
   /*
@@ -63,29 +65,32 @@ int do_integral(double*xi,double*err,integrand_params*params){
     and it doesn't have to integrate over the whole P(k).
    */
 
-  double result,abserr;
+  double result=0,abserr,next_result=1e99;
   int status;
-  if(1==0){
+  if(1==1){
   
     int i=1;
     double R = params->r;
-    double lk0 = log(PI/R); //The k where sin(x) is 0 first.
+    double lPR = log(PI/R);
+    double lk0 = lPR;
     while(lk0 < lkmin){
-      i++;
-      lk0 = log(i*PI/R);
+      i+=1;
+      lk0 = log(i)+lPR;
     }// Now i is the first root that is greater than lkmin
 
-    status = gsl_integration_qag(&F,lkmin,lk0,TOL,TOL/10.,workspace_size,6,workspace,&result,&abserr);//Result now has the integral from lkmin to lk0
-    double next_result=0, lk1=log((i+1)*PI/R);
-    while(lk1 < lkmax && fabs((result-next_result)/result) > TOL){
+    double k_period = exp(lk0); //period of  the kernal in k-space
+    double periods = (kmax-kmin)/k_period;
+    int step = (int)(log10(periods)+1)*2;
+    //printf("%e %e %e %e %d\n",kmin,kmax,k_period,periods,step);
+
+    status = gsl_integration_qag(&F,lkmin,lk0,TOL,TOL/10.,workspace_size,6,workspace,&result,&abserr);
+    double lk1=log(i+step)+lPR;//log((i+step)*PI/R);
+    while(lk1 < lkmax && fabs(next_result/result) > TOL2){
       status |= gsl_integration_qag(&F,lk0,lk1,TOL,TOL/10.,workspace_size,6,workspace,&next_result,&abserr);
-      //if (i<10){printf("%d %e %e %e %e %e %e\n",i,lkmin,lkmax,lk0,lk1,result,next_result);}
-      fflush(stdout);
       result+=next_result;
-      i++;
-      lk0 = log(i*PI/R);
-      lk1 = log((i+1)*PI/R);
-      //if (i<10){printf("%d %e %e %e %e %e %e\n",i,lkmin,lkmax,lk0,lk1,result,next_result);}
+      i+=step;
+      lk0 = lk1;
+      lk1 = log(i+step)+lPR;
     }
   }else{
     status = gsl_integration_qag(&F,lkmin,lkmax,TOL,TOL/10.,workspace_size,6,workspace,&result,&abserr);

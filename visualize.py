@@ -41,9 +41,9 @@ if doximm:
 
 if doxinfw:
     plt.loglog(R,xi_nfw)
-    plt.loglog(R,xi_mm)
+    plt.loglog(R,xi_mm,ls='--',alpha=0.5)
     plt.loglog(R,xi_hm)
-    plt.loglog(R,xi_2h)
+    plt.loglog(R,xi_2h,ls=':',alpha=0.5)
     plt.loglog(R,sigma_r)
     plt.loglog(R,delta_sigma)
     plt.show()

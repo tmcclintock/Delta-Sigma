@@ -67,7 +67,7 @@ int calc_sigma_r_at_r(double Rp,double Mass,double concentration
 }
 
 
-static int do_integral(double*sigma_r,double*err,integrand_params*params){
+int do_integral(double*sigma_r,double*err,integrand_params*params){
   gsl_function F;
   F.function=&integrand_small_scales;
   F.params=params;
@@ -97,7 +97,7 @@ static int do_integral(double*sigma_r,double*err,integrand_params*params){
   return status;
 }
 
-static double integrand_small_scales(double lrz, void*params){
+double integrand_small_scales(double lrz, void*params){
   double rz = exp(lrz);
   integrand_params pars=*(integrand_params *)params;
   double rp = pars.rperp;
@@ -111,7 +111,7 @@ static double integrand_small_scales(double lrz, void*params){
   return rz*answer;
 }
 
-static double integrand_medium_scales(double lrz, void*params){
+double integrand_medium_scales(double lrz, void*params){
   double rz = exp(lrz);
   integrand_params pars=*(integrand_params*)params;
   gsl_spline*spline = pars.spline;//Xi_hm(R) spline
