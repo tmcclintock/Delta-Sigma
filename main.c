@@ -60,6 +60,7 @@ int main(int argc, char **argv){
   double*sigma_r=(double*)malloc(NR*sizeof(double));
   double*delta_sigma=(double*)malloc(NR*sizeof(double));
   double*miscentered_sigma_r=(double*)malloc(NR*sizeof(double));
+  double*miscentered_delta_sigma=(double*)malloc(NR*sizeof(double));
 
   interface_parameters*params=
     (interface_parameters*)malloc(sizeof(interface_parameters));
@@ -81,19 +82,22 @@ int main(int argc, char **argv){
   outputs->bias=&bias;
   outputs->nu=&nu;
   outputs->miscentered_sigma_r=miscentered_sigma_r;
+  outputs->miscentered_delta_sigma=miscentered_delta_sigma;
 
   interface(k,P,N,NR,Rmin,Rmax,*cosmo,params,outputs);
 
-  FILE *Rout = fopen("output/R.txt","w");
-  FILE *xi_mm_out = fopen("output/xi_mm.txt","w");
-  FILE *xi_nfw_out = fopen("output/xi_nfw.txt","w");
-  FILE *xi_2h_out = fopen("output/xi_2halo.txt","w");
-  FILE *xi_hm_out = fopen("output/xi_hm.txt","w");
-  FILE *sigma_r_out = fopen("output/sigma_r.txt","w");
-  FILE *delta_sigma_out = fopen("output/delta_sigma.txt","w");
-  FILE *miscentered_sigma_r_out = fopen("output/miscentered_sigma_r.txt","w");
+  FILE*Rout = fopen("output/R.txt","w");
+  FILE*xi_mm_out = fopen("output/xi_mm.txt","w");
+  FILE*xi_nfw_out = fopen("output/xi_nfw.txt","w");
+  FILE*xi_2h_out = fopen("output/xi_2halo.txt","w");
+  FILE*xi_hm_out = fopen("output/xi_hm.txt","w");
+  FILE*sigma_r_out = fopen("output/sigma_r.txt","w");
+  FILE*delta_sigma_out = fopen("output/delta_sigma.txt","w");
+  FILE*miscentered_sigma_r_out = fopen("output/miscentered_sigma_r.txt","w");
+  FILE*miscentered_delta_sigma_out = fopen("output/miscentered_delta_sigma.txt","w");
 
   for(i = 0; i < NR; i++){
+    fprintf(miscentered_delta_sigma_out,"%e\n",miscentered_delta_sigma[i]);
     fprintf(miscentered_sigma_r_out,"%e\n",miscentered_sigma_r[i]);
     fprintf(delta_sigma_out,"%e\n",delta_sigma[i]);
     fprintf(sigma_r_out,"%e\n",sigma_r[i]);
@@ -103,9 +107,9 @@ int main(int argc, char **argv){
     fprintf(xi_mm_out,"%e\n",xi_mm[i]);
     fprintf(Rout,"%e\n",R[i]);
   }
-  FILE *bias_out = fopen("output/bias.txt","w");
-  FILE *nu_out = fopen("output/nu.txt","w");
-  FILE *M_out = fopen("output/M.txt","w");
+  FILE*bias_out = fopen("output/bias.txt","w");
+  FILE*nu_out = fopen("output/nu.txt","w");
+  FILE*M_out = fopen("output/M.txt","w");
   for(i = 0; i < NM; i++){
     fprintf(bias_out,"%e\n",bias_arr[i]);
     fprintf(nu_out,"%e\n",nu_arr[i]);
@@ -123,7 +127,7 @@ int main(int argc, char **argv){
   fclose(xi_hm_out),fclose(sigma_r_out),fclose(delta_sigma_out);
 }
 
-int read_file(FILE *fp,int N, double *data){
+int read_file(FILE*fp,int N, double *data){
   int i, garbage;
   for(i = 0; i < N; i++)
     garbage = fscanf(fp,"%lf",&data[i]);

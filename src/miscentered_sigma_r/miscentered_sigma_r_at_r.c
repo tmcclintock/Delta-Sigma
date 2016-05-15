@@ -1,7 +1,7 @@
 #include "miscentered_sigma_r_at_r.h"
 
-#define TOL1 1e-6
-#define TOL2 1e-7
+#define TOL1 1e-4
+#define TOL2 1e-5
 #define workspace_size 8000
 #define PI 3.141592653589793
 
