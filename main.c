@@ -45,7 +45,7 @@ int main(int argc, char **argv){
   }
   calc_tinker_bias(M,NM,k,P,N,bias_arr,nu_arr,200,*cosmo);
 
-  double Mass = 1e16;
+  double Mass = 1e14;
   double concentration = 4.0*pow(Mass/5.e14,-0.1);//Bad M-c relation
   double bias;
   double nu;
@@ -68,7 +68,7 @@ int main(int argc, char **argv){
   params->Mass=Mass;
   params->concentration=concentration;
   params->delta=200;
-  params->Rmis=0.35;
+  params->Rmis=0.3;
   params->fmis=0.23;
   params->timing=1; //1 is true
 

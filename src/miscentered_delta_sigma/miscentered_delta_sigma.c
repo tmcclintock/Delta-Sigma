@@ -59,7 +59,7 @@ int calc_miscentered_delta_sigma(double*Rp,double Mass,double concentration,
   double inner_result=0,abserr1=0;
   F.function=&integrand_inner;
   status |= gsl_integration_qag(&F,lrmin-10,lrmin,TOL,TOL/10.,workspace_size,6,workspace,&inner_result,&abserr1);
-  //inner_result contains Sigma(<R), which is the costly
+  //inner_result contains the numerator of Sigma(<R), which is the costly
   //integral over the non-spline region
 
 #pragma omp parallel shared(R,sigma_r,NR,miscentered_sigma_r,miscentered_delta_sigma,err,status)
