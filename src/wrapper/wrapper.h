@@ -14,6 +14,7 @@
 #include "../tinker_bias/tinker_bias.h"
 #include "../miscentered_sigma_r/miscentered_sigma_r.h"
 #include "../miscentered_delta_sigma/miscentered_delta_sigma.h"
+#include "../ave_delta_sigma/ave_delta_sigma.h"
 #include "../cosmology/cosmology.h"
 
 #ifndef INTERFACE
@@ -44,10 +45,13 @@ typedef struct wrapper_output{
   double*xi_hm;
   double*sigma_r;
   double*delta_sigma;
+  double*Rbins;
+  double*ave_delta_sigma;
   double*bias;
   double*nu;
   double*miscentered_sigma_r;
   double*miscentered_delta_sigma;
+  double*miscentered_ave_delta_sigma;
 }wrapper_output;
 #endif
 

@@ -64,6 +64,7 @@ int main(int argc, char **argv){
 
   int Nbins = 15;
   double R_bin_min = 0.01, R_bin_max = 200; //Mpc/h
+  double*Rbins=(double*)malloc(Nbins*sizeof(double));
   double*ave_delta_sigma=(double*)malloc(Nbins*sizeof(double));
   double*miscentered_ave_delta_sigma=(double*)malloc(Nbins*sizeof(double));
 
@@ -89,6 +90,9 @@ int main(int argc, char **argv){
   outputs->nu=&nu;
   outputs->miscentered_sigma_r=miscentered_sigma_r;
   outputs->miscentered_delta_sigma=miscentered_delta_sigma;
+  outputs->Rbins=Rbins;
+  outputs->ave_delta_sigma=ave_delta_sigma;
+  outputs->miscentered_ave_delta_sigma=miscentered_ave_delta_sigma;
 
   params->averaging=1; //1 is true
   params->Nbins=Nbins;
@@ -106,9 +110,30 @@ int main(int argc, char **argv){
   FILE*delta_sigma_out = fopen("output/delta_sigma.txt","w");
   FILE*miscentered_sigma_r_out;
   FILE*miscentered_delta_sigma_out;
+  FILE*ave_delta_sigma_out;
+  FILE*Rbins_out;
+  FILE*miscentered_ave_delta_sigma_out;
+  if(params->averaging){
+    ave_delta_sigma_out = fopen("output/ave_delta_sigma.txt","w");
+    Rbins_out = fopen("output/Rbins.txt","w");
+  }
   if(params->miscentering){
     miscentered_sigma_r_out = fopen("output/miscentered_sigma_r.txt","w");
     miscentered_delta_sigma_out = fopen("output/miscentered_delta_sigma.txt","w");
+    if(params->averaging)
+      miscentered_ave_delta_sigma_out = fopen("output/miscentered_ave_delta_sigma.txt","w");
+  }
+
+  //Write out the averaged values
+  for(i = 0; i < Nbins; i++){
+    if(params->averaging){
+      fprintf(ave_delta_sigma_out,"%e\n",ave_delta_sigma[i]);
+      fprintf(Rbins_out,"%e\n",Rbins[i]);
+      if(params->miscentering){
+	fprintf(miscentered_ave_delta_sigma_out,"%e\n",
+		miscentered_ave_delta_sigma[i]);
+      }
+    }
   }
 
   for(i = 0; i < NR; i++){
@@ -142,8 +167,15 @@ int main(int argc, char **argv){
   fclose(bias_out),fclose(nu_out),fclose(M_out);
   fclose(xi_2h_out),fclose(xi_nfw_out);
   fclose(xi_hm_out),fclose(sigma_r_out),fclose(delta_sigma_out);
+  if(params->averaging){
+    fclose(ave_delta_sigma_out);
+    fclose(Rbins_out);
+  }
   if(params->miscentering){
     fclose(miscentered_sigma_r_out),fclose(miscentered_delta_sigma_out);
+    if(params->averaging){
+      fclose(miscentered_ave_delta_sigma_out);
+    }
   }
   free(params);
 }

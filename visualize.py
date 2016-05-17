@@ -9,7 +9,8 @@ dopowerspec = False
 doxinfw = False
 doximm = False
 dobias = False
-dosigmar = True
+dosigmar = False
+doave = True
 
 testpath = "test_data/matter_power_%s/"
 outpath = "output/"
@@ -24,6 +25,8 @@ xi_2h = np.genfromtxt(outpath+"xi_2halo.txt")
 xi_hm = np.genfromtxt(outpath+"xi_hm.txt")
 sigma_r = np.genfromtxt(outpath+"sigma_r.txt")
 delta_sigma = np.genfromtxt(outpath+"delta_sigma.txt")
+Rbins = np.genfromtxt(outpath+"Rbins.txt")
+ave_delta_sigma = np.genfromtxt(outpath+"ave_delta_sigma.txt")
 mis_sigma_r = np.genfromtxt(outpath+"miscentered_sigma_r.txt")
 mis_ds = np.genfromtxt(outpath+"miscentered_delta_sigma.txt")
 
@@ -65,6 +68,13 @@ if dosigmar:
     plt.loglog(R,sigma_r)
     plt.loglog(R,delta_sigma)
     plt.loglog(R,mis_sigma_r,ls='--')
+    plt.loglog(R,mis_ds,ls=':')
+    plt.show()
+    plt.clf()
+
+if doave:
+    plt.loglog(R,delta_sigma)
+    plt.loglog(Rbins,ave_delta_sigma,ls="",marker="o")
     plt.loglog(R,mis_ds,ls=':')
     plt.show()
     plt.clf()

@@ -64,7 +64,7 @@ int calc_delta_sigma_at_r(double Rp,double Mass,double concentration
   return 0;
 }
 
-static int do_integral(double*delta_sigma,double*err,integrand_params*params){
+int do_integral(double*delta_sigma,double*err,integrand_params*params){
   gsl_function F;
   F.function=&integrand1;
   F.params=params;
