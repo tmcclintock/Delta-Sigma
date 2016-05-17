@@ -56,6 +56,9 @@ typedef struct wrapper_output{
 }wrapper_output;
 #endif
 
-int interface(double*k,double*P,int Nk,int NR,double Rmin,double Rmax,
+int interface(double*k_lin,double*P_lin,int Nk_lin,
+	      double*k,double*P,int Nk,
+	      int NR,double Rmin,double Rmax,
 	      cosmology cosmo, interface_parameters*params,
-	      wrapper_output*output);
+	      wrapper_output*outputs);
+

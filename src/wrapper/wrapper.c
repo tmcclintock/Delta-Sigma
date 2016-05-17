@@ -1,6 +1,8 @@
 #include "wrapper.h"
 
-int interface(double*k,double*P,int Nk,int NR,double Rmin,double Rmax,
+int interface(double*k_lin,double*P_lin,int Nk_lin,
+	      double*k,double*P,int Nk,
+	      int NR,double Rmin,double Rmax,
 	      cosmology cosmo, interface_parameters*params,
 	      wrapper_output*outputs){
   int i;
@@ -54,7 +56,7 @@ int interface(double*k,double*P,int Nk,int NR,double Rmin,double Rmax,
     printf("xi_mm time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();
   }
-  calc_tinker_bias(&Mass,1,k,P,Nk,bias,nu,delta,cosmo);
+  calc_tinker_bias(&Mass,1,k_lin,P_lin,Nk_lin,bias,nu,delta,cosmo);
   if (timing){
     printf("tinker_bias time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();

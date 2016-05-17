@@ -15,25 +15,45 @@ int main(int argc, char **argv){
   cosmo->ode = 0.7;
   cosmo->ok = 0.0;
 
-  FILE *k_fp, *P_fp;
+  FILE *k_lin_fp, *P_lin_fp;
+  FILE *k_nl_fp, *P_nl_fp;
   char * line = NULL;
   size_t len = 0;
-  int i,N = -1;
+  int i, N_lin = -1, N_nl = -1;
   int read;
 
-  k_fp = fopen("test_data/matter_power_nl/k_h.txt","r");
-  while ((read = getline(&line,&len,k_fp)) != -1){
-    N++;
+  k_lin_fp = fopen("test_data/matter_power_lin/k_h.txt","r");
+  while ((read = getline(&line,&len,k_lin_fp)) != -1){
+    N_lin++;
   }
-  rewind(k_fp);
-  read = getline(&line,&len,k_fp); //header line read off
-  double*k = (double*)malloc((N)*sizeof(double));
-  read_file(k_fp,N,k);
+  rewind(k_lin_fp);
+  read = getline(&line,&len,k_lin_fp); //header line read off
+  double*k_lin = (double*)malloc((N_lin)*sizeof(double));
+  read_file(k_lin_fp,N_lin,k_lin);
 
-  P_fp = fopen("test_data/matter_power_nl/p_k.txt","r");
-  read = getline(&line,&len,P_fp); //header line read off
-  double*P = (double*)malloc((N)*sizeof(double));
-  read_file(P_fp,N,P);
+  P_lin_fp = fopen("test_data/matter_power_lin/p_k.txt","r");
+  read = getline(&line,&len,P_lin_fp); //header line read off
+  double*P_lin = (double*)malloc((N_lin)*sizeof(double));
+  read_file(P_lin_fp,N_lin,P_lin);
+
+
+  k_nl_fp = fopen("test_data/matter_power_nl/k_h.txt","r");
+  while ((read = getline(&line,&len,k_nl_fp)) != -1){
+    N_nl++;
+  }
+  rewind(k_nl_fp);
+  read = getline(&line,&len,k_nl_fp); //header line read off
+  double*k_nl = (double*)malloc((N_nl)*sizeof(double));
+  read_file(k_nl_fp,N_nl,k_nl);
+
+  P_nl_fp = fopen("test_data/matter_power_nl/p_k.txt","r");
+  read = getline(&line,&len,P_nl_fp); //header line read off
+  double*P_nl = (double*)malloc((N_nl)*sizeof(double));
+  read_file(P_nl_fp,N_nl,P_nl);
+
+
+
+
 
   int NM = 100;
   double M[NM];
@@ -43,7 +63,7 @@ int main(int argc, char **argv){
     double dlM = (16.0 - 12.0)/(float)(NM-1.);
     M[i] = pow(10,(12.0 + i*dlM));
   }
-  calc_tinker_bias(M,NM,k,P,N,bias_arr,nu_arr,200,*cosmo);
+  calc_tinker_bias(M,NM,k_lin,P_lin,N_lin,bias_arr,nu_arr,200,*cosmo);
 
   double Mass = 1e14;
   double concentration = 4.0*pow(Mass/5.e14,-0.1);//Bad M-c relation
@@ -98,7 +118,8 @@ int main(int argc, char **argv){
   outputs->ave_delta_sigma=ave_delta_sigma;
   outputs->miscentered_ave_delta_sigma=miscentered_ave_delta_sigma;
 
-  interface(k,P,N,NR,Rmin,Rmax,*cosmo,params,outputs);
+  interface(k_lin,P_lin,N_lin,k_nl,P_nl,N_nl,
+	    NR,Rmin,Rmax,*cosmo,params,outputs);
 
   FILE*Rout = fopen("output/R.txt","w");
   FILE*xi_mm_out = fopen("output/xi_mm.txt","w");
@@ -157,11 +178,14 @@ int main(int argc, char **argv){
     fprintf(M_out,"%e\n",M[i]);
   }
 
-  free(k),free(P);
+  free(k_lin),free(P_lin);
+  free(k_nl),free(P_nl);
+
   free(R),free(xi_mm),free(xi_nfw),free(xi_2halo);
   free(xi_hm),free(sigma_r),free(delta_sigma);
   free(cosmo);
-  fclose(k_fp),fclose(P_fp);
+  fclose(k_lin_fp),fclose(P_lin_fp);
+  fclose(k_nl_fp),fclose(P_nl_fp);
   fclose(xi_mm_out),fclose(Rout);
   fclose(bias_out),fclose(nu_out),fclose(M_out);
   fclose(xi_2h_out),fclose(xi_nfw_out);
