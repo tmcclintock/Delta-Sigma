@@ -27,6 +27,10 @@ typedef struct interface_parameters{
   int*flow_control;
   int timing;
   int miscentering;
+  int averaging;
+  int Nbins;
+  double R_bin_min;
+  double R_bin_max;
 }interface_parameters;
 #endif
 

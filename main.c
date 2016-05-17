@@ -62,6 +62,11 @@ int main(int argc, char **argv){
   double*miscentered_sigma_r=(double*)malloc(NR*sizeof(double));
   double*miscentered_delta_sigma=(double*)malloc(NR*sizeof(double));
 
+  int Nbins = 15;
+  double R_bin_min = 0.01, R_bin_max = 200; //Mpc/h
+  double*ave_delta_sigma=(double*)malloc(Nbins*sizeof(double));
+  double*miscentered_ave_delta_sigma=(double*)malloc(Nbins*sizeof(double));
+
   interface_parameters*params=
     (interface_parameters*)malloc(sizeof(interface_parameters));
   wrapper_output*outputs=(wrapper_output*)malloc(sizeof(wrapper_output));
@@ -84,6 +89,11 @@ int main(int argc, char **argv){
   outputs->nu=&nu;
   outputs->miscentered_sigma_r=miscentered_sigma_r;
   outputs->miscentered_delta_sigma=miscentered_delta_sigma;
+
+  params->averaging=1; //1 is true
+  params->Nbins=Nbins;
+  params->R_bin_min=R_bin_min;
+  params->R_bin_max=R_bin_max;
 
   interface(k,P,N,NR,Rmin,Rmax,*cosmo,params,outputs);
 

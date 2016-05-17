@@ -26,8 +26,13 @@ int interface(double*k,double*P,int Nk,int NR,double Rmin,double Rmax,
   double fmis=params->fmis;
   int delta=params->delta;
 
+  int Nbins=params->Nbins;
+  double R_bin_min=params->R_bin_min;
+  double R_bin_max=params->R_bin_max;
+
   int timing=params->timing;
   int miscentering=params->miscentering;
+  int averaging=params->averaging;
   int*flow_control=params->flow_control;
 
   for(i = 0; i < NR; i++){
@@ -70,6 +75,14 @@ int interface(double*k,double*P,int Nk,int NR,double Rmin,double Rmax,
   if (timing){
     printf("delta_sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();
+  }
+
+  if(averaging){
+    //calc_ave_delta_sigma(R,NR,delta_sigma,Nbins,R_bin_min,R_bin_max,ave_delta_sigma,cosmo);
+    if (timing){
+      printf("ave_delta_sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
+      time=omp_get_wtime();
+    }
   }
 
 
