@@ -29,6 +29,7 @@ Rbins = np.genfromtxt(outpath+"Rbins.txt")
 ave_delta_sigma = np.genfromtxt(outpath+"ave_delta_sigma.txt")
 mis_sigma_r = np.genfromtxt(outpath+"miscentered_sigma_r.txt")
 mis_ds = np.genfromtxt(outpath+"miscentered_delta_sigma.txt")
+mis_ave_ds = np.genfromtxt(outpath+"miscentered_ave_delta_sigma.txt")
 
 M = np.genfromtxt(outpath+"M.txt")
 bias = np.genfromtxt(outpath+"bias.txt")
@@ -73,8 +74,12 @@ if dosigmar:
     plt.clf()
 
 if doave:
-    plt.loglog(R,delta_sigma)
-    plt.loglog(Rbins,ave_delta_sigma,ls="",marker="o")
-    plt.loglog(R,mis_ds,ls=':')
+    plt.loglog(R,delta_sigma,c='b')
+    plt.loglog(Rbins,ave_delta_sigma,ls="",marker="o",c='b')
+    plt.loglog(R,mis_ds,ls=':',c='r')
+    plt.loglog(Rbins,mis_ave_ds,ls="",marker="o",c='r')
+    fmis = 0.22
+    full_ds = (1.-fmis)*ave_delta_sigma + fmis*mis_ave_ds
+    plt.loglog(Rbins,full_ds,ls='',marker='o',c='g')
     plt.show()
     plt.clf()

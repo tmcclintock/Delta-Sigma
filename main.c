@@ -77,7 +77,11 @@ int main(int argc, char **argv){
   params->Rmis=0.3;
   params->fmis=0.23;
   params->timing=1; //1 is true
-  params->miscentering=0;//1 is true
+  params->miscentering=1;//1 is true
+  params->averaging=1; //1 is true
+  params->Nbins=Nbins;
+  params->R_bin_min=R_bin_min;
+  params->R_bin_max=R_bin_max;
 
   outputs->R=R;
   outputs->xi_1halo=xi_nfw;
@@ -93,11 +97,6 @@ int main(int argc, char **argv){
   outputs->Rbins=Rbins;
   outputs->ave_delta_sigma=ave_delta_sigma;
   outputs->miscentered_ave_delta_sigma=miscentered_ave_delta_sigma;
-
-  params->averaging=1; //1 is true
-  params->Nbins=Nbins;
-  params->R_bin_min=R_bin_min;
-  params->R_bin_max=R_bin_max;
 
   interface(k,P,N,NR,Rmin,Rmax,*cosmo,params,outputs);
 
