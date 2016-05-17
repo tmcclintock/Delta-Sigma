@@ -26,6 +26,7 @@ typedef struct interface_parameters{
   int delta;
   int*flow_control;
   int timing;
+  int miscentering;
 }interface_parameters;
 #endif
 

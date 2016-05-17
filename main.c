@@ -71,6 +71,7 @@ int main(int argc, char **argv){
   params->Rmis=0.3;
   params->fmis=0.23;
   params->timing=1; //1 is true
+  params->miscentering=0;//1 is true
 
   outputs->R=R;
   outputs->xi_1halo=xi_nfw;
@@ -93,12 +94,18 @@ int main(int argc, char **argv){
   FILE*xi_hm_out = fopen("output/xi_hm.txt","w");
   FILE*sigma_r_out = fopen("output/sigma_r.txt","w");
   FILE*delta_sigma_out = fopen("output/delta_sigma.txt","w");
-  FILE*miscentered_sigma_r_out = fopen("output/miscentered_sigma_r.txt","w");
-  FILE*miscentered_delta_sigma_out = fopen("output/miscentered_delta_sigma.txt","w");
+  FILE*miscentered_sigma_r_out;
+  FILE*miscentered_delta_sigma_out;
+  if(params->miscentering){
+    miscentered_sigma_r_out = fopen("output/miscentered_sigma_r.txt","w");
+    miscentered_delta_sigma_out = fopen("output/miscentered_delta_sigma.txt","w");
+  }
 
   for(i = 0; i < NR; i++){
-    fprintf(miscentered_delta_sigma_out,"%e\n",miscentered_delta_sigma[i]);
-    fprintf(miscentered_sigma_r_out,"%e\n",miscentered_sigma_r[i]);
+    if(params->miscentering){
+      fprintf(miscentered_delta_sigma_out,"%e\n",miscentered_delta_sigma[i]);
+      fprintf(miscentered_sigma_r_out,"%e\n",miscentered_sigma_r[i]);
+    }
     fprintf(delta_sigma_out,"%e\n",delta_sigma[i]);
     fprintf(sigma_r_out,"%e\n",sigma_r[i]);
     fprintf(xi_hm_out,"%e\n",xi_hm[i]);
@@ -125,6 +132,10 @@ int main(int argc, char **argv){
   fclose(bias_out),fclose(nu_out),fclose(M_out);
   fclose(xi_2h_out),fclose(xi_nfw_out);
   fclose(xi_hm_out),fclose(sigma_r_out),fclose(delta_sigma_out);
+  if(params->miscentering){
+    fclose(miscentered_sigma_r_out),fclose(miscentered_delta_sigma_out);
+  }
+  free(params);
 }
 
 int read_file(FILE*fp,int N, double *data){

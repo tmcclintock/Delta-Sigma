@@ -27,6 +27,7 @@ int interface(double*k,double*P,int Nk,int NR,double Rmin,double Rmax,
   int delta=params->delta;
 
   int timing=params->timing;
+  int miscentering=params->miscentering;
   int*flow_control=params->flow_control;
 
   for(i = 0; i < NR; i++){
@@ -70,20 +71,24 @@ int interface(double*k,double*P,int Nk,int NR,double Rmin,double Rmax,
     printf("delta_sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();
   }
-  calc_miscentered_sigma_r(R,Mass,concentration,delta,Rmis,R,sigma_r,NR,
-			   miscentered_sigma_r,err,cosmo);
-  if (timing){
-    printf("miscentered_sigma_r time = %f\n",
-	   omp_get_wtime()-time);fflush(stdout);
-    time=omp_get_wtime();
-  }
-  calc_miscentered_delta_sigma(R,Mass,concentration,delta,Rmis,R,sigma_r,
-			       miscentered_sigma_r,NR,miscentered_delta_sigma,
-			       err,cosmo);
-  if (timing){
-    printf("miscentered_delta_sigma time = %f\n",
-	   omp_get_wtime()-time);fflush(stdout);
-    time=omp_get_wtime();
+
+
+  if(miscentering){
+    calc_miscentered_sigma_r(R,Mass,concentration,delta,Rmis,R,sigma_r,NR,
+			     miscentered_sigma_r,err,cosmo);
+    if (timing){
+      printf("miscentered_sigma_r time = %f\n",
+	     omp_get_wtime()-time);fflush(stdout);
+      time=omp_get_wtime();
+    }
+    calc_miscentered_delta_sigma(R,Mass,concentration,delta,Rmis,R,sigma_r,
+				 miscentered_sigma_r,NR,miscentered_delta_sigma,
+				 err,cosmo);
+    if (timing){
+      printf("miscentered_delta_sigma time = %f\n",
+	     omp_get_wtime()-time);fflush(stdout);
+      time=omp_get_wtime();
+    }
   }
 
 
