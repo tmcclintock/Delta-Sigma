@@ -1,0 +1,6 @@
+This directory contains files specifically associated with implementing 
+the DeltaSigma code as a module in CosmoSIS. In order to get the code
+working create a folder for the module with the following:
+weak_lensing.c Makefile_cosmosis (renamed to Makefile) and src/.
+
+

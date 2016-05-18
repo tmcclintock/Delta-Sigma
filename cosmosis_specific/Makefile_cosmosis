@@ -1,0 +1,15 @@
+include ${COSMOSIS_SRC_DIR}/config/compilers.mk
+
+USER_CFLAGS = -I ${GSL_LIB}
+
+USER_LDFLAGS = -L ${GSL_LIB} -lgsl -lgslcblas -lcosmosis
+
+all: weak_lensing_module.so
+
+weak_lensing_module.so: weak_lensing_module.c src/xi_mm/xi_mm_at_r.c src/xi_mm/xi_mm.c src/tinker_bias/tinker_bias.c src/tinker_bias/tinker_bias_at_M.c src/xi_nfw/xi_nfw.c src/xi_2halo/xi_2halo.c src/xi_hm/xi_hm.c src/sigma_r/sigma_r.c src/sigma_r/sigma_r_at_r.c src/delta_sigma/delta_sigma.c src/delta_sigma/delta_sigma_at_r.c src/miscentered_sigma_r/miscentered_sigma_r.c src/miscentered_sigma_r/miscentered_sigma_r_at_r.c src/miscentered_delta_sigma/miscentered_delta_sigma.c src/miscentered_delta_sigma/miscentered_delta_sigma_at_r.c src/ave_delta_sigma/ave_delta_sigma.c src/ave_delta_sigma/ave_delta_sigma_in_bin.c src/miscentered_ave_delta_sigma/miscentered_ave_delta_sigma.c src/miscentered_ave_delta_sigma/miscentered_ave_delta_sigma_in_bin.c src/wrapper/wrapper.c
+	${CC} ${CFLAGS} -shared -o weak_lensing_module.so weak_lensing_module.c src/xi_mm/xi_mm_at_r.c src/xi_mm/xi_mm.c src/tinker_bias/tinker_bias.c src/tinker_bias/tinker_bias_at_M.c src/xi_nfw/xi_nfw.c src/xi_2halo/xi_2halo.c src/xi_hm/xi_hm.c src/sigma_r/sigma_r.c src/sigma_r/sigma_r_at_r.c src/delta_sigma/delta_sigma.c src/delta_sigma/delta_sigma_at_r.c src/miscentered_sigma_r/miscentered_sigma_r.c src/miscentered_sigma_r/miscentered_sigma_r_at_r.c src/miscentered_delta_sigma/miscentered_delta_sigma.c src/miscentered_delta_sigma/miscentered_delta_sigma_at_r.c src/ave_delta_sigma/ave_delta_sigma.c src/ave_delta_sigma/ave_delta_sigma_in_bin.c src/miscentered_ave_delta_sigma/miscentered_ave_delta_sigma.c src/miscentered_ave_delta_sigma/miscentered_ave_delta_sigma_in_bin.c src/wrapper/wrapper.c ${LDFLAGS}
+
+.PHONY: clean
+
+clean:
+	rm -f weak_lensing_module.so weak_lensing_module.so.dSYM weak_lensing_module.o
