@@ -1,6 +1,7 @@
 #include "gsl/gsl_spline.h"
 #include "gsl/gsl_integration.h"
 #include "../cosmology/cosmology.h"
+#include "../xi_nfw/xi_nfw.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -9,15 +9,15 @@
 #include <stdlib.h>
 #include "src/wrapper/wrapper.h"
 
-const char * cosmo = COSMOLOGICAL_PARAMETERS_SECTION;
-const char * dist = DISTANCES_SECTION;
+const char*cosmo_params = COSMOLOGICAL_PARAMETERS_SECTION;
+const char*dist = DISTANCES_SECTION;
 
 typedef struct weak_lensing_config{
   int delta;
   double Rmin, Rmax;
   double bin_min, bin_max;
   int NR, Nbins;
-  int timing=0,miscentering=0,averaging=0;
+  int timing,miscentering,averaging;
 }weak_lensing_config;
 
 void*setup(c_datablock*options){
@@ -29,7 +29,7 @@ void*setup(c_datablock*options){
   status |= c_datablock_get_int(options,OPTION_SECTION,"NR",&(config->NR));
   status|=c_datablock_get_double(options,OPTION_SECTION,"bin_min",&(config->bin_min));
   status |= c_datablock_get_double(options,OPTION_SECTION,"bin_max",&(config->bin_max));
-  status |= c_datablock_get_int(options,OPTION_SECTION,"Nbins",&(config->num_bins));
+  status |= c_datablock_get_int(options,OPTION_SECTION,"Nbins",&(config->Nbins));
   status |= c_datablock_get_int(options,OPTION_SECTION,"timing",&(config->timing));
   status |= c_datablock_get_int(options,OPTION_SECTION,"miscentering",&(config->miscentering));
   status |= c_datablock_get_int(options,OPTION_SECTION,"averaging",&(config->averaging));
@@ -56,39 +56,39 @@ int execute(c_datablock*block,void*config_in){
   //Read in the linear and nonlinear matter power spectra.
   double *k_lin;
   int NK_lin, ndims_lin;
-  status |= c_datablock_get_double_array_1d(block,"matter_power_lin","k_h",&k,&NK_lin);
+  status |= c_datablock_get_double_array_1d(block,"matter_power_lin","k_h",&k_lin,&NK_lin);
   if(status){fprintf(stderr,"Error on reading in k_h lin.\n");exit(status);}
   status |= c_datablock_get_array_ndim(block,"matter_power_lin","p_k",&ndims_lin);
   if(status){fprintf(stderr,"Error on reading in dimensions of PK lin.\n");exit(status);}
   int extents_lin[ndims_lin];
-  double*PK_lin = (double *)malloc(NZ*NK_lin*sizeof(double));
+  double*P_lin = (double *)malloc(NZ*NK_lin*sizeof(double));
   if (ndims_lin == 2){
     status |= c_datablock_get_double_array_shape(block,"matter_power_lin","p_k",
 						 ndims_lin,extents_lin);
     if(status){fprintf(stderr,"Error on reading in 2D PK lin.\n");exit(status);}
     status |= c_datablock_get_double_array(block,"matter_power_lin",
-					   "p_k",(double*)PK_lin,ndims_lin,extents_lin);
+					   "p_k",(double*)P_lin,ndims_lin,extents_lin);
   }else{
-    status |= c_datablock_get_double_array_1d(block,"matter_power_lin","p_k",&PK_lin,&NK_lin);
+    status |= c_datablock_get_double_array_1d(block,"matter_power_lin","p_k",&P_lin,&NK_lin);
     if(status){fprintf(stderr,"Error on reading in 1D PK lin.\n");exit(status);}
   }
   if(status){fprintf(stderr,"Error on reading in PK lin.\n");exit(status);}
   double *k_nl;
   int NK_nl, ndims_nl;
-  status |= c_datablock_get_double_array_1d(block,"matter_power_nl","k_h",&k,&NK_nl);
+  status |= c_datablock_get_double_array_1d(block,"matter_power_nl","k_h",&k_nl,&NK_nl);
   if(status){fprintf(stderr,"Error on reading in k_h nl.\n");exit(status);}
   status |= c_datablock_get_array_ndim(block,"matter_power_nl","p_k",&ndims_nl);
   if(status){fprintf(stderr,"Error on reading in dimensions of PK nl.\n");exit(status);}
   int extents_nl[ndims_nl];
-  double*PK_nl = (double *)malloc(NZ*NK_nl*sizeof(double));
+  double*P_nl = (double *)malloc(NZ*NK_nl*sizeof(double));
   if (ndims_nl == 2){
     status |= c_datablock_get_double_array_shape(block,"matter_power_nl","p_k",
 						 ndims_nl,extents_nl);
     if(status){fprintf(stderr,"Error on reading in 2D PK nl.\n");exit(status);}
     status |= c_datablock_get_double_array(block,"matter_power_nl",
-					   "p_k",(double*)PK_nl,ndims_nl,extents_nl);
+					   "p_k",(double*)P_nl,ndims_nl,extents_nl);
   }else{
-    status |= c_datablock_get_double_array_1d(block,"matter_power_nl","p_k",&PK_nl,&NK_nl);
+    status |= c_datablock_get_double_array_1d(block,"matter_power_nl","p_k",&P_nl,&NK_nl);
     if(status){fprintf(stderr,"Error on reading in 1D PK nl.\n");exit(status);}
   }
   if(status){fprintf(stderr,"Error on reading in PK nl.\n");exit(status);}
@@ -125,21 +125,27 @@ int execute(c_datablock*block,void*config_in){
   double**Rbins=(double**)malloc(Nbins*sizeof(double*));
   double**ave_delta_sigma=(double**)malloc(Nbins*sizeof(double*));
   double**miscentered_ave_delta_sigma=(double**)malloc(Nbins*sizeof(double*));
-  for(i = 0 i < NZ; i++){
-    Rbins=(double*)malloc(Nbins*sizeof(double));
-    ave_delta_sigma=(double*)malloc(Nbins*sizeof(double));
-    miscentered_ave_delta_sigma=(double*)malloc(Nbins*sizeof(double));
+  for(i = 0; i < NZ; i++){
+    Rbins[i]=(double*)malloc(Nbins*sizeof(double));
+    ave_delta_sigma[i]=(double*)malloc(Nbins*sizeof(double));
+    miscentered_ave_delta_sigma[i]=(double*)malloc(Nbins*sizeof(double));
   }
 
   //Acquire the mass, concentration, miscentering, miscentered fraction and cosmology
   double Mass,concentration,omega_m,H0,Rmis,fmis;
-  status |= c_datablock_get_double(block,cosmo,"log10_cluster_mass",&Mass);
-  status |= c_datablock_get_double(block,cosmo,"omega_m",&omega_m);
-  status |= c_datablock_get_double(block,cosmo,"hubble",&H0);
-  status |= c_datablock_get_double(block,cosmo,"sigma_miscentering",&Rmis);
-  status |= c_datablock_get_double(block,cosmo,"miscentered_fraction",&fmis);
+  status |= c_datablock_get_double(block,cosmo_params,"log10_cluster_mass",&Mass);
+  status |= c_datablock_get_double(block,cosmo_params,"omega_m",&omega_m);
+  status |= c_datablock_get_double(block,cosmo_params,"hubble",&H0);
+  status |= c_datablock_get_double(block,cosmo_params,"sigma_miscentering",&Rmis);
+  status |= c_datablock_get_double(block,cosmo_params,"miscentered_fraction",&fmis);
   status |= c_datablock_get_double(block,"mc_relation","concentration",&concentration);
   Mass = pow(10,Mass);
+
+  cosmology*cosmo = (cosmology*)malloc(sizeof(cosmology));
+  cosmo->h = H0/100.;
+  cosmo->om = omega_m;
+  cosmo->ode = 1-omega_m;
+  cosmo->ok = 0.0;
 
   interface_parameters*params=
     (interface_parameters*)malloc(sizeof(interface_parameters));
@@ -158,7 +164,7 @@ int execute(c_datablock*block,void*config_in){
   wrapper_output*outputs=(wrapper_output*)malloc(sizeof(wrapper_output));
   
   //Calculate everything one redshift bin at a time
-  for( i = 0; i < NZ; i ++){
+  for(i = 0; i < NZ; i++){
     outputs->R=R[i];
     outputs->xi_1halo=xi_nfw[i];
     outputs->xi_mm=xi_mm[i];
@@ -174,19 +180,19 @@ int execute(c_datablock*block,void*config_in){
     outputs->ave_delta_sigma=ave_delta_sigma[i];
     outputs->miscentered_ave_delta_sigma=miscentered_ave_delta_sigma[i];
 
-    status|=interface(k_lin,P_lin[i],N_lin,k_nl,P_nl[i],N_nl,
+    status|=interface(k_lin,&P_lin[i*NK_lin],NK_lin,k_nl,&P_nl[i*NK_nl],NK_nl,
 	    NR,Rmin,Rmax,*cosmo,params,outputs);
   }
 
   //Compute the full model
   double model_out[NZ][NR];
   double ave_model_out[NZ][Nbins];
-  for(i = 0 i < NZ; i++){
+  for(i = 0; i < NZ; i++){
     for(j = 0; j < NR; j++){
       model_out[i][j]=(1.-fmis)*delta_sigma[i][j]+fmis*miscentered_delta_sigma[i][j];
     }
     for(j = 0; j < Nbins; j++){
-      ave_model_out[i][j]=(1.-fmis)*ave_delta_sigma[i][j]+fmis*ave_miscentered_delta_sigma[i][j];
+      ave_model_out[i][j]=(1.-fmis)*ave_delta_sigma[i][j]+fmis*miscentered_ave_delta_sigma[i][j];
     }
   }
 
@@ -203,7 +209,7 @@ int execute(c_datablock*block,void*config_in){
   double Rbins_out[NZ][Nbins];
   double ave_delta_sigma_out[NZ][Nbins];
   double miscentered_ave_delta_sigma_out[NZ][Nbins];
-  for(i = 0 i < NZ; i++){
+  for(i = 0; i < NZ; i++){
     for(j = 0; j < NR; j++){
       R_out[i][j] = R[i][j];
       xi_mm_out[i][j] = xi_mm[i][j];
@@ -250,7 +256,7 @@ int execute(c_datablock*block,void*config_in){
   free(miscentered_sigma_r),free(miscentered_delta_sigma);
   free(miscentered_ave_delta_sigma);
 
-  return 0
+  return 0;
 }
 
 int cleanup(void*config_in){
