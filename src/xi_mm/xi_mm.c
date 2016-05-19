@@ -2,6 +2,7 @@
 
 int calc_xi_mm(double *R,int NR,double*k,double*P,int N,double*xi,double*err){
   int i;
+
 #pragma omp parallel shared(xi,err,k,P,NR,N)
 #pragma omp for
   for(i = 0; i < NR; i++){

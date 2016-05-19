@@ -52,9 +52,6 @@ int main(int argc, char **argv){
   read_file(P_nl_fp,N_nl,P_nl);
 
 
-
-
-
   int NM = 100;
   double M[NM];
   double bias_arr[NM];
