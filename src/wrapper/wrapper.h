@@ -6,6 +6,7 @@
   a boolean array that provides flow control with regards
   to which parts of the code to run.
 */
+#include "../mc_relation/mc_relation.h"
 #include "../delta_sigma/delta_sigma.h"
 #include "../sigma_r/sigma_r.h"
 #include "../xi_hm/xi_hm.h"
