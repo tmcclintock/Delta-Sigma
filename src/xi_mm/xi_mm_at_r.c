@@ -1,6 +1,6 @@
 #include "xi_mm_at_r.h"
 
-#define TOL 1e-6  //integral tolerance
+#define TOL 1e-8  //integral tolerance
 #define TOL2 1e-4 //periodicity tolerance; Xi is right to 0.01%
 #define workspace_size 8000
 #define PI 3.141592653589793
