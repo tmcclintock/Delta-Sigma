@@ -120,3 +120,23 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
   free(err);
   return 0;
 }
+
+int python_interface(double*k_lin,double*P_lin,int Nk_lin,
+		     double*k,double*P,int Nk,
+		     int NR,double Rmin,double Rmax,
+		     double h,double om,double ode,double ok,
+		     double Mass, double concentration,
+		     double Rmis, double fmis, int delta,
+		     int*flow_control,int timing, int miscentering,
+		     int averaging, int Nbins,
+		     double R_bin_min, double R_bin_max,
+		     double*R,double*xi_1halo,double*xi_mm,
+		     double*xi_2halo,double*xi_hm,double*sigma_r,
+		     double*delta_sigma,double*Rbins,int NRbins,
+		     double*ave_delta_sigma,double*bias,
+		     double*nu,double*miscentered_sigma_r,
+		     double*miscentered_delta_sigma,
+		     double*miscentered_ave_delta_sigma){
+  return 0;
+}
+		     

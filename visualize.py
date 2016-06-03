@@ -6,8 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 dopowerspec = False
-doxinfw = True
-doximm = False
+doxinfw = False
+doximm = True
 dobias = False
 dosigmar = False
 doave = False

@@ -10,9 +10,10 @@ int read_file(FILE *fp,int N, double *data);
 
 int main(int argc, char **argv){
   cosmology*cosmo = (cosmology*)malloc(sizeof(cosmology));
+  //Buzzard cosmology
   cosmo->h = 0.7;
-  cosmo->om = 0.3;
-  cosmo->ode = 0.7;
+  cosmo->om = 0.286;
+  cosmo->ode = 1.0 - cosmo->om;
   cosmo->ok = 0.0;
 
   FILE *k_lin_fp, *P_lin_fp;
@@ -52,7 +53,7 @@ int main(int argc, char **argv){
   read_file(P_nl_fp,N_nl,P_nl);
 
   FILE *M_fp = fopen("test_data/mass_list.dat","r");
-  int NM = 0;
+  int NM = -1;
   while ((read = getline(&line,&len,M_fp)) != -1){
     NM++;
   }
@@ -62,11 +63,12 @@ int main(int argc, char **argv){
   read_file(M_fp,NM,M);
   double*bias_arr = (double*)malloc((NM)*sizeof(double));
   double*nu_arr = (double*)malloc((NM)*sizeof(double));
-  for(i = 0; i < NM; i++){
-    double dlM = (16.0 - 12.0)/(float)(NM-1.);
-    M[i] = pow(10,(12.0 + i*dlM));
-  }
   calc_tinker_bias(M,NM,k_lin,P_lin,N_lin,bias_arr,nu_arr,200,*cosmo);
+  FILE*bias_fp = fopen("output/outbias.txt","w");
+  fprintf(bias_fp,"# M [Msun/h] bias\n");
+  for(i = 0; i < NM; i++){
+    fprintf(bias_fp,"%e\t%e\n",M[i],bias_arr[i]);
+  }
 
   double Mass = 1e14;
   double concentration = 4.0*pow(Mass/5.e14,-0.1);//Bad M-c relation
