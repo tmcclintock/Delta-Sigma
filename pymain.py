@@ -23,4 +23,4 @@ Nbins = 15
 R_bin_min, R_bin_max = 0.01,200.0
 delta = 200
 Rmis, fmis = 0.3,0.23
-
+timing,miscentering,averaging = 1,1,1
