@@ -6,11 +6,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 dopowerspec = False
-doxinfw = False
+doxinfw = True
 doximm = False
 dobias = False
 dosigmar = False
-doave = True
+doave = False
 
 testpath = "test_data/matter_power_%s/"
 outpath = "output/"
@@ -47,11 +47,14 @@ if doximm:
 
 if doxinfw:
     plt.loglog(R,xi_nfw)
-    plt.loglog(R,xi_mm,ls='--',alpha=0.5)
+    #plt.loglog(R,xi_mm,ls='--',alpha=0.5)
     plt.loglog(R,xi_hm)
     plt.loglog(R,xi_2h,ls=':',alpha=0.5)
-    plt.loglog(R,sigma_r)
-    plt.loglog(R,delta_sigma)
+    #plt.loglog(R,sigma_r)
+    #plt.loglog(R,delta_sigma)
+    plt.ylabel(r"$\rho_h/\rho_{cr}$",fontsize=20)
+    plt.xlabel(r"$R\ [Mpc/h]$",fontsize=20)
+    plt.subplots_adjust(bottom=0.15)
     plt.show()
     plt.clf()
 
