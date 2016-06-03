@@ -17,7 +17,9 @@ for pk in pks:
     print p.shape, z.shape, z
 
     pfile = open(paths%pk+"/p_k.txt.new","w")
+    pfile.write("# p_k\n")
     zfile = open(paths%pk+"/z.txt.new","w")
+    zfile.write("# z\n")
     for i in range(len(p)):
         pfile.write("%.18e "%p[i])
     pfile.close()

@@ -51,11 +51,17 @@ int main(int argc, char **argv){
   double*P_nl = (double*)malloc((N_nl)*sizeof(double));
   read_file(P_nl_fp,N_nl,P_nl);
 
-
-  int NM = 100;
-  double M[NM];
-  double bias_arr[NM];
-  double nu_arr[NM];
+  FILE *M_fp = fopen("test_data/mass_list.dat","r");
+  int NM = 0;
+  while ((read = getline(&line,&len,M_fp)) != -1){
+    NM++;
+  }
+  rewind(M_fp);
+  read = getline(&line,&len,M_fp); //header line read off
+  double*M = (double*)malloc((NM)*sizeof(double));
+  read_file(M_fp,NM,M);
+  double*bias_arr = (double*)malloc((NM)*sizeof(double));
+  double*nu_arr = (double*)malloc((NM)*sizeof(double));
   for(i = 0; i < NM; i++){
     double dlM = (16.0 - 12.0)/(float)(NM-1.);
     M[i] = pow(10,(12.0 + i*dlM));

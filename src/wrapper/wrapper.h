@@ -63,3 +63,7 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
 	      cosmology cosmo, interface_parameters*params,
 	      wrapper_output*outputs);
 
+//int python_interface(double*k_lin,double*P_lin,int Nk_lin,
+//		     double*k,double*P,int Nk,
+//		     int NR,double Rmin,double Rmax);
+		     
