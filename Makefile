@@ -6,7 +6,8 @@ ifeq ($(SHARED),yes)
 $(info Building shared library)
 EXEC = main.so
 CFLAGS = -fPIC
-OFLAGS = -shared -W1,-soname=$(EXEC)
+OFLAGS = -shared 
+#-W1,-soname=$(EXEC)
 endif
 else
 $(info Building executable)
@@ -15,8 +16,8 @@ CFLAGS =
 OFLAGS = 
 endif
 
-INCL = -I/home/tmcclintock/code/gsl/include -fopenmp -O3
-LIBS = -lgsl -lgslcblas -L/home/tmcclintock/code/gsl/lib -lm -fopenmp -O3
+INCL = -I/home/tom/code/gsl/include/ -fopenmp -O3
+LIBS = -lgsl -lgslcblas -L/home/tom/code/gsl/lib -lm -fopenmp -O3
 .SUFFIXES : .c .o
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCL) -c $< -o $@
