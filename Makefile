@@ -4,7 +4,7 @@ CC = gcc
 ifdef SHARED
 ifeq ($(SHARED),yes)
 $(info Building shared library)
-EXEC = main.so
+EXEC = Delta_Sigma.so
 CFLAGS = -fPIC
 OFLAGS = -shared 
 #-W1,-soname=$(EXEC)
@@ -16,8 +16,8 @@ CFLAGS =
 OFLAGS = 
 endif
 
-INCL = -I/home/tom/code/gsl/include/ -fopenmp -O3
-LIBS = -lgsl -lgslcblas -L/home/tom/code/gsl/lib -lm -fopenmp -O3
+INCL = -I/home/tmcclintock/code/gsl/include/ -fopenmp -O3
+LIBS = -lgsl -lgslcblas -L/home/tmcclintock/code/gsl/lib -lm -fopenmp -O3
 .SUFFIXES : .c .o
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCL) -c $< -o $@
@@ -30,5 +30,5 @@ $(EXEC): $(OBJS)
 .PHONY : clean
 
 clean:
-	rm -f $(OBJS) main.exe main.so
+	rm -f $(OBJS) main.exe Delta_Sigma.so
 	rm -f *~

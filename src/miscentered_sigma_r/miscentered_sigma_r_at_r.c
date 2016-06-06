@@ -1,7 +1,7 @@
 #include "miscentered_sigma_r_at_r.h"
 
-#define TOL1 1e-4
-#define TOL2 1e-5
+#define TOL1 1e-3
+#define TOL2 1e-4
 #define workspace_size 8000
 #define PI 3.141592653589793
 
@@ -27,11 +27,14 @@ typedef struct integrand_params{
   double concentration;
   int delta;
   double Rmis; //Miscentering length
+  double Rmis_sq; //Rmis^2
   double Rc; //Integration variable
+  double Rp2plusRc2;//Temp variable
+  double RpRctimes2;//Temp variable for math optimization
 }integrand_params;
 
-static double P_mc(double Rc,double Rmis){
-  return Rc/(Rmis*Rmis)*exp(-Rc*Rc/(2.0*Rmis*Rmis));
+static double P_mc(double Rc,double Rmis_sq){
+  return Rc/(Rmis_sq)*exp(-Rc*Rc/(2.0*Rmis_sq));
 }//2D gaussian of width Rmis and mean 0
 
 static int do_integral(double*sigmar_r,double*err,integrand_params*params);
@@ -52,6 +55,7 @@ int calc_miscentered_sigma_r_at_r(double Rp,double Mass,double concentration,
   double H0 = h*100.;
   double rhom = om*3.*(H0*Mpcperkm*H0*Mpcperkm)/(8.*PI*G)
     /(h*h*1e12);//SM h^2/pc^2/Mpc
+  //The integral is over R, which is Mpc/h
 
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,NR);
   gsl_spline_init(spline,R,sigma_r,NR);
@@ -76,6 +80,7 @@ int calc_miscentered_sigma_r_at_r(double Rp,double Mass,double concentration,
   params->concentration=concentration;
   params->delta=delta;
   params->Rmis=Rmis;
+  params->Rmis_sq=Rmis*Rmis;
 
   do_integral(mis_sigma_r,err,params);
   *mis_sigma_r *= rhom*2;
@@ -105,7 +110,8 @@ int do_integral(double*mis_sigma_r,double*err,integrand_params*params){
   status = gsl_integration_qag(&F,lrmin-10,lrmax,//log(sqrt(rmax*rmax-Rp*Rp)),
 			       TOL1,TOL1/10.,workspace_size,6,workspace,&result,&abserr);
 
-  *mis_sigma_r = result;
+  *mis_sigma_r = result*2; //Factor of 2*PI multiplied on from 2D gaussian integral
+  //, the pi is dropped from algebra
   *err = abserr;
 
   return status;
@@ -125,22 +131,27 @@ double integrand_outer(double lRc,void*params){
 
   double result,abserr;
   int status = 0;
-  if ((Rp*Rp + Rc*Rc + 2*Rp*Rc) < rmin*rmin){
+  double Rp2plusRc2 = Rp*Rp+Rc*Rc;
+  pars->Rp2plusRc2 = Rp2plusRc2;
+  double RpRctimes2 = 2*Rp*Rc;
+  pars->RpRctimes2 = RpRctimes2;
+  if ((Rp2plusRc2 + RpRctimes2) < rmin*rmin){
     //Everything is below rmin
     F.function = &integrand_inner_small_scales;
-  }else if((Rp*Rp + Rc*Rc - 2*Rp*Rc) > rmin*rmin && (Rp*Rp + Rc*Rc + 2*Rp*Rc) < rmax*rmax){
+  }else if((Rp2plusRc2 - RpRctimes2) > rmin*rmin && (Rp2plusRc2 + RpRctimes2) < rmax*rmax){
     //Everything is on the spline
     F.function = &integrand_inner_spline_scales;
-  }else if((Rp*Rp + Rc*Rc - 2*Rp*Rc) > rmax*rmax){ 
+  }else if((Rp2plusRc2 - RpRctimes2) > rmax*rmax){ 
     //F.function = &integrand_inner_large_scales;
     return 0; //Everything is past rmax (end of the spline)
   }else{
     F.function = &integrand_inner_boundaries;
   }
   //F.function = &integrand_inner_boundaries;
-  status |= gsl_integration_qag(&F,-1,1,TOL2,TOL2/10.,
+  status |= gsl_integration_qag(&F,0,PI,TOL2,TOL2/10.,
+  //status |= gsl_integration_qag(&F,-1,1,TOL2,TOL2/10.,
 				workspace_size,6,workspace,&result,&abserr);
-  return Rc*P_mc(Rc,pars->Rmis)*result/PI;
+  return Rc*P_mc(Rc,pars->Rmis_sq)*result;
 }
 
 //This is the function that needs to be broken into three parts
@@ -152,7 +163,11 @@ double integrand_inner_boundaries(double cos_theta,void*params){
   double Rp = pars->rperp;
   double Rc = pars->Rc;
   double rmin = pars->rmin,rmax = pars->rmax;
-  double arg = sqrt(Rp*Rp + Rc*Rc + 2*Rp*Rc*cos_theta);
+  double Rp2plusRc2 = pars->Rp2plusRc2;
+  double RpRctimes2 = pars->RpRctimes2;
+  // double arg = sqrt(Rp*Rp + Rc*Rc + 2*Rp*Rc*cos_theta);
+  //double arg = sqrt(pars->Rp2plusRc2 + pars->RpRctimes2*cos(cos_theta));
+  double arg = sqrt(Rp2plusRc2 + RpRctimes2*cos(cos_theta));
 
   if (arg<rmin){
     double Mass = pars->Mass;
@@ -171,11 +186,14 @@ double integrand_inner_boundaries(double cos_theta,void*params){
   }
 }
 
-double integrand_inner_small_scales(double cos_theta,void*params){
+double integrand_inner_small_scales(double theta,void*params){
   integrand_params*pars = (integrand_params*)params;
   double Rp = pars->rperp;
   double Rc = pars->Rc;
-  double arg = sqrt(Rp*Rp + Rc*Rc + 2*Rp*Rc*cos_theta);
+  double Rp2plusRc2 = pars->Rp2plusRc2;
+  double RpRctimes2 = pars->RpRctimes2;
+  //double arg = sqrt(Rp*Rp + Rc*Rc + 2*Rp*Rc*cos_theta);
+  double arg = sqrt(Rp2plusRc2 + RpRctimes2*cos(theta));
 
   double Mass = pars->Mass;
   double concentration = pars->concentration;
@@ -185,11 +203,14 @@ double integrand_inner_small_scales(double cos_theta,void*params){
   return sigma_r_1halo_analytic(arg,Mass,concentration,om,h*100.,delta);
 }
 
-double integrand_inner_spline_scales(double cos_theta,void*params){
+double integrand_inner_spline_scales(double theta,void*params){
   integrand_params*pars = (integrand_params*)params;
   double Rp = pars->rperp;
   double Rc = pars->Rc;
-  double arg = sqrt(Rp*Rp + Rc*Rc + 2*Rp*Rc*cos_theta);
+  double Rp2plusRc2 = pars->Rp2plusRc2;
+  double RpRctimes2 = pars->RpRctimes2;
+  //double arg = sqrt(Rp*Rp + Rc*Rc + 2*Rp*Rc*cos_theta);
+  double arg = sqrt(Rp2plusRc2 + RpRctimes2*cos(theta));
 
   gsl_spline*spline = pars->spline;
   gsl_interp_accel*acc = pars->acc;

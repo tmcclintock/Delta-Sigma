@@ -7,8 +7,8 @@ import numpy as np
 import ctypes
 from ctypes import c_double,c_int,POINTER,cdll
 
-def calc_Delta_Sigma(klin,Plin,knl,Pnl,cosmo_dict,input_params):
-    dslib = cdll.LoadLibrary("main.so")
+def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
+    dslib = cdll.LoadLibrary("Delta_Sigma.so")
     interface = dslib.python_interface
     interface.restype = c_int
     """
@@ -49,11 +49,12 @@ def calc_Delta_Sigma(klin,Plin,knl,Pnl,cosmo_dict,input_params):
                         POINTER(c_double),POINTER(c_double),\
                         POINTER(c_double),\
                         POINTER(c_double)]
-    klin_in = np.array(klin,dtype=np.double).ctypes.data_as(POINTER(c_double))
-    Plin_in = np.array(Plin,dtype=np.double).ctypes.data_as(POINTER(c_double))
-    knl_in = np.array(knl,dtype=np.double).ctypes.data_as(POINTER(c_double))
-    Pnl_in = np.array(Pnl,dtype=np.double).ctypes.data_as(POINTER(c_double))
-    print klin_in
+    Nk_lin = len(k_lin)
+    Nk_nl  = len(k_nl)
+    k_lin_in = k_lin.ctypes.data_as(POINTER(c_double))
+    P_lin_in = P_lin.ctypes.data_as(POINTER(c_double))
+    k_nl_in = k_nl.ctypes.data_as(POINTER(c_double))
+    P_nl_in = P_nl.ctypes.data_as(POINTER(c_double))
 
     Mass,concentration,NR,Rmin,Rmax,Nbins,R_bin_min,R_bin_max,\
         delta,Rmis,fmis,timing,miscentering,\
@@ -65,9 +66,62 @@ def calc_Delta_Sigma(klin,Plin,knl,Pnl,cosmo_dict,input_params):
                     input_params["fmis"],input_params["timing"],\
                     input_params["miscentering"],input_params["averaging"]
 
-    Rarr = np.zeros(NR)
-    binarr = np.zeros(Nbins)
-    
-    
+    h,om,ode,ok = cosmo_dict['h'],cosmo_dict['om'],cosmo_dict['ode'],cosmo_dict['ok']
+    flow_control = np.zeros(1).ctypes.data_as(POINTER(c_int))
 
-    print Mass,concentration,Rarr.shape,binarr.shape
+    R = np.zeros(NR)
+    R_in = R.ctypes.data_as(POINTER(c_double))
+    xi_1halo = np.zeros(NR)
+    xi_1halo_in = xi_1halo.ctypes.data_as(POINTER(c_double))
+    xi_mm = np.zeros(NR)
+    xi_mm_in = xi_mm.ctypes.data_as(POINTER(c_double))
+    xi_2halo = np.zeros(NR)
+    xi_2halo_in = xi_2halo.ctypes.data_as(POINTER(c_double))
+    xi_hm = np.zeros(NR)
+    xi_hm_in = xi_hm.ctypes.data_as(POINTER(c_double))
+    sigma_r = np.zeros(NR)
+    sigma_r_in = sigma_r.ctypes.data_as(POINTER(c_double))
+    delta_sigma = np.zeros(NR)
+    delta_sigma_in = delta_sigma.ctypes.data_as(POINTER(c_double))
+    miscentered_sigma_r = np.zeros(NR)
+    miscentered_sigma_r_in = miscentered_sigma_r.ctypes.data_as(POINTER(c_double))
+    miscentered_delta_sigma = np.zeros(NR)
+    miscentered_delta_sigma_in = miscentered_delta_sigma.ctypes.data_as(POINTER(c_double))
+
+    Rbins = np.zeros(Nbins)
+    Rbins_in = Rbins.ctypes.data_as(POINTER(c_double))
+    ave_delta_sigma = np.zeros(Nbins)
+    ave_delta_sigma_in = ave_delta_sigma.ctypes.data_as(POINTER(c_double))
+    miscentered_ave_delta_sigma = np.zeros(Nbins)
+    miscentered_ave_delta_sigma_in = miscentered_ave_delta_sigma.ctypes.data_as(POINTER(c_double))
+
+    bias = np.zeros(1)
+    bias_in = bias.ctypes.data_as(POINTER(c_double))
+    nu = np.zeros(1)
+    nu_in = nu.ctypes.data_as(POINTER(c_double))
+    
+    result = interface(k_lin_in,P_lin_in,Nk_lin,\
+                           k_nl_in,P_nl_in,Nk_nl,\
+                           NR,Rmin,Rmax,\
+                           h,om,ode,ok,\
+                           Mass,concentration,\
+                           Rmis,fmis,delta,\
+                           flow_control,timing,miscentering,\
+                           averaging,Nbins,R_bin_min,R_bin_max,\
+                           R_in,xi_1halo_in,xi_mm_in,xi_2halo_in,xi_hm_in,\
+                           sigma_r_in,delta_sigma_in,Rbins_in,\
+                           ave_delta_sigma_in,bias_in,nu_in,\
+                           miscentered_sigma_r_in,miscentered_delta_sigma_in,\
+                           miscentered_ave_delta_sigma_in)
+
+    #Now build a dictionary and return it
+    return_dict = {"R":R,"xi_1halo":xi_1halo,"xi_mm":xi_mm,\
+                       "xi_2halo":xi_2halo,"xi_hm":xi_hm,\
+                       "sigma_r":sigma_r,"delta_sigma":delta_sigma,\
+                       "miscentered_sigma_r":miscentered_sigma_r,\
+                       "miscentered_delta_sigma":miscentered_delta_sigma,\
+                       "Rbins":Rbins,"bias":bias,"nu":nu,\
+                       "ave_delta_sigma":ave_delta_sigma,\
+                       "miscentered_ave_delta_sigma":miscentered_ave_delta_sigma,\
+                       }
+    return return_dict

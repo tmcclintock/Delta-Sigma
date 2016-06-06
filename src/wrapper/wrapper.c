@@ -122,7 +122,7 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
 }
 
 int python_interface(double*k_lin,double*P_lin,int Nk_lin,
-		     double*k,double*P,int Nk,
+		     double*k_nl,double*P_nl,int Nk_nl,
 		     int NR,double Rmin,double Rmax,
 		     double h,double om,double ode,double ok,
 		     double Mass, double concentration,
@@ -137,6 +137,46 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     double*nu,double*miscentered_sigma_r,
 		     double*miscentered_delta_sigma,
 		     double*miscentered_ave_delta_sigma){
+
+  cosmology*cosmo = (cosmology*)malloc(sizeof(cosmology));
+  cosmo->h = h;
+  cosmo->om = om;
+  cosmo->ode = ode;
+  cosmo->ok = ok;
+
+  interface_parameters*params=
+    (interface_parameters*)malloc(sizeof(interface_parameters));
+  params->Mass=Mass;
+  params->concentration=concentration;
+  params->delta=delta;
+  params->Rmis=Rmis;
+  params->fmis=fmis;
+  params->timing=timing; //1 is true
+  params->miscentering=miscentering;//1 is true
+  params->averaging=averaging; //1 is true
+  params->Nbins=Nbins;
+  params->R_bin_min=R_bin_min;
+  params->R_bin_max=R_bin_max;
+
+  wrapper_output*outputs=(wrapper_output*)malloc(sizeof(wrapper_output));
+  outputs->R=R;
+  outputs->xi_1halo=xi_1halo;
+  outputs->xi_mm=xi_mm;
+  outputs->xi_2halo=xi_2halo;
+  outputs->xi_hm=xi_hm;
+  outputs->sigma_r=sigma_r;
+  outputs->delta_sigma=delta_sigma;
+  outputs->bias=&bias;
+  outputs->nu=&nu;
+  outputs->miscentered_sigma_r=miscentered_sigma_r;
+  outputs->miscentered_delta_sigma=miscentered_delta_sigma;
+  outputs->Rbins=Rbins;
+  outputs->ave_delta_sigma=ave_delta_sigma;
+  outputs->miscentered_ave_delta_sigma=miscentered_ave_delta_sigma;
+
+  interface(k_lin,P_lin,Nk_lin,k_nl,P_nl,Nk_nl,
+	    NR,Rmin,Rmax,*cosmo,params,outputs);
+
   return 0;
 }
 		     
