@@ -1,6 +1,6 @@
 #include "miscentered_delta_sigma.h"
 
-#define TOL 1e-8
+#define TOL 1e-5
 #define workspace_size 8000
 
 typedef struct integrand_params{

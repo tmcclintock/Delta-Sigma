@@ -48,7 +48,7 @@ timing - 1 if you want to print timing information, 0 if not
 miscentering - 1 if you want to run miscentering, 0 if not
 averaging - 1 if you want to run averaging, 0 if not
 """
-input_params = {"Mass": 1.e14,"NR":300,"Rmin":0.01,"Rmax":200.0,"Nbins":15,"R_bin_min":0.01,"R_bin_max":200.0,"delta":200,"Rmis":0.003,"fmis":0.23,"timing":1,"miscentering":1,"averaging":1}
+input_params = {"Mass": 1.e14,"NR":300,"Rmin":0.01,"Rmax":200.0,"Nbins":15,"R_bin_min":0.01,"R_bin_max":200.0,"delta":200,"Rmis":0.3,"fmis":0.23,"timing":1,"miscentering":1,"averaging":1}
 input_params["concentration"] = 4.0*(input_params["Mass"]/5.e14)**-0.1
 #Above is an example M-c relation. This particular one is BS.
 
@@ -61,7 +61,8 @@ import matplotlib.pyplot as plt
 R,delta_sigma,miscentered_delta_sigma = return_dict["R"],return_dict["delta_sigma"],return_dict["miscentered_delta_sigma"]
 sigma_r,miscentered_sigma_r = return_dict["sigma_r"],return_dict["miscentered_sigma_r"]
 
-print delta_sigma/miscentered_delta_sigma
+#print delta_sigma/miscentered_delta_sigma
+print miscentered_delta_sigma[0],miscentered_delta_sigma[-1]
 
 plt.loglog(R,delta_sigma,R,miscentered_delta_sigma,ls="--")
 plt.loglog(R,sigma_r,R,miscentered_sigma_r)
