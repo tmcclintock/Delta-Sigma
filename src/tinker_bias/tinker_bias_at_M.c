@@ -28,9 +28,9 @@ int tinker_bias_at_M(double M,double*k,double*P,int N,double*bias,double*nu,int 
   double H0 = h*100.;
   double rhom = om*3.*(H0*Mpcperkm*H0*Mpcperkm)/(8.*PI*G)
     /(h*h);//SM h^2/Mpc^3
-  double R=pow(M/(4./3.*PI*rhom),1./3.);//Lagrangian radius Mpc/h
+  double R=pow(3.*M/(4.*PI*rhom),1./3.);//Lagrangian radius Mpc/h
 
-  double y = log(delta);
+  double y = log10(delta);
   double xp = exp(-1.0*pow(4./y,4.));
   double A = 1.+0.24*y*xp, a = 0.44*y-0.88;
   double B = 0.183, b = 1.5;

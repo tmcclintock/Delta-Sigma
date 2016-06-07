@@ -11,8 +11,14 @@ int read_file(FILE *fp,int N, double *data);
 int main(int argc, char **argv){
   cosmology*cosmo = (cosmology*)malloc(sizeof(cosmology));
   //Buzzard cosmology
-  cosmo->h = 0.7;
+  /*cosmo->h = 0.7;
   cosmo->om = 0.286;
+  cosmo->ode = 1.0 - cosmo->om;
+  cosmo->ok = 0.0;*/
+
+  //Eduardo Cosmology
+  cosmo->h = 0.7;
+  cosmo->om = 0.3;
   cosmo->ode = 1.0 - cosmo->om;
   cosmo->ok = 0.0;
 
@@ -71,7 +77,7 @@ int main(int argc, char **argv){
   }
 
   double Mass = 1e14;
-  double concentration = 4.0*pow(Mass/5.e14,-0.1);//Bad M-c relation
+  double concentration = 5.0;//4.0*pow(Mass/5.e14,-0.1);//Bad M-c relation
   double bias;
   double nu;
 

@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 
 dopowerspec = False
 doxinfw = False
-doximm = True
+doximm = False
 dobias = False
 dosigmar = False
-doave = False
+doave = True
 
 testpath = "test_data/matter_power_%s/"
 outpath = "output/"
@@ -46,10 +46,10 @@ if doximm:
     plt.clf()
 
 if doxinfw:
-    plt.loglog(R,xi_nfw)
-    #plt.loglog(R,xi_mm,ls='--',alpha=0.5)
+    #plt.loglog(R,xi_nfw)
+    #plt.loglog(R,xi_mm)
     plt.loglog(R,xi_hm)
-    plt.loglog(R,xi_2h,ls=':',alpha=0.5)
+    #plt.loglog(R,xi_2h,ls=':',alpha=0.5)
     #plt.loglog(R,sigma_r)
     #plt.loglog(R,delta_sigma)
     plt.ylabel(r"$\xi(r)$",fontsize=20)
@@ -63,10 +63,10 @@ if dobias:
     plt.xscale('log')
     plt.show()
     plt.clf()
-    plt.plot(M,nu)
-    plt.xscale('log')
-    plt.show()
-    plt.clf()
+    #plt.plot(M,nu)
+    #plt.xscale('log')
+    #plt.show()
+    #plt.clf()
 
 if dosigmar:
     plt.loglog(R,sigma_r)
@@ -77,12 +77,17 @@ if dosigmar:
     plt.clf()
 
 if doave:
+    ed = np.genfromtxt("output/eduardo_data/RDeltaSigma_z0.0_Meq1e14.dat")
+    Red,rdsed = ed[:,0],ed[:,1]
+    dsed = rdsed/Red
+    plt.loglog(Red,dsed,ls="--",c="pink")
+
     plt.loglog(R,delta_sigma,c='b')
-    plt.loglog(Rbins,ave_delta_sigma,ls="",marker="o",c='b')
-    plt.loglog(R,mis_ds,ls=':',c='r')
-    plt.loglog(Rbins,mis_ave_ds,ls="",marker="o",c='r')
+    #plt.loglog(Rbins,ave_delta_sigma,ls="",marker="o",c='b')
+    #plt.loglog(R,mis_ds,ls=':',c='r')
+    #plt.loglog(Rbins,mis_ave_ds,ls="",marker="o",c='r')
     fmis = 0.22
     full_ds = (1.-fmis)*ave_delta_sigma + fmis*mis_ave_ds
-    plt.loglog(Rbins,full_ds,ls='',marker='o',c='g')
+    #plt.loglog(Rbins,full_ds,ls='',marker='o',c='g')
     plt.show()
     plt.clf()
