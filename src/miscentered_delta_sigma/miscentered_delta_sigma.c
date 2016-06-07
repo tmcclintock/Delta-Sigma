@@ -15,8 +15,8 @@ typedef struct integrand_params{
   int NR;
 }integrand_params;
 
-static double integrand_inner(double lR, void*params){
-  double Rp = exp(lR);
+static double integrand_inner(double lRp, void*params){
+  double Rp = exp(lRp);
   integrand_params pars=*(integrand_params *)params;
   double Mass = pars.Mass;
   double concentration = pars.concentration;
@@ -58,7 +58,9 @@ int calc_miscentered_delta_sigma(double*Rp,double Mass,double concentration,
   F.params=params;
   double inner_result=0,abserr1=0;
   F.function=&integrand_inner;
+  double time=omp_get_wtime();
   status |= gsl_integration_qag(&F,lrmin-10,lrmin,TOL,TOL/10.,workspace_size,6,workspace,&inner_result,&abserr1);
+  printf("inner time = %f\n",omp_get_wtime()-time);fflush(stdout);
   //inner_result contains the numerator of Sigma(<R), which is the costly
   //integral over the non-spline region
 

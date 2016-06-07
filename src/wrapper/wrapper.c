@@ -166,8 +166,8 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
   outputs->xi_hm=xi_hm;
   outputs->sigma_r=sigma_r;
   outputs->delta_sigma=delta_sigma;
-  outputs->bias=&bias;
-  outputs->nu=&nu;
+  outputs->bias=bias;
+  outputs->nu=nu;
   outputs->miscentered_sigma_r=miscentered_sigma_r;
   outputs->miscentered_delta_sigma=miscentered_delta_sigma;
   outputs->Rbins=Rbins;

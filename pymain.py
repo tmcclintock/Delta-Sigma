@@ -62,7 +62,7 @@ R,delta_sigma,miscentered_delta_sigma = return_dict["R"],return_dict["delta_sigm
 sigma_r,miscentered_sigma_r = return_dict["sigma_r"],return_dict["miscentered_sigma_r"]
 
 #print delta_sigma/miscentered_delta_sigma
-print miscentered_delta_sigma[0],miscentered_delta_sigma[-1]
+print "\n",miscentered_delta_sigma[0],miscentered_delta_sigma[-1],"\n"
 
 plt.loglog(R,delta_sigma,R,miscentered_delta_sigma,ls="--")
 plt.loglog(R,sigma_r,R,miscentered_sigma_r)
