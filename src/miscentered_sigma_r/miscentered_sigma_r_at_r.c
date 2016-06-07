@@ -2,6 +2,7 @@
 
 #define TOL1 1e-3
 #define TOL2 1e-4
+#define EPS 0.001 //error offset for angular integral
 #define workspace_size 8000
 #define PI 3.141592653589793
 
@@ -149,7 +150,7 @@ double integrand_outer(double lRc,void*params){
   }
   //F.function = &integrand_inner_boundaries;
   status |= gsl_integration_qag(&F,0,PI,TOL2,TOL2/10.,
-  //status |= gsl_integration_qag(&F,-1,1,TOL2,TOL2/10.,
+				//status |= gsl_integration_qag(&F,-1+EPS,1-EPS,TOL2,TOL2/10.,
 				workspace_size,6,workspace,&result,&abserr);
   return Rc*P_mc(Rc,pars->Rmis_sq)*result;
 }
@@ -165,7 +166,7 @@ double integrand_inner_boundaries(double cos_theta,void*params){
   double rmin = pars->rmin,rmax = pars->rmax;
   double Rp2plusRc2 = pars->Rp2plusRc2;
   double RpRctimes2 = pars->RpRctimes2;
-  // double arg = sqrt(Rp*Rp + Rc*Rc + 2*Rp*Rc*cos_theta);
+  //double arg = sqrt(Rp2plusRc2 + RpRctimes2*cos_theta);
   //double arg = sqrt(pars->Rp2plusRc2 + pars->RpRctimes2*cos(cos_theta));
   double arg = sqrt(Rp2plusRc2 + RpRctimes2*cos(cos_theta));
 
@@ -176,24 +177,27 @@ double integrand_inner_boundaries(double cos_theta,void*params){
     cosmology cosmo = pars->cosmo;
     double om = cosmo.om;
     double h = cosmo.h;
+    //return sigma_r_1halo_analytic(arg,Mass,concentration,om,h*100.,delta)/sqrt(1-cos_theta*cos_theta);
     return sigma_r_1halo_analytic(arg,Mass,concentration,om,h*100.,delta);
+
   }else if(arg < rmax){
     gsl_spline*spline = pars->spline;
     gsl_interp_accel*acc = pars->acc;
+    //return gsl_spline_eval(spline,arg,acc)/sqrt(1-cos_theta*cos_theta);
     return gsl_spline_eval(spline,arg,acc);
   }else{ //arg > rmax
      return 0;
   }
 }
 
-double integrand_inner_small_scales(double theta,void*params){
+double integrand_inner_small_scales(double cos_theta,void*params){
   integrand_params*pars = (integrand_params*)params;
   double Rp = pars->rperp;
   double Rc = pars->Rc;
   double Rp2plusRc2 = pars->Rp2plusRc2;
   double RpRctimes2 = pars->RpRctimes2;
   //double arg = sqrt(Rp*Rp + Rc*Rc + 2*Rp*Rc*cos_theta);
-  double arg = sqrt(Rp2plusRc2 + RpRctimes2*cos(theta));
+  double arg = sqrt(Rp2plusRc2 + RpRctimes2*cos(cos_theta));
 
   double Mass = pars->Mass;
   double concentration = pars->concentration;
@@ -203,14 +207,14 @@ double integrand_inner_small_scales(double theta,void*params){
   return sigma_r_1halo_analytic(arg,Mass,concentration,om,h*100.,delta);
 }
 
-double integrand_inner_spline_scales(double theta,void*params){
+double integrand_inner_spline_scales(double cos_theta,void*params){
   integrand_params*pars = (integrand_params*)params;
   double Rp = pars->rperp;
   double Rc = pars->Rc;
   double Rp2plusRc2 = pars->Rp2plusRc2;
   double RpRctimes2 = pars->RpRctimes2;
   //double arg = sqrt(Rp*Rp + Rc*Rc + 2*Rp*Rc*cos_theta);
-  double arg = sqrt(Rp2plusRc2 + RpRctimes2*cos(theta));
+  double arg = sqrt(Rp2plusRc2 + RpRctimes2*cos(cos_theta));
 
   gsl_spline*spline = pars->spline;
   gsl_interp_accel*acc = pars->acc;
