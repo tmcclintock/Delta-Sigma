@@ -38,32 +38,39 @@ int calc_miscentered_delta_sigma(double*Rp,double Mass,double concentration,
 				 int NR,double*miscentered_delta_sigma,
 				 double*err,cosmology cosmo){
   int i, status = 0;
-
   double lrmin = log(Rp[0]);
-
-  integrand_params*params=malloc(sizeof(integrand_params));
-  params->lrmin=log(R[0]);
-  params->cosmo=cosmo;
-  params->Mass=Mass;
-  params->concentration=concentration;
-  params->delta=delta;
-  params->Rmis=Rmis;
-  params->R=R;
-  params->sigma_r=sigma_r;
-  params->NR=NR;
-
-  gsl_integration_workspace * workspace
-    = gsl_integration_workspace_alloc(workspace_size);
-  gsl_function F;
-  F.params=params;
   double inner_result=0,abserr1=0;
-  F.function=&integrand_inner;
-  double time=omp_get_wtime();
-  status |= gsl_integration_qag(&F,lrmin-10,lrmin,TOL,TOL/10.,workspace_size,6,workspace,&inner_result,&abserr1);
-  printf("inner time = %f\n",omp_get_wtime()-time);fflush(stdout);
-  //inner_result contains the numerator of Sigma(<R), which is the costly
-  //integral over the non-spline region
 
+  if(R[0]/Rmis > 0.1){
+    integrand_params*params=malloc(sizeof(integrand_params));
+    params->lrmin=log(R[0]);
+    params->cosmo=cosmo;
+    params->Mass=Mass;
+    params->concentration=concentration;
+    params->delta=delta;
+    params->Rmis=Rmis;
+    params->R=R;
+    params->sigma_r=sigma_r;
+    params->NR=NR;
+    
+    gsl_integration_workspace * workspace
+      = gsl_integration_workspace_alloc(workspace_size);
+    gsl_function F;
+    F.params=params;
+    F.function=&integrand_inner;
+    double time=omp_get_wtime();
+    status |= gsl_integration_qag(&F,lrmin-10,lrmin,TOL,TOL/10.,workspace_size,6,workspace,&inner_result,&abserr1);
+    printf("inner time = %f\n",omp_get_wtime()-time);fflush(stdout);
+    //inner_result contains the numerator of Sigma(<R), which is the costly
+    //integral over the non-spline region
+  }else{
+    //If Rmin >> Rmis then we can use a power law approximation pretty well
+    double alpha = (log(miscentered_sigma_r[0])-log(miscentered_sigma_r[1]))
+      /(log(Rp[0])-log(Rp[1]));
+    double A = miscentered_sigma_r[0]/pow(Rp[0],alpha);
+    inner_result = A/(alpha+2.0)*(pow(Rp[0],alpha+2.0)-pow(exp(lrmin-10),alpha+2.0));
+  }
+    
 #pragma omp parallel shared(R,sigma_r,NR,miscentered_sigma_r,miscentered_delta_sigma,err,status)
 #pragma omp for
   for(i = 0; i < NR; i++){
