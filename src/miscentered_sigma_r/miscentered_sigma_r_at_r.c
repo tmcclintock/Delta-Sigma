@@ -30,9 +30,6 @@ typedef struct integrand_params{
   int delta;
   double Rmis; //Miscentering length
   double Rmis_sq; //Rmis^2
-  double Rc; //Integration variable
-  double Rp2plusRc2;//Temp variable
-  double RpRctimes2;//Temp variable for math optimization
   double cos_theta; //Temp variable for cos(theta)
 }integrand_params;
 
@@ -93,10 +90,6 @@ int calc_miscentered_sigma_r_at_r(double Rp,double Mass,double concentration,
 int do_integral(double*mis_sigma_r,double*err,integrand_params*params){
   int status = 0;
 
-  double lrmin = params->lrmin;
-  double lrmax = params->lrmax;
-  double Rp = params->rperp;
-  double rmax = exp(lrmax);
   gsl_integration_workspace*workspace=params->workspace;
 
   gsl_function F;
@@ -106,7 +99,6 @@ int do_integral(double*mis_sigma_r,double*err,integrand_params*params){
   double result,abserr;
 
   status = gsl_integration_qag(&F,0,PI,TOL1,TOL1/10.,workspace_size,6,workspace,&result,&abserr);
-  //status = gsl_integration_qag(&F,lrmin-10,lrmax,TOL1,TOL1/10.,workspace_size,6,workspace,&result,&abserr);
   
   *mis_sigma_r = result; 
   *err = abserr;
@@ -120,9 +112,7 @@ double integrand_outer(double theta,void*params){
   double cos_theta = cos(theta);
   pars->cos_theta = cos_theta;
 
-  double rmin = pars->rmin,rmax = pars->rmax;
   double lrmin = pars->lrmin,lrmax = pars->lrmax;
-  double Rp = pars->rperp;
   
   gsl_integration_workspace*workspace=pars->workspace2;
   gsl_function F;
@@ -137,14 +127,14 @@ double integrand_outer(double theta,void*params){
 }
 
 double integrand_inner(double lRc,void*params){
+  double Rc = exp(lRc);
+
   integrand_params*pars = (integrand_params*)params;
 
   double rmin = pars->rmin,rmax = pars->rmax;
   double Rp = pars->rperp;
-  double Rc = exp(lRc);
   double cos_theta = pars->cos_theta;
   double arg = sqrt(Rp*Rp+Rc*Rc-2*Rp*Rc*cos_theta);
-  double sigma_r = 0;
   if (arg < rmin){
     double Mass = pars->Mass;
     double concentration = pars->concentration;
