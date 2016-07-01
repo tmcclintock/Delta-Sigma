@@ -77,8 +77,11 @@ int do_integral(double*xi,double*err,integrand_params*params){
       i+=1;
       lk0 = log(i)+lPR;
     }// Now i is the first root that is greater than lkmin
+    if (lk0 > lkmax){
+      lk0 = lkmax;
+    }
 
-    double k_period = exp(lk0); //period of  the kernal in k-space
+    double k_period = exp(lk0); //period of the kernal in k-space
     double periods = (kmax-kmin)/k_period;
     int step = (int)(log10(periods)+1)*2;
     //printf("%e %e %e %e %d\n",kmin,kmax,k_period,periods,step);

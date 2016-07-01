@@ -21,14 +21,16 @@ import py_Delta_Sigma
 
 import numpy as np
 
+test_path = "test_data/buzzard/"
+
 #First load in the power spectrum data from somewhere
-klin = np.genfromtxt("test_data/matter_power_lin/k_h.txt")
-Plin = np.genfromtxt("test_data/matter_power_lin/p_k.txt")
-knl = np.genfromtxt("test_data/matter_power_nl/k_h.txt")
-Pnl = np.genfromtxt("test_data/matter_power_nl/p_k.txt")
+klin = np.genfromtxt(test_path+"matter_power_lin/k_h.txt")
+Plin = np.genfromtxt(test_path+"matter_power_lin/p_k.txt")
+knl = np.genfromtxt(test_path+"matter_power_nl/k_h.txt")
+Pnl = np.genfromtxt(test_path+"/matter_power_nl/p_k.txt")
 
 #Create a dictionary with the cosmology
-cosmo = {"h":0.7,"om":0.286,"ok":0.0,"ode":0.7}
+cosmo = {"h":0.7,"om":0.3,"ok":0.0,"ode":0.7}
 cosmo["ode"]=1.0-cosmo["om"]
 
 """
@@ -48,8 +50,11 @@ timing - 1 if you want to print timing information, 0 if not
 miscentering - 1 if you want to run miscentering, 0 if not
 averaging - 1 if you want to run averaging, 0 if not
 """
-input_params = {"Mass": 1.e14,"NR":300,"Rmin":0.005,"Rmax":200.0,"Nbins":15,"R_bin_min":0.01,"R_bin_max":200.0,"delta":200,"Rmis":0.3,"fmis":0.23,"timing":1,"miscentering":1,"averaging":1}
-input_params["concentration"] = 4.0*(input_params["Mass"]/5.e14)**-0.1
+print 10**13.9827, np.log10(1.1*10**13.9827)
+input_params = {"Mass": 1.1*10**13.9827,"NR":300,"Rmin":0.01,"Rmax":200.0,"Nbins":15,"R_bin_min":0.01,"R_bin_max":200.0,"delta":200,"Rmis":0.249697,"fmis":0.23374,"timing":1,"miscentering":0,"averaging":0}
+input_params["concentration"] = 5.52334887726 #for regular logM
+input_params["concentration"] = 5.47951741519 #for 1.1* regular logM
+#input_params["concentration"] = 4.0*(input_params["Mass"]/5.e14)**-0.1
 #Above is an example M-c relation. This particular one is BS.
 
 #Results come out in a dictionary
@@ -58,14 +63,24 @@ print return_dict.keys()
 
 #And can be plotted
 import matplotlib.pyplot as plt
-R,delta_sigma,miscentered_delta_sigma = return_dict["R"],return_dict["delta_sigma"],return_dict["miscentered_delta_sigma"]
-sigma_r,miscentered_sigma_r = return_dict["sigma_r"],return_dict["miscentered_sigma_r"]
 
-print miscentered_sigma_r[:5]/sigma_r[:5]
+R = return_dict["R"]
+xi_nl = return_dict["xi_mm"]
+xi_lin = return_dict["xi_lin"]
+plt.loglog(R,xi_nl,label=r"$\xi_{nl}$")
+plt.loglog(R,xi_lin,label=r"$\xi_{lin}$")
 
-plt.loglog(R,sigma_r,R,delta_sigma)
-plt.loglog(R,miscentered_sigma_r,ls=":")
-plt.loglog(R,miscentered_delta_sigma,ls="--")
-plt.ylabel(r"$\Delta\Sigma\ [M_\odot h/pc^2]$")
-plt.xlabel(r"$R\ [Mpc/h]$")
+#R,delta_sigma,miscentered_delta_sigma = return_dict["R"],return_dict["delta_sigma"],return_dict["miscentered_delta_sigma"]
+#sigma_r,miscentered_sigma_r = return_dict["sigma_r"],return_dict["miscentered_sigma_r"]
+#np.savetxt("/home/tmcclintock/Desktop/des_wl_work/ds_10pc.txt",delta_sigma)
+#np.savetxt("/home/tmcclintock/Desktop/des_wl_work/mds_10pc.txt",miscentered_delta_sigma)
+#np.savetxt("/home/tmcclintock/Desktop/des_wl_work/R.txt",R)
+#Rbins = return_dict['Rbins']
+#h = cosmo['h']
+#fmis = input_params['fmis']
+
+plt.legend()
+plt.xlabel(r"$R\ [Mpc/h]$",fontsize=24)
+plt.ylabel(r"$\xi$",fontsize=24)
+plt.subplots_adjust(bottom=0.15)
 plt.show()

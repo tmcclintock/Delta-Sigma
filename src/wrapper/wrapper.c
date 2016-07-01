@@ -10,6 +10,7 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
   double*R=outputs->R;
   double*xi_1halo=outputs->xi_1halo;
   double*xi_mm=outputs->xi_mm;
+  double*xi_lin=outputs->xi_lin;
   double*xi_2halo=outputs->xi_2halo;
   double*xi_hm=outputs->xi_hm;
   double*sigma_r=outputs->sigma_r;
@@ -54,6 +55,11 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
   calc_xi_mm(R,NR,k,P,Nk,xi_mm,err);
   if (timing){
     printf("xi_mm time = %f\n",omp_get_wtime()-time);fflush(stdout);
+    time=omp_get_wtime();
+  }
+  calc_xi_mm(R,NR,k_lin,P_lin,Nk_lin,xi_lin,err);
+  if (timing){
+    printf("xi_lin time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();
   }
   calc_tinker_bias(&Mass,1,k_lin,P_lin,Nk_lin,bias,nu,delta,cosmo);
@@ -130,7 +136,7 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     int*flow_control,int timing, int miscentering,
 		     int averaging, int Nbins,
 		     double R_bin_min, double R_bin_max,
-		     double*R,double*xi_1halo,double*xi_mm,
+		     double*R,double*xi_1halo,double*xi_mm,double*xi_lin,
 		     double*xi_2halo,double*xi_hm,double*sigma_r,
 		     double*delta_sigma,double*Rbins,
 		     double*ave_delta_sigma,double*bias,
@@ -162,6 +168,7 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
   outputs->R=R;
   outputs->xi_1halo=xi_1halo;
   outputs->xi_mm=xi_mm;
+  outputs->xi_lin=xi_lin;
   outputs->xi_2halo=xi_2halo;
   outputs->xi_hm=xi_hm;
   outputs->sigma_r=sigma_r;
