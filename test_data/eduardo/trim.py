@@ -9,7 +9,7 @@ for pk in pks:
     p = np.genfromtxt(paths%pk+"/p_k.txt")
     z = np.genfromtxt(paths%pk+"/z.txt")
     
-    index = np.where(z!=0)[0]
+    index = np.where(z==0)[0]
     print p.shape
     print index
     p = p[index][0]

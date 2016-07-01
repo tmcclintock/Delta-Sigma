@@ -29,7 +29,7 @@ int main(int argc, char **argv){
   int i, N_lin = -1, N_nl = -1;
   int read;
 
-  k_lin_fp = fopen("test_data/matter_power_lin/k_h.txt","r");
+  k_lin_fp = fopen("test_data/eduardo//matter_power_lin/k_h.txt","r");
   while ((read = getline(&line,&len,k_lin_fp)) != -1){
     N_lin++;
   }
@@ -38,13 +38,13 @@ int main(int argc, char **argv){
   double*k_lin = (double*)malloc((N_lin)*sizeof(double));
   read_file(k_lin_fp,N_lin,k_lin);
 
-  P_lin_fp = fopen("test_data/matter_power_lin/p_k.txt","r");
+  P_lin_fp = fopen("test_data/eduardo/matter_power_lin/p_k.txt","r");
   read = getline(&line,&len,P_lin_fp); //header line read off
   double*P_lin = (double*)malloc((N_lin)*sizeof(double));
   read_file(P_lin_fp,N_lin,P_lin);
 
 
-  k_nl_fp = fopen("test_data/matter_power_nl/k_h.txt","r");
+  k_nl_fp = fopen("test_data/eduardo/matter_power_nl/k_h.txt","r");
   while ((read = getline(&line,&len,k_nl_fp)) != -1){
     N_nl++;
   }
@@ -53,7 +53,7 @@ int main(int argc, char **argv){
   double*k_nl = (double*)malloc((N_nl)*sizeof(double));
   read_file(k_nl_fp,N_nl,k_nl);
 
-  P_nl_fp = fopen("test_data/matter_power_nl/p_k.txt","r");
+  P_nl_fp = fopen("test_data/eduardo/matter_power_nl/p_k.txt","r");
   read = getline(&line,&len,P_nl_fp); //header line read off
   double*P_nl = (double*)malloc((N_nl)*sizeof(double));
   read_file(P_nl_fp,N_nl,P_nl);
@@ -81,10 +81,11 @@ int main(int argc, char **argv){
   double bias;
   double nu;
 
-  int NR = 300;
+  int NR = 200;
   double Rmin = 0.01, Rmax = 200; //Mpc/h
   double*R=(double*)malloc(NR*sizeof(double));
   double*xi_mm=(double*)malloc(NR*sizeof(double));
+  double*xi_lin=(double*)malloc(NR*sizeof(double));
   double*xi_nfw=(double*)malloc(NR*sizeof(double));
   double*xi_2halo=(double*)malloc(NR*sizeof(double));
   double*xi_hm=(double*)malloc(NR*sizeof(double));
@@ -117,6 +118,7 @@ int main(int argc, char **argv){
   outputs->R=R;
   outputs->xi_1halo=xi_nfw;
   outputs->xi_mm=xi_mm;
+  outputs->xi_lin=xi_lin;
   outputs->xi_2halo=xi_2halo;
   outputs->xi_hm=xi_hm;
   outputs->sigma_r=sigma_r;
@@ -134,6 +136,7 @@ int main(int argc, char **argv){
 
   FILE*Rout = fopen("output/R.txt","w");
   FILE*xi_mm_out = fopen("output/xi_mm.txt","w");
+  FILE*xi_lin_out = fopen("output/xi_lin.txt","w");
   FILE*xi_nfw_out = fopen("output/xi_nfw.txt","w");
   FILE*xi_2h_out = fopen("output/xi_2halo.txt","w");
   FILE*xi_hm_out = fopen("output/xi_hm.txt","w");
@@ -178,6 +181,7 @@ int main(int argc, char **argv){
     fprintf(xi_2h_out,"%e\n",xi_2halo[i]);
     fprintf(xi_nfw_out,"%e\n",xi_nfw[i]);
     fprintf(xi_mm_out,"%e\n",xi_mm[i]);
+    fprintf(xi_lin_out,"%e\n",xi_lin[i]);
     fprintf(Rout,"%e\n",R[i]);
   }
   FILE*bias_out = fopen("output/bias.txt","w");
@@ -192,7 +196,7 @@ int main(int argc, char **argv){
   free(k_lin),free(P_lin);
   free(k_nl),free(P_nl);
 
-  free(R),free(xi_mm),free(xi_nfw),free(xi_2halo);
+  free(R),free(xi_mm),free(xi_nfw),free(xi_2halo),free(xi_lin);
   free(xi_hm),free(sigma_r),free(delta_sigma);
   free(cosmo);
   fclose(k_lin_fp),fclose(P_lin_fp);

@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 dopowerspec = False
 doxinfw = False
 doximm = False
-dobias = False
+dobias = True
 dosigmar = False
-doave = True
+doave = False
 
 testpath = "test_data/matter_power_%s/"
 outpath = "output/"
@@ -59,8 +59,11 @@ if doxinfw:
     plt.clf()
 
 if dobias:
+    ed = np.genfromtxt("test_data/eduardo/comparison_data/bias_z0.0.dat")
+    plt.plot(ed[:,0],ed[:,1],label="Eduardo")
     plt.plot(M,bias)
     plt.xscale('log')
+    plt.legend()
     plt.show()
     plt.clf()
     #plt.plot(M,nu)
