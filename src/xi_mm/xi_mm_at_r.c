@@ -1,6 +1,6 @@
 #include "xi_mm_at_r.h"
 
-#define TOL 1e-8  //integral tolerance
+#define TOL 1e-6  //integral tolerance
 #define TOL2 1e-4 //periodicity tolerance; Xi is right to 0.01%
 #define workspace_size 8000
 #define PI 3.141592653589793
@@ -26,7 +26,6 @@ int calc_xi_mm_at_r(double R,
 		    int N,
 		    double*xi,
 		    double*err){
-
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,N);
   gsl_spline_init(spline,k,P,N);
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
@@ -81,12 +80,13 @@ int do_integral(double*xi,double*err,integrand_params*params){
       lk0 = lkmax;
     }
 
-    double k_period = exp(lk0); //period of the kernal in k-space
-    double periods = (kmax-kmin)/k_period;
-    int step = (int)(log10(periods)+1)*2;
-    //printf("%e %e %e %e %d\n",kmin,kmax,k_period,periods,step);
+    double k_period = 2*PI/R;//exp(lk0); //period of the kernal in k-space
+    double periods = (kmax-kmin)/k_period; //Number of periods between kmin and kmax
+    int step = (int)(log10(periods)+1)*2; //How many consecutive periods we do later on
+    //printf("At R=%e\t%e %e %e %d\n",R,lk0,k_period,periods,step);
 
     status = gsl_integration_qag(&F,lkmin,lk0,TOL,TOL/10.,workspace_size,6,workspace,&result,&abserr);
+    //printf("Past first integral\n");fflush(stdout);
     double lk1=log(i+step)+lPR;//log((i+step)*PI/R);
     while(lk1 < lkmax && fabs(next_result/result) > TOL2){
       status |= gsl_integration_qag(&F,lk0,lk1,TOL,TOL/10.,workspace_size,6,workspace,&next_result,&abserr);
@@ -95,6 +95,7 @@ int do_integral(double*xi,double*err,integrand_params*params){
       lk0 = lk1;
       lk1 = log(i+step)+lPR;
     }
+    //printf("Past while integrals\n");fflush(stdout);
   }else{
     status = gsl_integration_qag(&F,lkmin,lkmax,TOL,TOL/10.,workspace_size,6,workspace,&result,&abserr);
   }
