@@ -52,12 +52,20 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
     printf("xi_nfw time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();
   }
-  calc_xi_mm(R,NR,k,P,Nk,xi_mm,err);
+  /*
+    These two variables are for the hankel transformation
+    They can be changed by hand, depending on how wacky the
+    the power spectrum looks. It is difficult to test
+    what combination works best for what scenarios.
+  */
+  int Nevals = 200;
+  double h = 0.005;
+  calc_xi_mm(R,NR,k,P,Nk,xi_mm,err,Nevals,h);
   if (timing){
     printf("xi_mm time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();
   }
-  calc_xi_mm(R,NR,k_lin,P_lin,Nk_lin,xi_lin,err);
+  calc_xi_mm(R,NR,k_lin,P_lin,Nk_lin,xi_lin,err,Nevals,h);
   if (timing){
     printf("xi_lin time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();
@@ -121,7 +129,6 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
       time=omp_get_wtime();
     }
   }
-
 
   free(err);
   return 0;

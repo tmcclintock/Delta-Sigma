@@ -59,7 +59,7 @@ timing - 1 if you want to print timing information, 0 if not
 miscentering - 1 if you want to run miscentering, 0 if not
 averaging - 1 if you want to run averaging, 0 if not
 """
-input_params = {"Mass": 10**14,"NR":350,"Rmin":0.01,"Rmax":200.0,"Nbins":15,"R_bin_min":0.01,"R_bin_max":200.0,"delta":200,"Rmis":0.249697,"fmis":0.23374,"timing":1,"miscentering":1,"averaging":0}
+input_params = {"Mass": 2.56*10**14,"NR":350,"Rmin":0.01,"Rmax":200.0,"Nbins":15,"R_bin_min":0.01,"R_bin_max":200.0,"delta":200,"Rmis":0.249697,"fmis":0.23374,"timing":1,"miscentering":1,"averaging":0}
 input_params["concentration"] = 5.0 #Completely arbitrary
 #input_params["concentration"] = 4.0*(input_params["Mass"]/5.e14)**-0.1
 #Above is an example M-c relation.
@@ -68,13 +68,16 @@ input_params["concentration"] = 5.0 #Completely arbitrary
 return_dict = py_Delta_Sigma.calc_Delta_Sigma(klin,Plin,knl,Pnl,cosmo,input_params)
 print return_dict.keys()
 
-R = return_dict["R"]
-delta_sigma = return_dict['delta_sigma']
-mis_delta_sigma = return_dict['miscentered_delta_sigma']
-
+z=0.406
+h = cosmo['h']
+R = return_dict["R"]/h/(1+z)
+delta_sigma = return_dict['delta_sigma']*(1+z)**2*h
+#mis_delta_sigma = return_dict['miscentered_delta_sigma']
+#for i in range(len(R)):
+#    print R[i],delta_sigma[i]
 
 plt.loglog(R,delta_sigma,label=r"$\Delta\Sigma_{\rm centered}$")
-plt.loglog(R,mis_delta_sigma,label=r"$\Delta\Sigma_{\rm miscentered}$")
+#plt.loglog(R,mis_delta_sigma,label=r"$\Delta\Sigma_{\rm miscentered}$")
 
 plt.legend()
 plt.xlabel(r"$R\ [Mpc/h]$",fontsize=24)

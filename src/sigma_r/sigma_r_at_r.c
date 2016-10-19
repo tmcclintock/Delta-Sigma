@@ -66,7 +66,6 @@ int calc_sigma_r_at_r(double Rp,double Mass,double concentration
   return 0;
 }
 
-
 int do_integral(double*sigma_r,double*err,integrand_params*params){
   gsl_function F;
   F.function=&integrand_small_scales;
