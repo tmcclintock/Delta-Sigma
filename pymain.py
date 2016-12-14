@@ -72,12 +72,10 @@ z=0.406
 h = cosmo['h']
 R = return_dict["R"]/h/(1+z)
 delta_sigma = return_dict['delta_sigma']*(1+z)**2*h
-#mis_delta_sigma = return_dict['miscentered_delta_sigma']
-#for i in range(len(R)):
-#    print R[i],delta_sigma[i]
+mis_delta_sigma = return_dict['miscentered_delta_sigma']*(1+z)**2*h
 
 plt.loglog(R,delta_sigma,label=r"$\Delta\Sigma_{\rm centered}$")
-#plt.loglog(R,mis_delta_sigma,label=r"$\Delta\Sigma_{\rm miscentered}$")
+plt.loglog(R,mis_delta_sigma,label=r"$\Delta\Sigma_{\rm miscentered}$")
 
 plt.legend()
 plt.xlabel(r"$R\ [Mpc/h]$",fontsize=24)
