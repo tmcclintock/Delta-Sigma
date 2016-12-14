@@ -46,7 +46,7 @@ double calc_corr_at_R(double R,double*k,double*P,int Nk,int N,double h){
   }
 
   gsl_spline_free(Pspl),gsl_interp_accel_free(acc);
-  return sum/(R*R*R*PI);
+  return sum/(R*R*R*PI*2);
 }
 
 int calc_xi_mm(double*R,int NR,double*k,double*P,int Nk,double*xi,double*err,int N, double h){
