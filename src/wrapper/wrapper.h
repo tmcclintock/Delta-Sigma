@@ -13,6 +13,7 @@
 #include "../xi_2halo/xi_2halo.h"
 #include "../xi_mm/xi_mm.h"
 #include "../tinker_bias/tinker_bias.h"
+#include "../sigma_mis/sigma_mis.h"
 #include "../miscentered_sigma_r/miscentered_sigma_r.h"
 #include "../miscentered_delta_sigma/miscentered_delta_sigma.h"
 #include "../ave_delta_sigma/ave_delta_sigma.h"
@@ -52,6 +53,7 @@ typedef struct wrapper_output{
   double*ave_delta_sigma;
   double*bias;
   double*nu;
+  double*sigma_mis;
   double*miscentered_sigma_r;
   double*miscentered_delta_sigma;
   double*miscentered_ave_delta_sigma;
@@ -77,6 +79,7 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     double*xi_2halo,double*xi_hm,double*sigma_r,
 		     double*delta_sigma,double*Rbins,
 		     double*ave_delta_sigma,double*bias,
-		     double*nu,double*miscentered_sigma_r,
+		     double*nu,double*sigma_mis,
+		     double*miscentered_sigma_r,
 		     double*miscentered_delta_sigma,
 		     double*miscentered_ave_delta_sigma);
