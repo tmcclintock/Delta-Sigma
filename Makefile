@@ -10,7 +10,7 @@ OFLAGS =
 endif
 else
 $(info Building shared library)
-EXEC = Delta_Sigma.so
+EXEC = src/wrapper/Delta_Sigma.so
 CFLAGS = -fPIC
 OFLAGS = -shared 
 #-W1,-soname=$(EXEC)
@@ -30,5 +30,5 @@ $(EXEC): $(OBJS)
 .PHONY : clean
 
 clean:
-	rm -f $(OBJS) main.exe Delta_Sigma.so
+	rm -f $(OBJS) main.exe Delta_Sigma.so src/wrapper/Delta_Sigma.so
 	rm -f *~
