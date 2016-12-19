@@ -30,9 +30,10 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
     xi_2halo,xi_hm,sigma_r,
 
     delta_sigma,Rbins,
-    ave_delta_sigma,bias,
-
-    nu,sigma_mis,
+    ave_delta_sigma,
+    bias,nu,
+    sigma_mis,
+    delta_sigma_mis
     miscentered_sigma_r,
     miscentered_delta_sigma,
     miscentered_ave_delta_sigma
@@ -49,8 +50,10 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
                         POINTER(c_double),POINTER(c_double),POINTER(c_double),\
                         POINTER(c_double),POINTER(c_double),POINTER(c_double),\
                         POINTER(c_double),POINTER(c_double),\
+                        POINTER(c_double),\
                         POINTER(c_double),POINTER(c_double),\
-                        POINTER(c_double),POINTER(c_double),\
+                        POINTER(c_double),\
+                        POINTER(c_double),\
                         POINTER(c_double),\
                         POINTER(c_double),\
                         POINTER(c_double)]
@@ -92,6 +95,8 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
     delta_sigma_in = delta_sigma.ctypes.data_as(POINTER(c_double))
     sigma_mis = np.zeros(NR)
     sigma_mis_in = sigma_mis.ctypes.data_as(POINTER(c_double))
+    delta_sigma_mis = np.zeros(NR)
+    delta_sigma_mis_in = delta_sigma_mis.ctypes.data_as(POINTER(c_double))
     miscentered_sigma_r = np.zeros(NR)
     miscentered_sigma_r_in = miscentered_sigma_r.ctypes.data_as(POINTER(c_double))
     miscentered_delta_sigma = np.zeros(NR)
@@ -122,6 +127,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
                            sigma_r_in,delta_sigma_in,Rbins_in,\
                            ave_delta_sigma_in,bias_in,nu_in,\
                            sigma_mis_in,\
+                           delta_sigma_mis_in,\
                            miscentered_sigma_r_in,miscentered_delta_sigma_in,\
                            miscentered_ave_delta_sigma_in)
 
@@ -131,6 +137,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
                        "xi_2halo":xi_2halo,"xi_hm":xi_hm,\
                        "sigma_r":sigma_r,"delta_sigma":delta_sigma,\
                        "sigma_mis":sigma_mis,\
+                       "delta_sigma_mis":delta_sigma_mis,\
                        "miscentered_sigma_r":miscentered_sigma_r,\
                        "miscentered_delta_sigma":miscentered_delta_sigma,\
                        "Rbins":Rbins,"bias":bias,"nu":nu,\

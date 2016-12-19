@@ -68,17 +68,28 @@ input_params["concentration"] = 5.0 #Completely arbitrary
 return_dict = py_Delta_Sigma.calc_Delta_Sigma(klin,Plin,knl,Pnl,cosmo,input_params)
 print return_dict.keys()
 
-z=0.406
-h = cosmo['h']
-R = return_dict["R"]/h/(1+z)
-delta_sigma = return_dict['delta_sigma']*(1+z)**2*h
-mis_delta_sigma = return_dict['miscentered_delta_sigma']*(1+z)**2*h
+R = return_dict["R"]
 
-plt.loglog(R,delta_sigma,label=r"$\Delta\Sigma_{\rm centered}$")
-plt.loglog(R,mis_delta_sigma,label=r"$\Delta\Sigma_{\rm miscentered}$")
-
+sigma = return_dict['sigma_r']
+sigma_miscentered = return_dict['miscentered_sigma_r']
+sigma_m = return_dict['sigma_mis']
+plt.loglog(R,sigma,label=r"$\Sigma$")
+plt.loglog(R,sigma_miscentered,label=r"$\Sigma_{\rm mis}$",ls='--')
+plt.loglog(R,sigma_m,label=r"$\Sigma(R|R_{\rm mis})$")
 plt.legend()
-plt.xlabel(r"$R\ [Mpc/h]$",fontsize=24)
-plt.ylabel(r"$\Delta\Sigma(R)$",fontsize=24)
+plt.xlabel(r"$R\ [{\rm Mpc}/h]$",fontsize=24)
+plt.ylabel(r"$\Sigma\ [{\rm Mpc}\ h/{\rm pc^2}]$",fontsize=24)
+plt.subplots_adjust(bottom=0.15)
+plt.show()
+
+delta_sigma = return_dict['delta_sigma']
+miscentered_delta_sigma = return_dict['miscentered_delta_sigma']
+delta_sigma_mis = return_dict['delta_sigma_mis']
+plt.loglog(R,delta_sigma,label=r"$\Delta\Sigma_{\rm centered}$")
+plt.loglog(R,miscentered_delta_sigma,label=r"$\Delta\Sigma_{\rm mis}$",ls='--')
+plt.loglog(R,delta_sigma_mis,label=r"$\Delta\Sigma(R|R_{\rm mis})$")
+plt.legend()
+plt.xlabel(r"$R\ [{\rm Mpc}/h]$",fontsize=24)
+plt.ylabel(r"$\Delta\Sigma\ [{\rm Mpc}\ h/{\rm pc^2}]$",fontsize=24)
 plt.subplots_adjust(bottom=0.15)
 plt.show()

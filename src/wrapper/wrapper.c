@@ -20,6 +20,7 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
   double*bias=outputs->bias;
   double*nu=outputs->nu;
   double*sigma_mis=outputs->sigma_mis;
+  double*delta_sigma_mis=outputs->delta_sigma_mis;
   double*miscentered_sigma_r=outputs->miscentered_sigma_r;
   double*miscentered_delta_sigma=outputs->miscentered_delta_sigma;
   double*miscentered_ave_delta_sigma=outputs->miscentered_ave_delta_sigma;
@@ -113,6 +114,13 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
 	     omp_get_wtime()-time);fflush(stdout);
       time=omp_get_wtime();
     }
+    calc_delta_sigma_mis(R,Mass,concentration,delta,Rmis,R,sigma_r,sigma_mis,
+			 NR,delta_sigma_mis,err,cosmo);
+    if (timing){
+      printf("delta_sigma_mis time = %f\n",
+	     omp_get_wtime()-time);fflush(stdout);
+      time=omp_get_wtime();
+    }
     calc_miscentered_sigma_r(R,Mass,concentration,delta,Rmis,R,sigma_r,NR,
 			     miscentered_sigma_r,err,cosmo);
     if (timing){
@@ -128,7 +136,6 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
 	     omp_get_wtime()-time);fflush(stdout);
       time=omp_get_wtime();
     }
-
     calc_miscentered_ave_delta_sigma(R,NR,miscentered_delta_sigma,Nbins,R_bin_min,R_bin_max,Rbins,miscentered_ave_delta_sigma);
     if (timing){
       printf("miscentered_ave_delta_sigma time = %f\n",
@@ -155,6 +162,7 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     double*delta_sigma,double*Rbins,
 		     double*ave_delta_sigma,double*bias,
 		     double*nu,double*sigma_mis,
+		     double*delta_sigma_mis,
 		     double*miscentered_sigma_r,
 		     double*miscentered_delta_sigma,
 		     double*miscentered_ave_delta_sigma){
@@ -191,6 +199,7 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
   outputs->bias=bias;
   outputs->nu=nu;
   outputs->sigma_mis=sigma_mis;
+  outputs->delta_sigma_mis=delta_sigma_mis;
   outputs->miscentered_sigma_r=miscentered_sigma_r;
   outputs->miscentered_delta_sigma=miscentered_delta_sigma;
   outputs->Rbins=Rbins;
