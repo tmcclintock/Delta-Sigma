@@ -21,7 +21,14 @@ typedef struct integrand_params{
 }integrand_params;
 
 static int do_integral(double*miscentered_delta_sigma,double*err,integrand_params*params);
-static double integrand(double lR, void*params);
+
+static double integrand(double lR, void*params){
+  double R = exp(lR);
+  integrand_params pars=*(integrand_params *)params;
+  gsl_spline*spline = pars.spline;//Sigma(R) spline
+  gsl_interp_accel*acc = pars.acc;
+  return R*R*gsl_spline_eval(spline,R,acc);
+}
 
 int calc_miscentered_delta_sigma_at_r(double Rp,double Mass,
 				      double concentration,int delta,
@@ -78,10 +85,3 @@ int do_integral(double*miscentered_delta_sigma,double*err,integrand_params*param
   return status;
 }
 
-double integrand(double lR, void*params){
-  double R = exp(lR);
-  integrand_params pars=*(integrand_params *)params;
-  gsl_spline*spline = pars.spline;//Sigma_R(R) spline
-  gsl_interp_accel*acc = pars.acc;
-  return R*R*gsl_spline_eval(spline,R,acc);
-}
