@@ -12,8 +12,6 @@ library_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfr
 dslib = cdll.LoadLibrary(library_path)
 
 def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
-
-    #The next line breaks if not run from the Delta-Sigma directory. Need to fix
     interface = dslib.python_interface
     interface.restype = c_int
     """
