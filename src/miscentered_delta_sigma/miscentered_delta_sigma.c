@@ -64,7 +64,7 @@ int calc_miscentered_delta_sigma(double*Rp,double Mass,double concentration,
     //inner_result contains the numerator of Sigma(<R), which is the costly
     //integral over the non-spline region
   }else{
-    //If Rmin >> Rmis then we can use a power law approximation pretty well
+    //If Rmin ~< Rmis then we can use a power law approximation pretty well
     double alpha = (log(miscentered_sigma_r[0])-log(miscentered_sigma_r[1]))
       /(log(Rp[0])-log(Rp[1]));
     double A = miscentered_sigma_r[0]/pow(Rp[0],alpha);
@@ -80,4 +80,7 @@ int calc_miscentered_delta_sigma(double*Rp,double Mass,double concentration,
 						NR,&miscentered_delta_sigma[i],
 						&err[i],cosmo);
   }
+
+  //Success
+  return status;
 }
