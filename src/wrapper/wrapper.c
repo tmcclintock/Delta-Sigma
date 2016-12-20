@@ -136,11 +136,13 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
 	     omp_get_wtime()-time);fflush(stdout);
       time=omp_get_wtime();
     }
-    calc_miscentered_ave_delta_sigma(R,NR,miscentered_delta_sigma,Nbins,R_bin_min,R_bin_max,Rbins,miscentered_ave_delta_sigma);
-    if (timing){
-      printf("miscentered_ave_delta_sigma time = %f\n",
-	     omp_get_wtime()-time);fflush(stdout);
-      time=omp_get_wtime();
+    if (averaging){
+      calc_miscentered_ave_delta_sigma(R,NR,miscentered_delta_sigma,Nbins,R_bin_min,R_bin_max,Rbins,miscentered_ave_delta_sigma);
+      if (timing){
+	printf("miscentered_ave_delta_sigma time = %f\n",
+	       omp_get_wtime()-time);fflush(stdout);
+	time=omp_get_wtime();
+      }
     }
   }
 
