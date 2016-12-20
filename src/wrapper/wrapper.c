@@ -115,23 +115,19 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
 	     omp_get_wtime()-time);fflush(stdout);
       time=omp_get_wtime();
     }
-    calc_delta_sigma_mis(R,Mass,concentration,delta,Rmis,R,sigma_r,sigma_mis,
-			 NR,delta_sigma_mis,err,cosmo);
+    calc_delta_sigma_mis(R,Mass,concentration,delta,Rmis,R,sigma_r,sigma_mis,NR,delta_sigma_mis,err,cosmo);
     if (timing){
       printf("delta_sigma_mis time = %f\n",
 	     omp_get_wtime()-time);fflush(stdout);
       time=omp_get_wtime();
     }
-    calc_miscentered_sigma_r(R,Mass,concentration,delta,Rmis,R,sigma_r,NR,
-			     miscentered_sigma_r,err,cosmo);
+    calc_miscentered_sigma_r(R,Mass,concentration,delta,Rmis,R,sigma_r,NR,miscentered_sigma_r,err,cosmo);
     if (timing){
       printf("miscentered_sigma_r time = %f\n",
 	     omp_get_wtime()-time);fflush(stdout);
       time=omp_get_wtime();
     }
-    calc_miscentered_delta_sigma(R,Mass,concentration,delta,Rmis,R,sigma_r,
-				 miscentered_sigma_r,NR,miscentered_delta_sigma,
-				 err,cosmo);
+    calc_miscentered_delta_sigma(R,Mass,concentration,delta,Rmis,R,sigma_r,miscentered_sigma_r,NR,miscentered_delta_sigma,err,cosmo);
     if (timing){
       printf("miscentered_delta_sigma time = %f\n",
 	     omp_get_wtime()-time);fflush(stdout);
@@ -144,9 +140,10 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
 	       omp_get_wtime()-time);fflush(stdout);
 	time=omp_get_wtime();
       }
-      /*NOTE: the ave_delta_sigma_mis is calculated with
+      /***********************************************************
+	NOTE: the ave_delta_sigma_mis is calculated with
 	an identical function call as ave_miscentered_delta_sigma.
-       */
+      ***********************************************************/
       calc_ave_miscentered_delta_sigma(R,NR,delta_sigma_mis,Nbins,R_bin_min,R_bin_max,Rbins,ave_delta_sigma_mis);
       if (timing){
 	printf("ave_delta_sigma_mis time = %f\n",
