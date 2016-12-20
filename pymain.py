@@ -59,7 +59,10 @@ timing - 1 if you want to print timing information, 0 if not
 miscentering - 1 if you want to run miscentering, 0 if not
 averaging - 1 if you want to run averaging, 0 if not
 """
-input_params = {"Mass": 2.56*10**14,"NR":350,"Rmin":0.01,"Rmax":200.0,"Nbins":15,"R_bin_min":0.01,"R_bin_max":200.0,"delta":200,"Rmis":0.249697,"fmis":0.23374,"timing":1,"miscentering":1,"averaging":0}
+input_params = {"Mass": 2.56*10**14,"NR":350,"Rmin":0.01,
+                "Rmax":200.0,"Nbins":15,"R_bin_min":0.01,"R_bin_max":200.0,
+                "delta":200,"Rmis":0.249697,"fmis":0.23374,
+                "timing":1,"miscentering":1,"averaging":0}
 input_params["concentration"] = 5.0 #Completely arbitrary
 #input_params["concentration"] = 4.0*(input_params["Mass"]/5.e14)**-0.1
 #Above is an example M-c relation.
