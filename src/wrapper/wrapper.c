@@ -23,7 +23,8 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
   double*delta_sigma_mis=outputs->delta_sigma_mis;
   double*miscentered_sigma_r=outputs->miscentered_sigma_r;
   double*miscentered_delta_sigma=outputs->miscentered_delta_sigma;
-  double*miscentered_ave_delta_sigma=outputs->miscentered_ave_delta_sigma;
+  double*ave_miscentered_delta_sigma=outputs->ave_miscentered_delta_sigma;
+  double*ave_delta_sigma_mis=outputs->ave_delta_sigma_mis;
 
   //Used to hold integration errors for some routines
   double*err=(double*)malloc(NR*sizeof(double));
@@ -137,12 +138,22 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
       time=omp_get_wtime();
     }
     if (averaging){
-      calc_miscentered_ave_delta_sigma(R,NR,miscentered_delta_sigma,Nbins,R_bin_min,R_bin_max,Rbins,miscentered_ave_delta_sigma);
+      calc_ave_miscentered_delta_sigma(R,NR,miscentered_delta_sigma,Nbins,R_bin_min,R_bin_max,Rbins,ave_miscentered_delta_sigma);
       if (timing){
-	printf("miscentered_ave_delta_sigma time = %f\n",
+	printf("ave_miscentered_delta_sigma time = %f\n",
 	       omp_get_wtime()-time);fflush(stdout);
 	time=omp_get_wtime();
       }
+      /*NOTE: the ave_delta_sigma_mis is calculated with
+	an identical function call as ave_miscentered_delta_sigma.
+       */
+      calc_ave_miscentered_delta_sigma(R,NR,delta_sigma_mis,Nbins,R_bin_min,R_bin_max,Rbins,ave_delta_sigma_mis);
+      if (timing){
+	printf("ave_delta_sigma_mis time = %f\n",
+	       omp_get_wtime()-time);fflush(stdout);
+	time=omp_get_wtime();
+      }
+
     }
   }
 
@@ -167,7 +178,8 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     double*delta_sigma_mis,
 		     double*miscentered_sigma_r,
 		     double*miscentered_delta_sigma,
-		     double*miscentered_ave_delta_sigma){
+		     double*ave_miscentered_delta_sigma,
+		     double*ave_delta_sigma_mis){
 
   cosmology*cosmo = (cosmology*)malloc(sizeof(cosmology));
   cosmo->h = h;
@@ -206,7 +218,8 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
   outputs->miscentered_delta_sigma=miscentered_delta_sigma;
   outputs->Rbins=Rbins;
   outputs->ave_delta_sigma=ave_delta_sigma;
-  outputs->miscentered_ave_delta_sigma=miscentered_ave_delta_sigma;
+  outputs->ave_miscentered_delta_sigma=ave_miscentered_delta_sigma;
+  outputs->ave_delta_sigma_mis=ave_delta_sigma_mis;
 
   interface(k_lin,P_lin,Nk_lin,k_nl,P_nl,Nk_nl,
 	    NR,Rmin,Rmax,*cosmo,params,outputs);

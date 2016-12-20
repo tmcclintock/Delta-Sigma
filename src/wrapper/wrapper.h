@@ -18,7 +18,7 @@
 #include "../miscentered_sigma_r/miscentered_sigma_r.h"
 #include "../miscentered_delta_sigma/miscentered_delta_sigma.h"
 #include "../ave_delta_sigma/ave_delta_sigma.h"
-#include "../miscentered_ave_delta_sigma/miscentered_ave_delta_sigma.h"
+#include "../ave_miscentered_delta_sigma/ave_miscentered_delta_sigma.h"
 #include "../cosmology/cosmology.h"
 
 #ifndef INTERFACE
@@ -58,7 +58,8 @@ typedef struct wrapper_output{
   double*delta_sigma_mis;
   double*miscentered_sigma_r;
   double*miscentered_delta_sigma;
-  double*miscentered_ave_delta_sigma;
+  double*ave_miscentered_delta_sigma;
+  double*ave_delta_sigma_mis;
 }wrapper_output;
 #endif
 
@@ -85,4 +86,5 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     double*delta_sigma_mis,
 		     double*miscentered_sigma_r,
 		     double*miscentered_delta_sigma,
-		     double*miscentered_ave_delta_sigma);
+		     double*ave_miscentered_delta_sigma,
+		     double*ave_delta_sigma_mis);

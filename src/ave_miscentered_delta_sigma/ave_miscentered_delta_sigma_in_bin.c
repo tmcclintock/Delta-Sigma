@@ -1,4 +1,4 @@
-#include "miscentered_ave_delta_sigma_in_bin.h"
+#include "ave_miscentered_delta_sigma_in_bin.h"
 
 #define TOL 1e-8
 #define workspace_size 8000
@@ -13,16 +13,16 @@ typedef struct integrand_params{
   gsl_integration_workspace*workspace;
 }integrand_params;
 
-static int do_integral(double*miscentered_ave_delta_sigma,
+static int do_integral(double*ave_miscentered_delta_sigma,
 		       double lRlow,double lRhigh,
 		       integrand_params*params);
 
 static double integrand(double lR, void*params);
 
-int calc_miscentered_ave_delta_sigma_in_bin(double*R,int NR,
+int calc_ave_miscentered_delta_sigma_in_bin(double*R,int NR,
 					    double*miscentered_delta_sigma,
 					    double lRlow,double lRhigh,
-					    double*miscentered_ave_delta_sigma){
+					    double*ave_miscentered_delta_sigma){
   int status = 0;
 
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,NR);
@@ -38,8 +38,11 @@ int calc_miscentered_ave_delta_sigma_in_bin(double*R,int NR,
 
   double Rlow=exp(lRlow),Rhigh=exp(lRhigh);
 
-  do_integral(miscentered_ave_delta_sigma,lRlow,lRhigh,params);
-  *miscentered_ave_delta_sigma *= 2./(Rhigh*Rhigh-Rlow*Rlow);
+  do_integral(ave_miscentered_delta_sigma,lRlow,lRhigh,params);
+  *ave_miscentered_delta_sigma *= 2./(Rhigh*Rhigh-Rlow*Rlow);
+  if(*ave_miscentered_delta_sigma<0){
+    *ave_miscentered_delta_sigma = 0;
+  }
 
   gsl_spline_free(spline),gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
@@ -47,7 +50,7 @@ int calc_miscentered_ave_delta_sigma_in_bin(double*R,int NR,
   return 0;
 }
 
-int do_integral(double*miscentered_ave_delta_sigma,double lRlow,double lRhigh,
+int do_integral(double*ave_miscentered_delta_sigma,double lRlow,double lRhigh,
 		integrand_params*params){
   int status = 0;
 
@@ -62,7 +65,7 @@ int do_integral(double*miscentered_ave_delta_sigma,double lRlow,double lRhigh,
   status |= gsl_integration_qag(&F,lRlow,lRhigh,TOL,TOL/10.,workspace_size,6,
 				workspace,&result,&abserr);
 
-  *miscentered_ave_delta_sigma = result;
+  *ave_miscentered_delta_sigma = result;
 
   return status;
 }

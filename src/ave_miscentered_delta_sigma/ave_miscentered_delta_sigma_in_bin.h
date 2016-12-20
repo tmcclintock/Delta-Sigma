@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int calc_miscentered_ave_delta_sigma_in_bin(double*R,int NR,
+int calc_ave_miscentered_delta_sigma_in_bin(double*R,int NR,
 					    double*miscentered_delta_sigma,
 					    double lRlow,double lRhigh,
-					    double*miscentered_ave_delta_sigma);
+					    double*ave_miscentered_delta_sigma);

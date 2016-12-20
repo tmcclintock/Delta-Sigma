@@ -98,7 +98,7 @@ int main(int argc, char **argv){
   double R_bin_min = 0.01, R_bin_max = 200; //Mpc/h
   double*Rbins=(double*)malloc(Nbins*sizeof(double));
   double*ave_delta_sigma=(double*)malloc(Nbins*sizeof(double));
-  double*miscentered_ave_delta_sigma=(double*)malloc(Nbins*sizeof(double));
+  double*ave_miscentered_delta_sigma=(double*)malloc(Nbins*sizeof(double));
 
   interface_parameters*params=
     (interface_parameters*)malloc(sizeof(interface_parameters));
@@ -129,7 +129,7 @@ int main(int argc, char **argv){
   outputs->miscentered_delta_sigma=miscentered_delta_sigma;
   outputs->Rbins=Rbins;
   outputs->ave_delta_sigma=ave_delta_sigma;
-  outputs->miscentered_ave_delta_sigma=miscentered_ave_delta_sigma;
+  outputs->ave_miscentered_delta_sigma=ave_miscentered_delta_sigma;
 
   interface(k_lin,P_lin,N_lin,k_nl,P_nl,N_nl,
 	    NR,Rmin,Rmax,*cosmo,params,outputs);
@@ -146,7 +146,7 @@ int main(int argc, char **argv){
   FILE*miscentered_delta_sigma_out;
   FILE*ave_delta_sigma_out;
   FILE*Rbins_out;
-  FILE*miscentered_ave_delta_sigma_out;
+  FILE*ave_miscentered_delta_sigma_out;
   if(params->averaging){
     ave_delta_sigma_out = fopen("output/ave_delta_sigma.txt","w");
     Rbins_out = fopen("output/Rbins.txt","w");
@@ -155,7 +155,7 @@ int main(int argc, char **argv){
     miscentered_sigma_r_out = fopen("output/miscentered_sigma_r.txt","w");
     miscentered_delta_sigma_out = fopen("output/miscentered_delta_sigma.txt","w");
     if(params->averaging)
-      miscentered_ave_delta_sigma_out = fopen("output/miscentered_ave_delta_sigma.txt","w");
+      ave_miscentered_delta_sigma_out = fopen("output/ave_miscentered_delta_sigma.txt","w");
   }
 
   //Write out the averaged values
@@ -164,8 +164,8 @@ int main(int argc, char **argv){
       fprintf(ave_delta_sigma_out,"%e\n",ave_delta_sigma[i]);
       fprintf(Rbins_out,"%e\n",Rbins[i]);
       if(params->miscentering){
-	fprintf(miscentered_ave_delta_sigma_out,"%e\n",
-		miscentered_ave_delta_sigma[i]);
+	fprintf(ave_miscentered_delta_sigma_out,"%e\n",
+		ave_miscentered_delta_sigma[i]);
       }
     }
   }
@@ -212,7 +212,7 @@ int main(int argc, char **argv){
   if(params->miscentering){
     fclose(miscentered_sigma_r_out),fclose(miscentered_delta_sigma_out);
     if(params->averaging){
-      fclose(miscentered_ave_delta_sigma_out);
+      fclose(ave_miscentered_delta_sigma_out);
     }
   }
   free(params);

@@ -36,7 +36,8 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
     delta_sigma_mis
     miscentered_sigma_r,
     miscentered_delta_sigma,
-    miscentered_ave_delta_sigma
+    ave_miscentered_delta_sigma
+    ave_delta_sigma_mis
     """
     interface.argtypes=[POINTER(c_double),POINTER(c_double),c_int,\
                         POINTER(c_double),POINTER(c_double),c_int,\
@@ -52,6 +53,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
                         POINTER(c_double),POINTER(c_double),\
                         POINTER(c_double),\
                         POINTER(c_double),POINTER(c_double),\
+                        POINTER(c_double),\
                         POINTER(c_double),\
                         POINTER(c_double),\
                         POINTER(c_double),\
@@ -106,8 +108,10 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
     Rbins_in = Rbins.ctypes.data_as(POINTER(c_double))
     ave_delta_sigma = np.zeros(Nbins)
     ave_delta_sigma_in = ave_delta_sigma.ctypes.data_as(POINTER(c_double))
-    miscentered_ave_delta_sigma = np.zeros(Nbins)
-    miscentered_ave_delta_sigma_in = miscentered_ave_delta_sigma.ctypes.data_as(POINTER(c_double))
+    ave_miscentered_delta_sigma = np.zeros(Nbins)
+    ave_miscentered_delta_sigma_in = ave_miscentered_delta_sigma.ctypes.data_as(POINTER(c_double))
+    ave_delta_sigma_mis = np.zeros(Nbins)
+    ave_delta_sigma_mis_in = ave_delta_sigma_mis.ctypes.data_as(POINTER(c_double))
 
     bias = np.zeros(1)
     bias_in = bias.ctypes.data_as(POINTER(c_double))
@@ -129,7 +133,8 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
                            sigma_mis_in,\
                            delta_sigma_mis_in,\
                            miscentered_sigma_r_in,miscentered_delta_sigma_in,\
-                           miscentered_ave_delta_sigma_in)
+                           ave_miscentered_delta_sigma_in,\
+                           ave_delta_sigma_mis_in)
 
     #Now build a dictionary and return it
     return_dict = {"R":R,"xi_1halo":xi_1halo,"xi_mm":xi_mm,\
@@ -142,6 +147,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
                        "miscentered_delta_sigma":miscentered_delta_sigma,\
                        "Rbins":Rbins,"bias":bias,"nu":nu,\
                        "ave_delta_sigma":ave_delta_sigma,\
-                       "miscentered_ave_delta_sigma":miscentered_ave_delta_sigma,\
+                       "ave_miscentered_delta_sigma":ave_miscentered_delta_sigma,\
+                       "ave_delta_sigma_mis":ave_delta_sigma_mis
                        }
     return return_dict
