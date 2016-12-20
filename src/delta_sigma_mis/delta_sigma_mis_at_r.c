@@ -57,6 +57,8 @@ int calc_delta_sigma_mis_at_r(double Rp,double Mass,
   *delta_sigma_mis *= 2./Rp/Rp;
   *delta_sigma_mis -= gsl_spline_eval(spline,Rp,acc);
   *err *= 2./Rp/Rp;
+  if (*delta_sigma_mis < 0)
+    *delta_sigma_mis = 0; //Don't accept negative values.
 
   gsl_spline_free(spline),gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
