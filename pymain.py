@@ -26,8 +26,8 @@ test_path = "test_data/"
 #First load in the power spectrum data from somewhere
 klin = np.genfromtxt(test_path+"matter_power_lin/k_h.txt")
 Plin = np.genfromtxt(test_path+"matter_power_lin/p_k.txt")
-knl = np.genfromtxt(test_path+"matter_power_nl/k_h.txt")
-Pnl = np.genfromtxt(test_path+"/matter_power_nl/p_k.txt")
+knl  = np.genfromtxt(test_path+"matter_power_nl/k_h.txt")
+Pnl  = np.genfromtxt(test_path+"matter_power_nl/p_k.txt")
 
 
 #Create a dictionary with the cosmology
@@ -78,7 +78,7 @@ plt.loglog(R,sigma_miscentered,label=r"$\Sigma_{\rm mis}$",ls='--')
 plt.loglog(R,sigma_m,label=r"$\Sigma(R|R_{\rm mis})$")
 plt.legend()
 plt.xlabel(r"$R\ [{\rm Mpc}/h]$",fontsize=24)
-plt.ylabel(r"$\Sigma\ [{\rm Mpc}\ h/{\rm pc^2}]$",fontsize=24)
+plt.ylabel(r"$\Sigma\ [{\rm M_\odot}\ h/{\rm pc^2}]$",fontsize=24)
 plt.subplots_adjust(bottom=0.15)
 plt.show()
 
@@ -90,6 +90,6 @@ plt.loglog(R,miscentered_delta_sigma,label=r"$\Delta\Sigma_{\rm mis}$",ls='--')
 plt.loglog(R,delta_sigma_mis,label=r"$\Delta\Sigma(R|R_{\rm mis})$")
 plt.legend()
 plt.xlabel(r"$R\ [{\rm Mpc}/h]$",fontsize=24)
-plt.ylabel(r"$\Delta\Sigma\ [{\rm Mpc}\ h/{\rm pc^2}]$",fontsize=24)
+plt.ylabel(r"$\Delta\Sigma\ [{\rm M_\odot}\ h/{\rm pc^2}]$",fontsize=24)
 plt.subplots_adjust(bottom=0.15)
 plt.show()
