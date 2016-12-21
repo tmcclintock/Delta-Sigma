@@ -89,9 +89,9 @@ int main(int argc, char **argv){
   double*xi_nfw=(double*)malloc(NR*sizeof(double));
   double*xi_2halo=(double*)malloc(NR*sizeof(double));
   double*xi_hm=(double*)malloc(NR*sizeof(double));
-  double*sigma_r=(double*)malloc(NR*sizeof(double));
+  double*sigma=(double*)malloc(NR*sizeof(double));
   double*delta_sigma=(double*)malloc(NR*sizeof(double));
-  double*miscentered_sigma_r=(double*)malloc(NR*sizeof(double));
+  double*miscentered_sigma=(double*)malloc(NR*sizeof(double));
   double*miscentered_delta_sigma=(double*)malloc(NR*sizeof(double));
 
   int Nbins = 15;
@@ -121,11 +121,11 @@ int main(int argc, char **argv){
   outputs->xi_lin=xi_lin;
   outputs->xi_2halo=xi_2halo;
   outputs->xi_hm=xi_hm;
-  outputs->sigma_r=sigma_r;
+  outputs->sigma=sigma;
   outputs->delta_sigma=delta_sigma;
   outputs->bias=&bias;
   outputs->nu=&nu;
-  outputs->miscentered_sigma_r=miscentered_sigma_r;
+  outputs->miscentered_sigma=miscentered_sigma;
   outputs->miscentered_delta_sigma=miscentered_delta_sigma;
   outputs->Rbins=Rbins;
   outputs->ave_delta_sigma=ave_delta_sigma;
@@ -140,9 +140,9 @@ int main(int argc, char **argv){
   FILE*xi_nfw_out = fopen("output/xi_nfw.txt","w");
   FILE*xi_2h_out = fopen("output/xi_2halo.txt","w");
   FILE*xi_hm_out = fopen("output/xi_hm.txt","w");
-  FILE*sigma_r_out = fopen("output/sigma_r.txt","w");
+  FILE*sigma_out = fopen("output/sigma.txt","w");
   FILE*delta_sigma_out = fopen("output/delta_sigma.txt","w");
-  FILE*miscentered_sigma_r_out;
+  FILE*miscentered_sigma_out;
   FILE*miscentered_delta_sigma_out;
   FILE*ave_delta_sigma_out;
   FILE*Rbins_out;
@@ -152,7 +152,7 @@ int main(int argc, char **argv){
     Rbins_out = fopen("output/Rbins.txt","w");
   }
   if(params->miscentering){
-    miscentered_sigma_r_out = fopen("output/miscentered_sigma_r.txt","w");
+    miscentered_sigma_out = fopen("output/miscentered_sigma.txt","w");
     miscentered_delta_sigma_out = fopen("output/miscentered_delta_sigma.txt","w");
     if(params->averaging)
       ave_miscentered_delta_sigma_out = fopen("output/ave_miscentered_delta_sigma.txt","w");
@@ -173,10 +173,10 @@ int main(int argc, char **argv){
   for(i = 0; i < NR; i++){
     if(params->miscentering){
       fprintf(miscentered_delta_sigma_out,"%e\n",miscentered_delta_sigma[i]);
-      fprintf(miscentered_sigma_r_out,"%e\n",miscentered_sigma_r[i]);
+      fprintf(miscentered_sigma_out,"%e\n",miscentered_sigma[i]);
     }
     fprintf(delta_sigma_out,"%e\n",delta_sigma[i]);
-    fprintf(sigma_r_out,"%e\n",sigma_r[i]);
+    fprintf(sigma_out,"%e\n",sigma[i]);
     fprintf(xi_hm_out,"%e\n",xi_hm[i]);
     fprintf(xi_2h_out,"%e\n",xi_2halo[i]);
     fprintf(xi_nfw_out,"%e\n",xi_nfw[i]);
@@ -197,20 +197,20 @@ int main(int argc, char **argv){
   free(k_nl),free(P_nl);
 
   free(R),free(xi_mm),free(xi_nfw),free(xi_2halo),free(xi_lin);
-  free(xi_hm),free(sigma_r),free(delta_sigma);
+  free(xi_hm),free(sigma),free(delta_sigma);
   free(cosmo);
   fclose(k_lin_fp),fclose(P_lin_fp);
   fclose(k_nl_fp),fclose(P_nl_fp);
   fclose(xi_mm_out),fclose(Rout);
   fclose(bias_out),fclose(nu_out),fclose(M_out);
   fclose(xi_2h_out),fclose(xi_nfw_out);
-  fclose(xi_hm_out),fclose(sigma_r_out),fclose(delta_sigma_out);
+  fclose(xi_hm_out),fclose(sigma_out),fclose(delta_sigma_out);
   if(params->averaging){
     fclose(ave_delta_sigma_out);
     fclose(Rbins_out);
   }
   if(params->miscentering){
-    fclose(miscentered_sigma_r_out),fclose(miscentered_delta_sigma_out);
+    fclose(miscentered_sigma_out),fclose(miscentered_delta_sigma_out);
     if(params->averaging){
       fclose(ave_miscentered_delta_sigma_out);
     }

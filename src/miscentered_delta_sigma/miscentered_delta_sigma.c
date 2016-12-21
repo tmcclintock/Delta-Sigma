@@ -11,7 +11,7 @@ typedef struct integrand_params{
   int delta;
   double Rmis; //Miscentering length
   double*R;
-  double*sigma_r;
+  double*sigma;
   int NR;
 }integrand_params;
 
@@ -23,18 +23,18 @@ static double integrand_inner(double lRp, void*params){
   int delta = pars.delta;
   double Rmis = pars.Rmis;
   double*R = pars.R;
-  double*sigma_r = pars.sigma_r;
+  double*sigma = pars.sigma;
   int NR = pars.NR;
   cosmology cosmo = pars.cosmo;
   double h = cosmo.h, om = cosmo.om;
   double answer = 0,error=0; //we put the answer here
-  calc_miscentered_sigma_r_at_r(Rp,Mass,concentration,delta,Rmis,R,sigma_r,NR,&answer,&error,cosmo);
+  calc_miscentered_sigma_at_r(Rp,Mass,concentration,delta,Rmis,R,sigma,NR,&answer,&error,cosmo);
   return Rp*Rp*answer;
 }
 
 int calc_miscentered_delta_sigma(double*Rp,double Mass,double concentration,
 				 int delta,double Rmis,double*R,
-				 double*sigma_r,double*miscentered_sigma_r,
+				 double*sigma,double*miscentered_sigma,
 				 int NR,double*miscentered_delta_sigma,
 				 double*err,cosmology cosmo){
   int i, status = 0;
@@ -50,7 +50,7 @@ int calc_miscentered_delta_sigma(double*Rp,double Mass,double concentration,
     params->delta=delta;
     params->Rmis=Rmis;
     params->R=R;
-    params->sigma_r=sigma_r;
+    params->sigma=sigma;
     params->NR=NR;
     
     gsl_integration_workspace * workspace
@@ -65,18 +65,18 @@ int calc_miscentered_delta_sigma(double*Rp,double Mass,double concentration,
     //integral over the non-spline region
   }else{
     //If Rmin ~< Rmis then we can use a power law approximation pretty well
-    double alpha = (log(miscentered_sigma_r[0])-log(miscentered_sigma_r[1]))
+    double alpha = (log(miscentered_sigma[0])-log(miscentered_sigma[1]))
       /(log(Rp[0])-log(Rp[1]));
-    double A = miscentered_sigma_r[0]/pow(Rp[0],alpha);
+    double A = miscentered_sigma[0]/pow(Rp[0],alpha);
     inner_result = A/(alpha+2.0)*(pow(Rp[0],alpha+2.0)-pow(exp(lrmin-10),alpha+2.0));
   }
     
-#pragma omp parallel shared(R,sigma_r,NR,miscentered_sigma_r,miscentered_delta_sigma,err,status)
+#pragma omp parallel shared(R,sigma,NR,miscentered_sigma,miscentered_delta_sigma,err,status)
 #pragma omp for
   for(i = 0; i < NR; i++){
     status |= calc_miscentered_delta_sigma_at_r(Rp[i],Mass,concentration,delta,
-						Rmis,R,sigma_r,
-						miscentered_sigma_r,inner_result,
+						Rmis,R,sigma,
+						miscentered_sigma,inner_result,
 						NR,&miscentered_delta_sigma[i],
 						&err[i],cosmo);
   }

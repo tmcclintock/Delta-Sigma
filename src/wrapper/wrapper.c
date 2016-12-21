@@ -13,7 +13,7 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
   double*xi_lin=outputs->xi_lin;
   double*xi_2halo=outputs->xi_2halo;
   double*xi_hm=outputs->xi_hm;
-  double*sigma_r=outputs->sigma_r;
+  double*sigma=outputs->sigma;
   double*delta_sigma=outputs->delta_sigma;
   double*Rbins=outputs->Rbins;
   double*ave_delta_sigma=outputs->ave_delta_sigma;
@@ -21,7 +21,7 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
   double*nu=outputs->nu;
   double*sigma_mis=outputs->sigma_mis;
   double*delta_sigma_mis=outputs->delta_sigma_mis;
-  double*miscentered_sigma_r=outputs->miscentered_sigma_r;
+  double*miscentered_sigma=outputs->miscentered_sigma;
   double*miscentered_delta_sigma=outputs->miscentered_delta_sigma;
   double*ave_miscentered_delta_sigma=outputs->ave_miscentered_delta_sigma;
   double*ave_delta_sigma_mis=outputs->ave_delta_sigma_mis;
@@ -88,12 +88,12 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
     printf("xi_hm time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();
   }
-  calc_sigma_r(R,Mass,concentration,delta,R,xi_hm,NR,sigma_r,err,cosmo);
+  calc_sigma(R,Mass,concentration,delta,R,xi_hm,NR,sigma,err,cosmo);
   if (timing){
-    printf("sigma_r time = %f\n",omp_get_wtime()-time);fflush(stdout);
+    printf("sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();
   }
-  calc_delta_sigma(R,Mass,concentration,delta,R,sigma_r,NR,delta_sigma,err,cosmo);
+  calc_delta_sigma(R,Mass,concentration,delta,R,sigma,NR,delta_sigma,err,cosmo);
   if (timing){
     printf("delta_sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();
@@ -109,25 +109,25 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
 
 
   if(miscentering){
-    calc_sigma_mis(R,Mass,concentration,delta,Rmis,R,sigma_r,NR,sigma_mis,err,cosmo);
+    calc_sigma_mis(R,Mass,concentration,delta,Rmis,R,sigma,NR,sigma_mis,err,cosmo);
     if (timing){
       printf("sigma_mis time = %f\n",
 	     omp_get_wtime()-time);fflush(stdout);
       time=omp_get_wtime();
     }
-    calc_delta_sigma_mis(R,Mass,concentration,delta,Rmis,R,sigma_r,sigma_mis,NR,delta_sigma_mis,err,cosmo);
+    calc_delta_sigma_mis(R,Mass,concentration,delta,Rmis,R,sigma,sigma_mis,NR,delta_sigma_mis,err,cosmo);
     if (timing){
       printf("delta_sigma_mis time = %f\n",
 	     omp_get_wtime()-time);fflush(stdout);
       time=omp_get_wtime();
     }
-    calc_miscentered_sigma_r(R,Mass,concentration,delta,Rmis,R,sigma_r,NR,miscentered_sigma_r,err,cosmo);
+    calc_miscentered_sigma(R,Mass,concentration,delta,Rmis,R,sigma,NR,miscentered_sigma,err,cosmo);
     if (timing){
-      printf("miscentered_sigma_r time = %f\n",
+      printf("miscentered_sigma time = %f\n",
 	     omp_get_wtime()-time);fflush(stdout);
       time=omp_get_wtime();
     }
-    calc_miscentered_delta_sigma(R,Mass,concentration,delta,Rmis,R,sigma_r,miscentered_sigma_r,NR,miscentered_delta_sigma,err,cosmo);
+    calc_miscentered_delta_sigma(R,Mass,concentration,delta,Rmis,R,sigma,miscentered_sigma,NR,miscentered_delta_sigma,err,cosmo);
     if (timing){
       printf("miscentered_delta_sigma time = %f\n",
 	     omp_get_wtime()-time);fflush(stdout);
@@ -168,12 +168,12 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     int averaging, int Nbins,
 		     double R_bin_min, double R_bin_max,
 		     double*R,double*xi_1halo,double*xi_mm,double*xi_lin,
-		     double*xi_2halo,double*xi_hm,double*sigma_r,
+		     double*xi_2halo,double*xi_hm,double*sigma,
 		     double*delta_sigma,double*Rbins,
 		     double*ave_delta_sigma,double*bias,
 		     double*nu,double*sigma_mis,
 		     double*delta_sigma_mis,
-		     double*miscentered_sigma_r,
+		     double*miscentered_sigma,
 		     double*miscentered_delta_sigma,
 		     double*ave_miscentered_delta_sigma,
 		     double*ave_delta_sigma_mis){
@@ -205,13 +205,13 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
   outputs->xi_lin=xi_lin;
   outputs->xi_2halo=xi_2halo;
   outputs->xi_hm=xi_hm;
-  outputs->sigma_r=sigma_r;
+  outputs->sigma=sigma;
   outputs->delta_sigma=delta_sigma;
   outputs->bias=bias;
   outputs->nu=nu;
   outputs->sigma_mis=sigma_mis;
   outputs->delta_sigma_mis=delta_sigma_mis;
-  outputs->miscentered_sigma_r=miscentered_sigma_r;
+  outputs->miscentered_sigma=miscentered_sigma;
   outputs->miscentered_delta_sigma=miscentered_delta_sigma;
   outputs->Rbins=Rbins;
   outputs->ave_delta_sigma=ave_delta_sigma;

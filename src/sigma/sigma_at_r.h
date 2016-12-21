@@ -7,4 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-int calc_sigma_r_at_r(double Rp,double Mass,double concentration,int delta,double*R,double*xi,int NR,double*sigma_r,double*err,cosmology cosmo);
+int calc_sigma_at_r(double Rp,double Mass,double concentration,
+		    int delta,double*R,double*xi,int NR,double*sigma,
+		    double*err,cosmology cosmo);

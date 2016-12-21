@@ -75,8 +75,8 @@ print ""
 
 R = return_dict["R"]
 
-sigma = return_dict['sigma_r']
-sigma_miscentered = return_dict['miscentered_sigma_r']
+sigma = return_dict['sigma']
+sigma_miscentered = return_dict['miscentered_sigma']
 sigma_m = return_dict['sigma_mis']
 plt.loglog(R,sigma,label=r"$\Sigma$")
 plt.loglog(R,sigma_miscentered,label=r"$\Sigma_{\rm mis}$",ls='--')

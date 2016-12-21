@@ -1,4 +1,4 @@
-#include "sigma_r_at_r.h"
+#include "sigma_at_r.h"
 
 #define TOL 1e-7
 #define workspace_size 8000
@@ -29,9 +29,9 @@ static int do_integral(double*sigmar_r,double*err,integrand_params*params);
 static double integrand_small_scales(double lrz, void*params);
 static double integrand_medium_scales(double lrz, void*params);
 
-int calc_sigma_r_at_r(double Rp,double Mass,double concentration
-		      ,int delta,double*R,double*xi,int NR,
-		      double*sigma_r,double*err,cosmology cosmo){
+int calc_sigma_at_r(double Rp,double Mass,double concentration,
+		    int delta,double*R,double*xi,int NR,
+		    double*sigma,double*err,cosmology cosmo){
 
   double h = cosmo.h, om = cosmo.om;
   double H0 = h*100.;
@@ -56,8 +56,8 @@ int calc_sigma_r_at_r(double Rp,double Mass,double concentration
   params->concentration=concentration;
   params->delta=delta;
   
-  do_integral(sigma_r,err,params);
-  *sigma_r *= rhom*2;
+  do_integral(sigma,err,params);
+  *sigma *= rhom*2;
   *err *= rhom*2;
 
   gsl_spline_free(spline),gsl_interp_accel_free(acc);
@@ -66,7 +66,7 @@ int calc_sigma_r_at_r(double Rp,double Mass,double concentration
   return 0;
 }
 
-int do_integral(double*sigma_r,double*err,integrand_params*params){
+int do_integral(double*sigma,double*err,integrand_params*params){
   gsl_function F;
   F.function=&integrand_small_scales;
   F.params=params;
@@ -91,7 +91,7 @@ int do_integral(double*sigma_r,double*err,integrand_params*params){
   //F.function=&integrand_large_scales;
   //status = gsl_integration_qag(&F,lrmax,lrmax+10,TOL,TOL/10.,workspace_size,6,workspace,&result3,&abserr3);
 
-  *sigma_r = result1+result2;
+  *sigma = result1+result2;
   *err= abserr1+abserr2;
   return status;
 }

@@ -1,4 +1,4 @@
-#include "miscentered_sigma_r_at_r.h"
+#include "miscentered_sigma_at_r.h"
 
 #define TOL1 1e-3
 #define TOL2 1e-4
@@ -42,16 +42,15 @@ static int do_integral(double*sigmar_r,double*err,integrand_params*params);
 static double integrand_outer(double theta,void*params);
 static double integrand_inner(double lRc,void*params);
 
-static double sigma_r_1halo_analytic(double R,double Mass,double concentration,double om,double H0,int delta);
+static double sigma_1halo_analytic(double R,double Mass,double concentration,double om,double H0,int delta);
 
-int calc_miscentered_sigma_r_at_r(double Rp,double Mass,double concentration,
-				  int delta,double Rmis,double*R,double*sigma_r,
-				  int NR,double*mis_sigma_r,
-				  double*err,
-				  cosmology cosmo){
+int calc_miscentered_sigma_at_r(double Rp,double Mass,double concentration,
+				int delta,double Rmis,double*R,double*sigma,
+				int NR,double*mis_sigma,
+				double*err,cosmology cosmo){
 
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,NR);
-  gsl_spline_init(spline,R,sigma_r,NR);
+  gsl_spline_init(spline,R,sigma,NR);
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
   gsl_integration_workspace * workspace
     = gsl_integration_workspace_alloc(workspace_size);
@@ -76,8 +75,8 @@ int calc_miscentered_sigma_r_at_r(double Rp,double Mass,double concentration,
   params->Rmis=Rmis;
   params->Rmis_sq=Rmis*Rmis;
 
-  do_integral(mis_sigma_r,err,params);
-  *mis_sigma_r *= 1./PI;
+  do_integral(mis_sigma,err,params);
+  *mis_sigma *= 1./PI;
   *err *= 1./PI;
   //Factor of PI from the angular integral
 
@@ -88,7 +87,7 @@ int calc_miscentered_sigma_r_at_r(double Rp,double Mass,double concentration,
   return 0;
 }
 
-int do_integral(double*mis_sigma_r,double*err,integrand_params*params){
+int do_integral(double*mis_sigma,double*err,integrand_params*params){
   int status = 0;
 
   gsl_integration_workspace*workspace=params->workspace;
@@ -101,7 +100,7 @@ int do_integral(double*mis_sigma_r,double*err,integrand_params*params){
 
   status = gsl_integration_qag(&F,0,PI,TOL1,TOL1/10.,workspace_size,6,workspace,&result,&abserr);
   
-  *mis_sigma_r = result; 
+  *mis_sigma = result; 
   *err = abserr;
 
   return status;
@@ -143,7 +142,7 @@ double integrand_inner(double lRc,void*params){
     cosmology cosmo = pars->cosmo;
     double om = cosmo.om;
     double h = cosmo.h;
-    return Rc*P_mis(Rc,pars->Rmis_sq)*sigma_r_1halo_analytic(arg,Mass,concentration,om,h*100.,delta);
+    return Rc*P_mis(Rc,pars->Rmis_sq)*sigma_1halo_analytic(arg,Mass,concentration,om,h*100.,delta);
   }else if(arg < rmax){
     gsl_spline*spline = pars->spline;
     gsl_interp_accel*acc = pars->acc;
@@ -153,7 +152,7 @@ double integrand_inner(double lRc,void*params){
   }
 }
 
-double sigma_r_1halo_analytic(double R,double Mass,double concentration,
+double sigma_1halo_analytic(double R,double Mass,double concentration,
 			      double om,double H0,int delta){
   double c = concentration;
   double rhom = om*3.*(H0*H0*Mpcperkm*Mpcperkm)/(8.*PI*G)

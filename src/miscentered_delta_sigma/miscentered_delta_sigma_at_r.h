@@ -8,8 +8,8 @@
 
 int calc_miscentered_delta_sigma_at_r(double Rp,double Mass,
 				      double concentration,int delta,
-				      double Rmis,double*R,double*sigma_r,
-				      double*mis_sigma_r,
+				      double Rmis,double*R,double*sigma,
+				      double*mis_sigma,
 				      double sigma_less_rmin,int NR,
 				      double*mis_delta_sigma,
 				      double*err,cosmology cosmo);

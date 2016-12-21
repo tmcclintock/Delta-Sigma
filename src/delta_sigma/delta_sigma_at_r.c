@@ -10,7 +10,7 @@
 
 /* These are the parameters passed into the integrand.
    A spline and accelerator for interpolation and the radius 
-   we are evaluating sigma_r at.*/
+   we are evaluating sigma at.*/
 typedef struct integrand_params{
   gsl_spline*spline;
   gsl_interp_accel*acc;
@@ -29,14 +29,15 @@ static int do_integral(double*delta_sigma,double*err,integrand_params*params);
 static double integrand1(double R, void*params);
 static double integrand2(double R, void*params);
 
-static double sigma_r_1halo_analytic(double R,double Mass,double concentration,double om,double H0,int delta);
+static double sigma_1halo_analytic(double R,double Mass,double concentration,
+				   double om,double H0,int delta);
 
-int calc_delta_sigma_at_r(double Rp,double Mass,double concentration
-		      ,int delta,double*R,double*sigma_r,int NR,
-		      double*delta_sigma,double*err,cosmology cosmo){
+int calc_delta_sigma_at_r(double Rp,double Mass,double concentration,
+			  int delta,double*R,double*sigma,int NR,
+			  double*delta_sigma,double*err,cosmology cosmo){
 
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,NR);
-  gsl_spline_init(spline,R,sigma_r,NR);
+  gsl_spline_init(spline,R,sigma,NR);
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
   gsl_integration_workspace * workspace
     = gsl_integration_workspace_alloc(workspace_size);
@@ -96,18 +97,19 @@ double integrand1(double lR, void*params){
   int delta = pars.delta;
   double om = cosmo.om;
   double h = cosmo.h;
-  return R*R*sigma_r_1halo_analytic(R,Mass,concentration,om,h*100.,delta);
+  return R*R*sigma_1halo_analytic(R,Mass,concentration,om,h*100.,delta);
 }
 
 double integrand2(double lR, void*params){
   double R = exp(lR);
   integrand_params pars=*(integrand_params *)params;
-  gsl_spline*spline = pars.spline;//Sigma_R(R) spline
+  gsl_spline*spline = pars.spline;//Sigma(R) spline
   gsl_interp_accel*acc = pars.acc;
   return R*R*gsl_spline_eval(spline,R,acc);
 }
 
-double sigma_r_1halo_analytic(double R,double Mass,double concentration,double om,double H0,int delta){
+double sigma_1halo_analytic(double R,double Mass,double concentration,
+			    double om,double H0,int delta){
   double c = concentration;
   double rhom = om*3.*(H0*H0*Mpcperkm*Mpcperkm)/(8.*PI*G)
     /(H0/100.*H0/100.);//SM h^2/Mpc^3

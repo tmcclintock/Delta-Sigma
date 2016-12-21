@@ -1,4 +1,4 @@
-#include "miscentered_sigma_r_at_r.h"
+#include "miscentered_sigma_at_r.h"
 
 #define TOL1 1e-3
 #define TOL2 1e-4
@@ -45,15 +45,15 @@ static double integrand_inner_boundaries(double cos_theta,void*params);
 static double integrand_inner_small_scales(double cos_theta,void*params);
 static double integrand_inner_spline_scales(double cos_theta,void*params);
 
-static double sigma_r_1halo_analytic(double R,double Mass,double concentration,double om,double H0,int delta);
+static double sigma_1halo_analytic(double R,double Mass,double concentration,double om,double H0,int delta);
 
-int calc_miscentered_sigma_r_at_r(double Rp,double Mass,double concentration,
-				  int delta,double Rmis,double*R,double*sigma_r,
-				  int NR,double*mis_sigma_r,double*err,
+int calc_miscentered_sigma_at_r(double Rp,double Mass,double concentration,
+				  int delta,double Rmis,double*R,double*sigma,
+				  int NR,double*mis_sigma,double*err,
 				  cosmology cosmo){
 
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,NR);
-  gsl_spline_init(spline,R,sigma_r,NR);
+  gsl_spline_init(spline,R,sigma,NR);
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
   gsl_integration_workspace * workspace
     = gsl_integration_workspace_alloc(workspace_size);
@@ -77,8 +77,8 @@ int calc_miscentered_sigma_r_at_r(double Rp,double Mass,double concentration,
   params->Rmis=Rmis;
   params->Rmis_sq=Rmis*Rmis;
 
-  do_integral(mis_sigma_r,err,params);
-  *mis_sigma_r *= 1./PI;
+  do_integral(mis_sigma,err,params);
+  *mis_sigma *= 1./PI;
   *err *= 1./PI;
   //Factor of PI from the angular integral
 
@@ -89,7 +89,7 @@ int calc_miscentered_sigma_r_at_r(double Rp,double Mass,double concentration,
   return 0;
 }
 
-int do_integral(double*mis_sigma_r,double*err,integrand_params*params){
+int do_integral(double*mis_sigma,double*err,integrand_params*params){
   int status = 0;
 
   double lrmin = params->lrmin;
@@ -107,7 +107,7 @@ int do_integral(double*mis_sigma_r,double*err,integrand_params*params){
   /*if (Rp/Rmis < 0.01){
     params->Rc = Rmis;
     //result = integrand_inner_small_scales(0,params);
-    result = sigma_r_1halo_analytic(Rmis,params->Mass,params->concentration,
+    result = sigma_1halo_analytic(Rmis,params->Mass,params->concentration,
 				    params->cosmo.om,params->cosmo.h*100.,
 				    params->delta);
 				    }else{*/
@@ -115,7 +115,7 @@ int do_integral(double*mis_sigma_r,double*err,integrand_params*params){
 			       TOL1,TOL1/10.,workspace_size,6,workspace,&result,&abserr);
   
 
-  *mis_sigma_r = result; 
+  *mis_sigma = result; 
   *err = abserr;
 
   return status;
@@ -183,7 +183,7 @@ double integrand_inner_boundaries(double theta,void*params){
     cosmology cosmo = pars->cosmo;
     double om = cosmo.om;
     double h = cosmo.h;
-    return sigma_r_1halo_analytic(arg,Mass,concentration,om,h*100.,delta);
+    return sigma_1halo_analytic(arg,Mass,concentration,om,h*100.,delta);
   }else if(arg < rmax){
     gsl_spline*spline = pars->spline;
     gsl_interp_accel*acc = pars->acc;
@@ -219,10 +219,10 @@ double integrand_inner_small_scales(double theta,void*params){
   int delta = pars->delta;
   double om = pars->cosmo.om;
   double h = pars->cosmo.h;
-  return sigma_r_1halo_analytic(arg,Mass,concentration,om,h*100.,delta);
+  return sigma_1halo_analytic(arg,Mass,concentration,om,h*100.,delta);
 }
 
-double sigma_r_1halo_analytic(double R,double Mass,double concentration,
+double sigma_1halo_analytic(double R,double Mass,double concentration,
 			      double om,double H0,int delta){
   double c = concentration;
   double rhom = om*3.*(H0*H0*Mpcperkm*Mpcperkm)/(8.*PI*G)
