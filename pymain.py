@@ -98,7 +98,7 @@ plt.legend()
 plt.xlabel(r"$R\ [{\rm Mpc}/h]$",fontsize=24)
 plt.ylabel(r"$\Delta\Sigma\ [{\rm M_\odot}\ h/{\rm pc^2}]$",fontsize=24)
 plt.subplots_adjust(bottom=0.15)
-#plt.show()
+plt.show()
 plt.clf()
 
 Rbins = return_dict['Rbins']
