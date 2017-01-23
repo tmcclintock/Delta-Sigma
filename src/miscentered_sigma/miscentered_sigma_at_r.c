@@ -1,8 +1,6 @@
 #include "miscentered_sigma_at_r.h"
 
-#define TOL1 1e-3
-#define TOL2 1e-4
-#define EPS 0.00001 //error offset for angular integral
+#define TOL1 1e-2
 #define workspace_size 8000
 #define PI 3.141592653589793
 

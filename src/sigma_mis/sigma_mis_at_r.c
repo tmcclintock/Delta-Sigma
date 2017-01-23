@@ -1,8 +1,6 @@
 #include "sigma_mis_at_r.h"
 
-#define TOL1 1e-3
-#define TOL2 1e-4
-#define EPS 0.00001 // error offset for angular integral
+#define TOL1 1e-2
 #define workspace_size 8000
 #define PI 3.141592653589793
 #define invPI 0.318309886183790 // 1/PI
@@ -95,7 +93,7 @@ int do_integral(double*mis_sigma,double*err,integrand_params*params){
 
   double result,abserr;
 
-  status = gsl_integration_qag(&F,0,PI,TOL1,TOL2,workspace_size,6,workspace,&result,&abserr);
+  status = gsl_integration_qag(&F,0,PI,TOL1,TOL1/10.,workspace_size,6,workspace,&result,&abserr);
   
   *mis_sigma = result; 
   *err = abserr;
