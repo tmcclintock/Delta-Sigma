@@ -10,8 +10,7 @@ int calc_ave_miscentered_delta_sigma(double*R,int NR,
   double lRmin=log(R_bin_min),lRmax=log(R_bin_max);
   double dlR=(lRmax-lRmin)/Nbins;
   double lRlow,lRhigh,Rlow,Rhigh; //high and low bounds of current bin
-#pragma omp parallel shared(R,Rbins,miscentered_delta_sigma,ave_miscentered_delta_sigma) private(i,lRlow,lRhigh,Rlow,Rhigh)
-#pragma omp for
+#pragma omp parallel for shared(R,Rbins,miscentered_delta_sigma,ave_miscentered_delta_sigma) private(i,lRlow,lRhigh,Rlow,Rhigh)
   for( i = 0; i < Nbins; i++){
     lRlow = lRmin+i*dlR;
     lRhigh = lRmin+(i+1)*dlR;

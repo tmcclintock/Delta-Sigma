@@ -30,5 +30,5 @@ $(EXEC): $(OBJS)
 .PHONY : clean
 
 clean:
-	rm -f $(OBJS) main.exe Delta_Sigma.so src/wrapper/Delta_Sigma.so
+	rm -f $(OBJS) main.o main.exe Delta_Sigma.so src/wrapper/Delta_Sigma.so
 	rm -f *~
