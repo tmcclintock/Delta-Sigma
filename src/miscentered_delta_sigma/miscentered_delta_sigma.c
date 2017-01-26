@@ -71,8 +71,7 @@ int calc_miscentered_delta_sigma(double*Rp,double Mass,double concentration,
     inner_result = A/(alpha+2.0)*(pow(Rp[0],alpha+2.0)-pow(exp(lrmin-10),alpha+2.0));
   }
     
-#pragma omp parallel shared(R,sigma,NR,miscentered_sigma,miscentered_delta_sigma,err,status)
-#pragma omp for
+#pragma omp parallel for shared(R,sigma,NR,miscentered_sigma,miscentered_delta_sigma,err,status)
   for(i = 0; i < NR; i++){
     status |= calc_miscentered_delta_sigma_at_r(Rp[i],Mass,concentration,delta,
 						Rmis,R,sigma,
