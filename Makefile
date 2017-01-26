@@ -5,7 +5,7 @@ ifdef ALONE
 ifeq ($(ALONE),yes)
 $(info Building executable)
 EXEC = main.exe
-CFLAGS = 
+CFLAGS = -g
 OFLAGS = 
 endif
 else

@@ -107,7 +107,6 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
     }
   }
 
-
   if(miscentering){
     calc_sigma_mis(R,Mass,concentration,delta,Rmis,R,sigma,NR,sigma_mis,err,cosmo);
     if (timing){
