@@ -19,6 +19,6 @@ Running
 -------
 For an exmaple of how to run, you can use:
 
-$python pymain.py
+$python example.py
 
-If you want to change cosmologies then you have to supply a different power spectrum and change the paths around in pymain.py
+If you want to change cosmologies then you have to supply a different power spectrum and change the paths around in example.py
