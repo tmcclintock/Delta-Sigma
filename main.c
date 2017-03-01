@@ -67,6 +67,7 @@ int main(int argc, char **argv){
   read = getline(&line,&len,M_fp); //header line read off
   double*M = (double*)malloc((NM)*sizeof(double));
   read_file(M_fp,NM,M);
+  fclose(M_fp);
   double*bias_arr = (double*)malloc((NM)*sizeof(double));
   double*nu_arr = (double*)malloc((NM)*sizeof(double));
   calc_tinker_bias(M,NM,k_lin,P_lin,N_lin,bias_arr,nu_arr,200,*cosmo);
@@ -75,6 +76,7 @@ int main(int argc, char **argv){
   for(i = 0; i < NM; i++){
     fprintf(bias_fp,"%e\t%e\n",M[i],bias_arr[i]);
   }
+  fclose(bias_fp);
 
   double Mass = 1e14;
   double concentration = 5.0;//4.0*pow(Mass/5.e14,-0.1);//Bad M-c relation
@@ -93,12 +95,15 @@ int main(int argc, char **argv){
   double*delta_sigma=(double*)malloc(NR*sizeof(double));
   double*miscentered_sigma=(double*)malloc(NR*sizeof(double));
   double*miscentered_delta_sigma=(double*)malloc(NR*sizeof(double));
+  double*sigma_mis=(double*)malloc(NR*sizeof(double));
+  double*delta_sigma_mis=(double*)malloc(NR*sizeof(double));
 
   int Nbins = 15;
   double R_bin_min = 0.01, R_bin_max = 200; //Mpc/h
   double*Rbins=(double*)malloc(Nbins*sizeof(double));
   double*ave_delta_sigma=(double*)malloc(Nbins*sizeof(double));
   double*ave_miscentered_delta_sigma=(double*)malloc(Nbins*sizeof(double));
+  double*ave_delta_sigma_mis=(double*)malloc(Nbins*sizeof(double));
 
   interface_parameters*params=
     (interface_parameters*)malloc(sizeof(interface_parameters));
@@ -130,6 +135,9 @@ int main(int argc, char **argv){
   outputs->Rbins=Rbins;
   outputs->ave_delta_sigma=ave_delta_sigma;
   outputs->ave_miscentered_delta_sigma=ave_miscentered_delta_sigma;
+  outputs->sigma_mis=sigma_mis;
+  outputs->delta_sigma_mis=delta_sigma_mis;
+  outputs->ave_delta_sigma_mis=ave_delta_sigma_mis;
 
   interface(k_lin,P_lin,N_lin,k_nl,P_nl,N_nl,
 	    NR,Rmin,Rmax,*cosmo,params,outputs);
@@ -198,10 +206,21 @@ int main(int argc, char **argv){
 
   free(R),free(xi_mm),free(xi_nfw),free(xi_2halo),free(xi_lin);
   free(xi_hm),free(sigma),free(delta_sigma);
+  free(miscentered_sigma);
+  free(miscentered_delta_sigma);
+  free(sigma_mis);
+  free(delta_sigma_mis);
+  free(Rbins);
+  free(ave_delta_sigma);
+  free(ave_miscentered_delta_sigma);
+  free(ave_delta_sigma_mis);
   free(cosmo);
+  free(line);
+  free(M); free(bias_arr); free(nu_arr);
   fclose(k_lin_fp),fclose(P_lin_fp);
   fclose(k_nl_fp),fclose(P_nl_fp);
   fclose(xi_mm_out),fclose(Rout);
+  fclose(xi_lin_out);
   fclose(bias_out),fclose(nu_out),fclose(M_out);
   fclose(xi_2h_out),fclose(xi_nfw_out);
   fclose(xi_hm_out),fclose(sigma_out),fclose(delta_sigma_out);
@@ -216,6 +235,7 @@ int main(int argc, char **argv){
     }
   }
   free(params);
+  free(outputs);
 }
 
 int read_file(FILE*fp,int N, double *data){

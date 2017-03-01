@@ -5,8 +5,7 @@ int calc_sigma(double*Rp,double Mass,double concentration,
 	       double*err,cosmology cosmo){
   int i,status=0;
 
-#pragma omp parallel shared(R,xi,NR,sigma,err,status)
-#pragma omp for
+#pragma omp parallel for shared(R,xi,NR,sigma,err,status)
     for(i = 0; i < NR; i++)
       status |= calc_sigma_at_r(Rp[i],Mass,concentration,delta,R,xi,NR,&sigma[i],&err[i],cosmo);
     

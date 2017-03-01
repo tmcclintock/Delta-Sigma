@@ -7,8 +7,7 @@ int calc_ave_delta_sigma(double*R,int NR,double*delta_sigma,int Nbins,
   double lRmin=log(R_bin_min),lRmax=log(R_bin_max);
   double dlR=(lRmax-lRmin)/Nbins;
   double lRlow,lRhigh,Rlow,Rhigh; //high and low bounds of current bin
-#pragma omp parallel shared(R,Rbins,delta_sigma,ave_delta_sigma) private(i,lRlow,lRhigh,Rlow,Rhigh)
-#pragma omp for
+  //#pragma omp parallel for shared(R,Rbins,delta_sigma,ave_delta_sigma) private(i,lRlow,lRhigh,Rlow,Rhigh) //This is fast enough to not need parallelization
   for( i = 0; i < Nbins; i++){
     lRlow = lRmin+i*dlR;
     lRhigh = lRmin+(i+1)*dlR;
