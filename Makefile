@@ -16,8 +16,8 @@ OFLAGS = -shared
 #-W1,-soname=$(EXEC)
 endif
 
-INCL = -I/${GSLI} -fopenmp -O3
-LIBS = -lgsl -lgslcblas -L/${GSLL} -lm -fopenmp -O3
+INCL = -I/${GSLI} -O3
+LIBS = -lgsl -lgslcblas -L/${GSLL} -lm -O3
 .SUFFIXES : .c .o
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCL) -c $< -o $@

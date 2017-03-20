@@ -58,7 +58,8 @@ int calc_miscentered_delta_sigma(double*Rp,double Mass,double concentration,
     gsl_function F;
     F.params=params;
     F.function=&integrand_inner;
-    double time=omp_get_wtime();
+    double time=0;
+    //time=omp_get_wtime();
     status |= gsl_integration_qag(&F,lrmin-10,lrmin,TOL,TOL/10.,workspace_size,6,workspace,&inner_result,&abserr1);
     //printf("inner time = %f\n",omp_get_wtime()-time);fflush(stdout);
     //inner_result contains the numerator of Sigma(<R), which is the costly
