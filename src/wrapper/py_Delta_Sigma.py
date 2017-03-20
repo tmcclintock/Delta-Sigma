@@ -12,6 +12,21 @@ library_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfr
 dslib = cdll.LoadLibrary(library_path)
 
 def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
+    """Calculates the DeltaSigma profile given some cosmology, matter power spectra, and input parameters (e.g. mass, concentraton, etc.)
+
+    Note: Mass units are Msun/h. Distances are Mpc/h comoving.
+
+    k_lin (array_like): Wavenumbers of input linear matter power spectrum; h/Mpc.
+    P_lin (array_like): Linear matter power spectrum; (h/Mpc)^3.
+    k_nl (array_like): Wavenumbers of input nonlinear matter power spectrum; h/Mpc.
+    P_nl (array_like): Nonlinear matter power spectrum; (h/Mpc)^3.
+    cosmo_dict (dictionary): Contains key-value pairs of cosmological parameters. Required parameters: h, om, and ode.
+    input_params (dictionary): Contains key-value pairs of halo parameters, including: Mass, delta, Rmis, fmis, concentration, NR, Rmin, Rmax, Nbins, R_bin_min, R_bin_max, timing, miscentering, averaging.
+
+    Returns:
+        return_dict (dictionary): Contains key-value pairs of all possible quantities assosciated with the halo.
+    
+    """
     interface = dslib.python_interface
     interface.restype = c_int
     """
