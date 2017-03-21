@@ -215,6 +215,9 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
   interface(k_lin,P_lin,Nk_lin,k_nl,P_nl,Nk_nl,
 	    NR,Rmin,Rmax,*cosmo,params,outputs);
 
+  free(cosmo);
+  free(params);
+  //Need to free the outputs
   return 0;
 }
 		     
