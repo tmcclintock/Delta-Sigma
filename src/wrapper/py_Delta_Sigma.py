@@ -21,7 +21,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
     k_nl (array_like): Wavenumbers of input nonlinear matter power spectrum; h/Mpc.
     P_nl (array_like): Nonlinear matter power spectrum; (h/Mpc)^3.
     cosmo_dict (dictionary): Contains key-value pairs of cosmological parameters. Required parameters: h, om, and ode.
-    input_params (dictionary): Contains key-value pairs of halo parameters, including: Mass, delta, Rmis, fmis, concentration, NR, Rmin, Rmax, Nbins, R_bin_min, R_bin_max, timing, miscentering, averaging.
+    input_params (dictionary): Contains key-value pairs of halo parameters, including: Mass, delta, Rmis, fmis, concentration, NR, Rmin, Rmax, Nbins, R_bin_min, R_bin_max, miscentering, averaging.
 
     Returns:
         return_dict (dictionary): Contains key-value pairs of all possible quantities assosciated with the halo.
@@ -37,7 +37,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
     h,om,ode,ok,
     Mass,concentration,
     Rmis,fmis,delta,
-    flow_control,timing,miscentering,
+    flow_control,miscentering,
     averaging, Nbins,
     R_bin_min,R_bin_max,
 
@@ -60,7 +60,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
                         c_double,c_double,c_double,c_double,\
                         c_double,c_double,\
                         c_double,c_double,c_int,\
-                        POINTER(c_int),c_int,c_int,\
+                        POINTER(c_int),c_int,\
                         c_int,c_int,\
                         c_double,c_double,\
                         POINTER(c_double),POINTER(c_double),POINTER(c_double),\
@@ -82,13 +82,13 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
     P_nl_in = P_nl.ctypes.data_as(POINTER(c_double))
 
     Mass,concentration,NR,Rmin,Rmax,Nbins,R_bin_min,R_bin_max,\
-        delta,Rmis,fmis,timing,miscentering,\
+        delta,Rmis,fmis,miscentering,\
         averaging = input_params["Mass"],input_params["concentration"],\
                     input_params["NR"],input_params["Rmin"],\
                     input_params["Rmax"],input_params["Nbins"],\
                     input_params["R_bin_min"],input_params["R_bin_max"],\
                     input_params["delta"],input_params["Rmis"],\
-                    input_params["fmis"],input_params["timing"],\
+                    input_params["fmis"],\
                     input_params["miscentering"],input_params["averaging"]
 
     h,om,ode,ok = cosmo_dict['h'],cosmo_dict['om'],cosmo_dict['ode'],cosmo_dict['ok']
@@ -139,7 +139,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
                            h,om,ode,ok,\
                            Mass,concentration,\
                            Rmis,fmis,delta,\
-                           flow_control,timing,miscentering,\
+                           flow_control,miscentering,\
                            averaging,Nbins,R_bin_min,R_bin_max,\
                            R_in,xi_1halo_in,xi_mm_in,xi_lin_in,\
                            xi_2halo_in,xi_hm_in,\

@@ -37,5 +37,5 @@ $(EXEC) : $(OBJS)
 .PHONY : clean all
 
 clean:
-	rm -f $(OBJS) main.o $(CEXEC) $(PYEXEC)
+	@rm -f $(OBJS) main.o $(CEXEC) $(PYEXEC)
 	@echo "Cleanup complete."

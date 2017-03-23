@@ -113,7 +113,6 @@ int main(int argc, char **argv){
   params->delta=200;
   params->Rmis=0.3;
   params->fmis=0.23;
-  params->timing=1; //1 is true
   params->miscentering=1;//1 is true
   params->averaging=1; //1 is true
   params->Nbins=Nbins;

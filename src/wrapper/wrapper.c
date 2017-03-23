@@ -39,7 +39,6 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
   double R_bin_min=params->R_bin_min;
   double R_bin_max=params->R_bin_max;
 
-  int timing=params->timing;
   int miscentering=params->miscentering;
   int averaging=params->averaging;
   int*flow_control=params->flow_control;
@@ -170,7 +169,7 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     double h,double om,double ode,double ok,
 		     double Mass, double concentration,
 		     double Rmis, double fmis, int delta,
-		     int*flow_control,int timing, int miscentering,
+		     int*flow_control, int miscentering,
 		     int averaging, int Nbins,
 		     double R_bin_min, double R_bin_max,
 		     double*R,double*xi_1halo,double*xi_mm,double*xi_lin,
@@ -197,7 +196,6 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
   params->delta=delta;
   params->Rmis=Rmis;
   params->fmis=fmis;
-  params->timing=timing; //1 is true
   params->miscentering=miscentering;//1 is true
   params->averaging=averaging; //1 is true
   params->Nbins=Nbins;
