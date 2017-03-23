@@ -20,12 +20,16 @@ endif
 
 INCL = -I${GSLI} -fopenmp -O2
 LIBS = -lgsl -lgslcblas -L${GSLL} -lm -fopenmp  -O2
+DFLAGS =
 
 all : $(EXEC)
 	@echo "Compilation complete."
 
+timing : DFLAGS += -DTIMING
+timing : $(EXEC)
+
 %.o: %.c
-	$(CC) $(CFLAGS) $(INCL) -c $< -o $@
+	$(CC) $(CFLAGS) $(DFLAGS) $(INCL) -c $< -o $@
 
 $(EXEC) : $(OBJS)
 	$(CC) $(OFLAGS) $(OBJS) $(LIBS) -o $(EXEC)
