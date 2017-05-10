@@ -52,7 +52,7 @@ double calc_corr_at_R(double R,double*k,double*P,int Nk,int N,double h){
 int calc_xi_mm(double*R,int NR,double*k,double*P,int Nk,double*xi,double*err,int N, double h){
   int i;
 
-#pragma omp parallel for shared(R,NR,k,P,Nk,xi,err,N,h) private(i)
+  //#pragma omp parallel for shared(R,NR,k,P,Nk,xi,err,N,h) private(i)
   for(i=0;i<NR;i++)
     xi[i] = calc_corr_at_R(R[i],k,P,Nk,N,h);
   
