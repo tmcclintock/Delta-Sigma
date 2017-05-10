@@ -18,8 +18,8 @@ CFLAGS = -fPIC
 OFLAGS = -shared 
 endif
 
-INCL = -I${GSLI} -fopenmp -O2
-LIBS = -lgsl -lgslcblas -L${GSLL} -lm -fopenmp  -O2
+INCL = -I${GSLI} -O2
+LIBS = -lgsl -lgslcblas -L${GSLL} -lm -O2
 DFLAGS =
 
 all : $(EXEC)
