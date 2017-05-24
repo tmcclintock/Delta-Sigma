@@ -1,3 +1,6 @@
+#C compiled files
+*.exe
+
 # Python compiled files
 *.pyc
 
