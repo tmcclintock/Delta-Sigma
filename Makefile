@@ -8,8 +8,8 @@ PYEXEC = ./src/wrapper/Delta_Sigma.so
 ifdef ALONE
 ifeq ($(ALONE),yes)
 EXEC += $(CEXEC)
-CFLAGS = -g
-OFLAGS = 
+CFLAGS = -pg
+OFLAGS = -pg
 OBJS += main.o
 endif
 else
