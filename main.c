@@ -26,6 +26,15 @@ int main(){
   double*xihm=(double*)malloc(NR*sizeof(double));
   double*sigma=(double*)malloc(NR*sizeof(double));
   double*deltasigma=(double*)malloc(NR*sizeof(double));
+  double*ads=(double*)malloc(Nbins*sizeof(double));
+  double*bias=(double*)malloc(sizeof(double));
+  double*nu=(double*)malloc(sizeof(double));
+  double*sigma_mis=(double*)malloc(NR*sizeof(double));
+  double*deltasigma_mis=(double*)malloc(NR*sizeof(double));
+  double*mis_sigma=(double*)malloc(NR*sizeof(double));
+  double*mis_deltasigma=(double*)malloc(NR*sizeof(double));
+  double*ads_mis=(double*)malloc(Nbins*sizeof(double));
+  double*mis_ads=(double*)malloc(Nbins*sizeof(double));
 
   //Step 4: allocate arrays for the IO
 
@@ -40,6 +49,15 @@ int main(){
   free(xihm);
   free(sigma);
   free(deltasigma);
+  free(ads);
+  free(bias);
+  free(nu);
+  free(sigma_mis);
+  free(deltasigma_mis);
+  free(mis_sigma);
+  free(mis_deltasigma);
+  free(ads_mis);
+  free(mis_ads);
 
   return 0;
 }
