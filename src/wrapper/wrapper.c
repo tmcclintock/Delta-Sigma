@@ -184,6 +184,7 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     double*ave_delta_sigma_mis){
 
   cosmology*cosmo = (cosmology*)malloc(sizeof(cosmology));
+  cosmo->H0 = h*100.;
   cosmo->h = h;
   cosmo->om = om;
   cosmo->ode = ode;

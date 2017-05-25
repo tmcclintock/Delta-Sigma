@@ -1,6 +1,7 @@
 #include "miscentered_sigma_at_r.h"
 
 #define TOL1 1e-2
+#define TOL2 1e-3
 #define workspace_size 8000
 #define PI 3.141592653589793
 
@@ -30,6 +31,7 @@ typedef struct integrand_params{
   double Rmis; //Miscentering length
   double Rmis_sq; //Rmis^2
   double cos_theta; //Temp variable for cos(theta)
+  double Rp2_cos_theta;
 }integrand_params;
 
 static int do_integral(double*sigmar_r,double*err,integrand_params*params);
@@ -93,7 +95,7 @@ int do_integral(double*mis_sigma,double*err,integrand_params*params){
 
   double result,abserr;
 
-  status = gsl_integration_qag(&F,0,PI,TOL1,TOL1/10.,workspace_size,6,workspace,&result,&abserr);
+  status = gsl_integration_qag(&F,0,PI,TOL1,TOL2,workspace_size,6,workspace,&result,&abserr);
   
   *mis_sigma = result; 
   *err = abserr;
@@ -106,6 +108,7 @@ double integrand_outer(double theta,void*params){
   integrand_params*pars = (integrand_params*)params;
   double cos_theta = cos(theta);
   pars->cos_theta = cos_theta;
+  pars->Rp2_cos_theta = pars->rperp*cos_theta*2;
 
   double lrmin = pars->lrmin,lrmax = pars->lrmax;
   
@@ -116,38 +119,39 @@ double integrand_outer(double theta,void*params){
 
   double result,abserr;
   int status = 0;
-  status = gsl_integration_qag(&F,lrmin-10,lrmax,TOL1,TOL1/10.,workspace_size,6,workspace,&result,&abserr);
+  status = gsl_integration_qag(&F,lrmin-10,lrmax,TOL1,TOL2,workspace_size,6,workspace,&result,&abserr);
 
   return result;
 }
 
-double integrand_inner(double lRc,void*params){
+double integrand_inner(double lRc, void*params){
   double Rc = exp(lRc);
+  double Rc_sq = Rc*Rc;
 
   integrand_params*pars = (integrand_params*)params;
   double rmin = pars->rmin,rmax = pars->rmax;
   double Rp = pars->rperp;
+  double Rp_sq = pars->rperp_sq;
   double Rmis_sq = pars->Rmis_sq;
   double cos_theta = pars->cos_theta;
-  double arg = sqrt(Rp*Rp + Rc*Rc - 2*Rp*Rc*cos_theta);
+  double Rp2_cos_theta = pars->Rp2_cos_theta;
+  double arg = sqrt(Rp_sq + Rc_sq - Rc*Rp2_cos_theta);
   
-  double Rcsq_Rmissq = Rc*Rc/Rmis_sq;
+  double Rcsq_Rmissq = Rc_sq/Rmis_sq;
 
   /*Note: P_miscentering is a 2D gaussian.
     This is the Rc/Rmis^2 * exp() term.
    */
   if (arg < rmin){
     double Mass = pars->Mass;
-    double concentration = pars->concentration;
-    int delta = pars->delta;
+    double conc = pars->concentration;
     cosmology cosmo = pars->cosmo;
-    double om = cosmo.om;
-    double h = cosmo.h;
-    return Rcsq_Rmissq*exp(-0.5*Rcsq_Rmissq)*sigma_1halo_analytic(arg,Mass,concentration,om,h*100.,delta);
+    return Rcsq_Rmissq*exp(-0.5*Rcsq_Rmissq)*sigma_1halo_analytic(arg, Mass, conc,
+								  cosmo.om, cosmo.H0, pars->delta);
   }else if(arg < rmax){
     gsl_spline*spline = pars->spline;
     gsl_interp_accel*acc = pars->acc;
-    return Rcsq_Rmissq*exp(-0.5*Rcsq_Rmissq)*gsl_spline_eval(spline,arg,acc);
+    return Rcsq_Rmissq*exp(-0.5*Rcsq_Rmissq)*gsl_spline_eval(spline, arg, acc);
   }else{
     return 0;
   }
