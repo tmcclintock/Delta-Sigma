@@ -41,6 +41,7 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
 
   int miscentering=params->miscentering;
   int averaging=params->averaging;
+  int single_miscentering=params->single_miscentering;
   int*flow_control=params->flow_control;
 
   for(i = 0; i < NR; i++){
@@ -115,7 +116,7 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
 #endif
   }
 
-  if(miscentering){
+  if(single_miscentering){
     calc_sigma_mis(R,Mass,concentration,delta,Rmis,R,sigma,NR,sigma_mis,err,cosmo);
 #ifdef TIMING
     printf("sigma_mis time = %f\n",omp_get_wtime()-time);fflush(stdout);
@@ -127,33 +128,30 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
     printf("delta_sigma_mis time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();
 #endif
+    if(averaging){
+      calc_ave_miscentered_delta_sigma(R,NR,delta_sigma_mis,Nbins,R_bin_min,R_bin_max,Rbins,ave_delta_sigma_mis);
+#ifdef TIMING
+      printf("ave_delta_sigma_mis time = %f\n",omp_get_wtime()-time);fflush(stdout);
+      time=omp_get_wtime();
+#endif
+    }
+  }
 
+  if(miscentering){
     calc_miscentered_sigma(R,Mass,concentration,delta,Rmis,R,sigma,NR,miscentered_sigma,err,cosmo);
 #ifdef TIMING
     printf("miscentered_sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();
 #endif
-
     calc_miscentered_delta_sigma(R,Mass,concentration,delta,Rmis,R,sigma,miscentered_sigma,NR,miscentered_delta_sigma,err,cosmo);
 #ifdef TIMING
     printf("miscentered_delta_sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
     time=omp_get_wtime();
 #endif
-
-    if (averaging){
+    if(averaging){
       calc_ave_miscentered_delta_sigma(R,NR,miscentered_delta_sigma,Nbins,R_bin_min,R_bin_max,Rbins,ave_miscentered_delta_sigma);
 #ifdef TIMING
       printf("ave_miscentered_delta_sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
-      time=omp_get_wtime();
-#endif
-
-      /***********************************************************
-	NOTE: the ave_delta_sigma_mis is calculated with
-	an identical function call as ave_miscentered_delta_sigma.
-      ***********************************************************/
-      calc_ave_miscentered_delta_sigma(R,NR,delta_sigma_mis,Nbins,R_bin_min,R_bin_max,Rbins,ave_delta_sigma_mis);
-#ifdef TIMING
-      printf("ave_delta_sigma_mis time = %f\n",omp_get_wtime()-time);fflush(stdout);
       time=omp_get_wtime();
 #endif
     }
@@ -170,7 +168,8 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     double Mass, double concentration,
 		     double Rmis, double fmis, int delta,
 		     int*flow_control, int miscentering,
-		     int averaging, int Nbins,
+		     int averaging, int single_miscentering,
+		     int Nbins,
 		     double R_bin_min, double R_bin_max,
 		     double*R,double*xi_1halo,double*xi_mm,double*xi_lin,
 		     double*xi_2halo,double*xi_hm,double*sigma,
@@ -199,6 +198,7 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
   params->fmis=fmis;
   params->miscentering=miscentering;//1 is true
   params->averaging=averaging; //1 is true
+  params->single_miscentering=single_miscentering;
   params->Nbins=Nbins;
   params->R_bin_min=R_bin_min;
   params->R_bin_max=R_bin_max;

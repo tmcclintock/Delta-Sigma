@@ -38,6 +38,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
     Mass,concentration,
     Rmis,fmis,delta,
     flow_control,miscentering,
+    single_miscentering,
     averaging, Nbins,
     R_bin_min,R_bin_max,
 
@@ -54,25 +55,26 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
     ave_miscentered_delta_sigma
     ave_delta_sigma_mis
     """
-    interface.argtypes=[POINTER(c_double),POINTER(c_double),c_int,\
-                        POINTER(c_double),POINTER(c_double),c_int,\
-                        c_int,c_double,c_double,\
-                        c_double,c_double,c_double,c_double,\
-                        c_double,c_double,\
-                        c_double,c_double,c_int,\
-                        POINTER(c_int),c_int,\
-                        c_int,c_int,\
-                        c_double,c_double,\
-                        POINTER(c_double),POINTER(c_double),POINTER(c_double),\
-                        POINTER(c_double),POINTER(c_double),POINTER(c_double),\
-                        POINTER(c_double),POINTER(c_double),\
-                        POINTER(c_double),\
-                        POINTER(c_double),POINTER(c_double),\
-                        POINTER(c_double),\
-                        POINTER(c_double),\
-                        POINTER(c_double),\
-                        POINTER(c_double),\
-                        POINTER(c_double),\
+    interface.argtypes=[POINTER(c_double),POINTER(c_double),c_int,
+                        POINTER(c_double),POINTER(c_double),c_int,
+                        c_int,c_double,c_double,
+                        c_double,c_double,c_double,c_double,
+                        c_double,c_double,
+                        c_double,c_double,c_int,
+                        POINTER(c_int),c_int,
+                        c_int,
+                        c_int,c_int,
+                        c_double,c_double,
+                        POINTER(c_double),POINTER(c_double),POINTER(c_double),
+                        POINTER(c_double),POINTER(c_double),POINTER(c_double),
+                        POINTER(c_double),POINTER(c_double),
+                        POINTER(c_double),
+                        POINTER(c_double),POINTER(c_double),
+                        POINTER(c_double),
+                        POINTER(c_double),
+                        POINTER(c_double),
+                        POINTER(c_double),
+                        POINTER(c_double),
                         POINTER(c_double)]
     Nk_lin = len(k_lin)
     Nk_nl  = len(k_nl)
@@ -83,13 +85,13 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
 
     Mass,concentration,NR,Rmin,Rmax,Nbins,R_bin_min,R_bin_max,\
         delta,Rmis,fmis,miscentering,\
-        averaging = input_params["Mass"],input_params["concentration"],\
-                    input_params["NR"],input_params["Rmin"],\
-                    input_params["Rmax"],input_params["Nbins"],\
-                    input_params["R_bin_min"],input_params["R_bin_max"],\
-                    input_params["delta"],input_params["Rmis"],\
-                    input_params["fmis"],\
-                    input_params["miscentering"],input_params["averaging"]
+        averaging, single_miscentering = input_params["Mass"],input_params["concentration"],\
+        input_params["NR"],input_params["Rmin"],\
+        input_params["Rmax"],input_params["Nbins"],\
+        input_params["R_bin_min"],input_params["R_bin_max"],\
+        input_params["delta"],input_params["Rmis"],\
+        input_params["fmis"],\
+        input_params["miscentering"],input_params["averaging"],input_params["single_miscentering"]
 
     h,om,ode,ok = cosmo_dict['h'],cosmo_dict['om'],cosmo_dict['ode'],cosmo_dict['ok']
     flow_control = np.zeros(1).ctypes.data_as(POINTER(c_int))
@@ -133,36 +135,37 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
     nu = np.zeros(1)
     nu_in = nu.ctypes.data_as(POINTER(c_double))
     
-    result = interface(k_lin_in,P_lin_in,Nk_lin,\
-                           k_nl_in,P_nl_in,Nk_nl,\
-                           NR,Rmin,Rmax,\
-                           h,om,ode,ok,\
-                           Mass,concentration,\
-                           Rmis,fmis,delta,\
-                           flow_control,miscentering,\
-                           averaging,Nbins,R_bin_min,R_bin_max,\
-                           R_in,xi_1halo_in,xi_mm_in,xi_lin_in,\
-                           xi_2halo_in,xi_hm_in,\
-                           sigma_in,delta_sigma_in,Rbins_in,\
-                           ave_delta_sigma_in,bias_in,nu_in,\
-                           sigma_mis_in,\
-                           delta_sigma_mis_in,\
-                           miscentered_sigma_in,miscentered_delta_sigma_in,\
-                           ave_miscentered_delta_sigma_in,\
-                           ave_delta_sigma_mis_in)
+    result = interface(k_lin_in,P_lin_in,Nk_lin,
+                       k_nl_in,P_nl_in,Nk_nl,
+                       NR,Rmin,Rmax,
+                       h,om,ode,ok,
+                       Mass,concentration,
+                       Rmis,fmis,delta,
+                       flow_control,miscentering,
+                       averaging,single_miscentering,
+                       Nbins,R_bin_min,R_bin_max,
+                       R_in,xi_1halo_in,xi_mm_in,xi_lin_in,
+                       xi_2halo_in,xi_hm_in,
+                       sigma_in,delta_sigma_in,Rbins_in,
+                       ave_delta_sigma_in,bias_in,nu_in,
+                       sigma_mis_in,
+                       delta_sigma_mis_in,
+                       miscentered_sigma_in,miscentered_delta_sigma_in,
+                       ave_miscentered_delta_sigma_in,
+                       ave_delta_sigma_mis_in)
 
     #Now build a dictionary and return it
-    return_dict = {"R":R,"xi_1halo":xi_1halo,"xi_mm":xi_mm,\
-                       "xi_lin":xi_lin,\
-                       "xi_2halo":xi_2halo,"xi_hm":xi_hm,\
-                       "sigma":sigma,"delta_sigma":delta_sigma,\
-                       "sigma_mis":sigma_mis,\
-                       "delta_sigma_mis":delta_sigma_mis,\
-                       "miscentered_sigma":miscentered_sigma,\
-                       "miscentered_delta_sigma":miscentered_delta_sigma,\
-                       "Rbins":Rbins,"bias":bias,"nu":nu,\
-                       "ave_delta_sigma":ave_delta_sigma,\
-                       "ave_miscentered_delta_sigma":ave_miscentered_delta_sigma,\
-                       "ave_delta_sigma_mis":ave_delta_sigma_mis
-                       }
+    return_dict = {"R":R,"xi_1halo":xi_1halo,"xi_mm":xi_mm,
+                   "xi_lin":xi_lin,
+                   "xi_2halo":xi_2halo,"xi_hm":xi_hm,
+                   "sigma":sigma,"delta_sigma":delta_sigma,
+                   "sigma_mis":sigma_mis,
+                   "delta_sigma_mis":delta_sigma_mis,
+                   "miscentered_sigma":miscentered_sigma,
+                   "miscentered_delta_sigma":miscentered_delta_sigma,
+                   "Rbins":Rbins,"bias":bias,"nu":nu,
+                   "ave_delta_sigma":ave_delta_sigma,
+                   "ave_miscentered_delta_sigma":ave_miscentered_delta_sigma,
+                   "ave_delta_sigma_mis":ave_delta_sigma_mis
+                   }
     return return_dict
