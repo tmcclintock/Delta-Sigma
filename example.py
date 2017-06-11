@@ -9,7 +9,7 @@ sys.path.insert(0,"./src/wrapper/")
 import py_Delta_Sigma
 import matplotlib.pyplot as plt
 import numpy as np
-plt.rc("text", fontsize=12)
+plt.rc("font", size=12)
 
 """
 2) Load a linear and mm power spectrum from somewhere.
