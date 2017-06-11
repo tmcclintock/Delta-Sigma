@@ -37,7 +37,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
     h,om,ode,ok,
     Mass,concentration,
     Rmis,fmis,delta,
-    flow_control,miscentering,
+    miscentering,
     single_miscentering,
     averaging, Nbins,
     R_bin_min,R_bin_max,
@@ -61,7 +61,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
                         c_double,c_double,c_double,c_double,
                         c_double,c_double,
                         c_double,c_double,c_int,
-                        POINTER(c_int),c_int,
+                        c_int,
                         c_int,
                         c_int,c_int,
                         c_double,c_double,
@@ -94,7 +94,6 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
         input_params["miscentering"],input_params["averaging"],input_params["single_miscentering"]
 
     h,om,ode,ok = cosmo_dict['h'],cosmo_dict['om'],cosmo_dict['ode'],cosmo_dict['ok']
-    flow_control = np.zeros(1).ctypes.data_as(POINTER(c_int))
 
     R = np.zeros(NR)
     R_in = R.ctypes.data_as(POINTER(c_double))
@@ -141,7 +140,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
                        h,om,ode,ok,
                        Mass,concentration,
                        Rmis,fmis,delta,
-                       flow_control,miscentering,
+                       miscentering,
                        averaging,single_miscentering,
                        Nbins,R_bin_min,R_bin_max,
                        R_in,xi_1halo_in,xi_mm_in,xi_lin_in,

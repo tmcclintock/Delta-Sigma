@@ -42,7 +42,6 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
   int miscentering=params->miscentering;
   int averaging=params->averaging;
   int single_miscentering=params->single_miscentering;
-  int*flow_control=params->flow_control;
 
   for(i = 0; i < NR; i++){
     double dlR = (log(Rmax) - log(Rmin))/(float)(NR-1.);
@@ -167,7 +166,7 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     double h,double om,double ode,double ok,
 		     double Mass, double concentration,
 		     double Rmis, double fmis, int delta,
-		     int*flow_control, int miscentering,
+		     int miscentering,
 		     int averaging, int single_miscentering,
 		     int Nbins,
 		     double R_bin_min, double R_bin_max,

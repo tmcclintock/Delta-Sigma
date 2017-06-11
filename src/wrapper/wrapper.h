@@ -2,9 +2,6 @@
   This is an interface between the DeltaSigma code and 
   a piece of code that can pass in a cosmology and 
   a power spectrum.
-  In addition, the next thing to be implemented will be 
-  a boolean array that provides flow control with regards
-  to which parts of the code to run.
 */
 #include "../mc_relation/mc_relation.h"
 #include "../delta_sigma/delta_sigma.h"
@@ -29,7 +26,6 @@ typedef struct interface_parameters{
   double Rmis;
   double fmis;
   int delta;
-  int*flow_control;
   int miscentering;
   int averaging;
   int single_miscentering;
@@ -75,7 +71,7 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     double h,double om,double ode,double ok,
 		     double Mass, double concentration,
 		     double Rmis, double fmis, int delta,
-		     int*flow_control, int miscentering,
+		     int miscentering,
 		     int averaging, int single_miscentering,
 		     int Nbins,
 		     double R_bin_min, double R_bin_max,
