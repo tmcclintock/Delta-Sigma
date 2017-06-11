@@ -32,7 +32,6 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
   double Mass=params->Mass;
   double concentration=params->concentration;
   double Rmis=params->Rmis;
-  double fmis=params->fmis;
   int delta=params->delta;
 
   int Nbins=params->Nbins;
@@ -165,7 +164,7 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     int NR,double Rmin,double Rmax,
 		     double h,double om,double ode,double ok,
 		     double Mass, double concentration,
-		     double Rmis, double fmis, int delta,
+		     double Rmis, int delta,
 		     int miscentering,
 		     int averaging, int single_miscentering,
 		     int Nbins,
@@ -194,7 +193,6 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
   params->concentration=concentration;
   params->delta=delta;
   params->Rmis=Rmis;
-  params->fmis=fmis;
   params->miscentering=miscentering;//1 is true
   params->averaging=averaging; //1 is true
   params->single_miscentering=single_miscentering;

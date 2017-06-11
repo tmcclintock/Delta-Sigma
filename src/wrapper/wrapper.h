@@ -24,7 +24,6 @@ typedef struct interface_parameters{
   double Mass;
   double concentration;
   double Rmis;
-  double fmis;
   int delta;
   int miscentering;
   int averaging;
@@ -70,7 +69,7 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     int NR,double Rmin,double Rmax,
 		     double h,double om,double ode,double ok,
 		     double Mass, double concentration,
-		     double Rmis, double fmis, int delta,
+		     double Rmis, int delta,
 		     int miscentering,
 		     int averaging, int single_miscentering,
 		     int Nbins,
