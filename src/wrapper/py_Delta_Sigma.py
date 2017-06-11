@@ -165,6 +165,8 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
                    "Rbins":Rbins,"bias":bias,"nu":nu,
                    "ave_delta_sigma":ave_delta_sigma,
                    "ave_miscentered_delta_sigma":ave_miscentered_delta_sigma,
-                   "ave_delta_sigma_mis":ave_delta_sigma_mis
+                   "ave_delta_sigma_mis":ave_delta_sigma_mis,
+                   "full_delta_sigma":(1-fmis)*delta_sigma+fmis*miscentered_delta_sigma,
+                   "full_ave_delta_sigma":(1-fmis)*ave_delta_sigma+fmis*ave_miscentered_delta_sigma
                    }
     return return_dict
