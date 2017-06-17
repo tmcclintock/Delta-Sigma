@@ -60,7 +60,7 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
   calc_xi_mm(R,NR,k_lin,P_lin,Nk_lin,xi_lin,err,Nevals,h);
   calc_tinker_bias(&Mass,1,k_lin,P_lin,Nk_lin,bias,nu,delta,cosmo);
   calc_xi_2halo(NR,xi_mm,*bias,xi_2halo);
-  calc_xi_hm(NR,Mass,xi_1halo,xi_2halo,xi_hm);
+  calc_xi_hm(NR,xi_1halo,xi_2halo,xi_hm);
   calc_sigma(R,Mass,concentration,delta,R,xi_hm,NR,sigma,err,cosmo);
   calc_delta_sigma(R,Mass,concentration,delta,R,sigma,NR,delta_sigma,err,cosmo);
   if(averaging){
