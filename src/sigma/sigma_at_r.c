@@ -1,13 +1,5 @@
 #include "sigma_at_r.h"
 
-#define TOL 1e-3
-#define workspace_size 8000
-#define PI 3.141592653589793
-
-//These are physical constants
-#define G 4.517e-48//Newton's G in Mpc^3/s^2/Solar Mass
-#define Mpcperkm 3.241e-20//Mpc/km used to convert H0 to per seconds
-
 /* These are the parameters passed into the integrand.
    A spline and accelerator for interpolation and the radius 
    we are evaluating xi at.*/
@@ -25,7 +17,6 @@ typedef struct integrand_params{
 }integrand_params;
 
 static int do_integral(double*sigmar_r,double*err,integrand_params*params);
-
 static double integrand_small_scales(double lrz, void*params);
 static double integrand_medium_scales(double lrz, void*params);
 
@@ -68,7 +59,6 @@ int calc_sigma_at_r(double Rp,double Mass,double concentration,
 
 int do_integral(double*sigma,double*err,integrand_params*params){
   gsl_function F;
-  F.function=&integrand_small_scales;
   F.params=params;
   
   double lrmin = params->lrmin;
@@ -82,15 +72,13 @@ int do_integral(double*sigma,double*err,integrand_params*params){
   double result2=0,abserr2=0;
   double result3=0,abserr3=0;
 
+  F.function=&integrand_small_scales;
   int status = gsl_integration_qag(&F,lrmin-10,lrmin,TOL,TOL/10.,workspace_size,6,workspace,&result1,&abserr1);
 
   F.function=&integrand_medium_scales;
   if (lrz_max > 0)
     status |= gsl_integration_qag(&F,lrmin,lrz_max,TOL,TOL/10.,workspace_size,6,workspace,&result2,&abserr2);
   
-  //F.function=&integrand_large_scales;
-  //status = gsl_integration_qag(&F,lrmax,lrmax+10,TOL,TOL/10.,workspace_size,6,workspace,&result3,&abserr3);
-
   *sigma = result1+result2;
   *err= abserr1+abserr2;
   return status;
