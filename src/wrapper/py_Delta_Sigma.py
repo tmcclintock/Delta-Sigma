@@ -24,7 +24,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
     params (dictionary): Contains key-value pairs of halo parameters, including: Mass, delta, Rmis, fmis, concentration, NR, Rmin, Rmax, Nbins, R_bin_min, R_bin_max, miscentering, averaging.
 
     Returns:
-        return_dict (dictionary): Contains key-value pairs of all possible quantities assosciated with the halo.
+        output (dictionary): Contains key-value pairs of all possible quantities assosciated with the halo.
     
     """
     interface = dslib.python_interface
