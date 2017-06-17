@@ -1,9 +1,4 @@
-#include "gsl/gsl_spline.h"
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#define PI 3.14159265358979
+#include "xi_mm.h"
 
 //The power spectrum
 double get_P(double x,double R,double*k,double*P,int Nk,gsl_spline*Pspl,gsl_interp_accel*acc){
@@ -26,7 +21,7 @@ double get_P(double x,double R,double*k,double*P,int Nk,gsl_spline*Pspl,gsl_inte
 double calc_corr_at_R(double R,double*k,double*P,int Nk,int N,double h){
   double zero,psi,x,t,dpsi,f,PIsinht;
   double PI_h = PI/h;
-  double PI_2 = PI/2.;
+  double PI_2 = PI*0.5;
   gsl_spline*Pspl = gsl_spline_alloc(gsl_interp_cspline,Nk);
   gsl_spline_init(Pspl,k,P,Nk);
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
@@ -51,10 +46,8 @@ double calc_corr_at_R(double R,double*k,double*P,int Nk,int N,double h){
 
 int calc_xi_mm(double*R,int NR,double*k,double*P,int Nk,double*xi,double*err,int N, double h){
   int i;
-
-  //#pragma omp parallel for shared(R,NR,k,P,Nk,xi,err,N,h) private(i)
-  for(i=0;i<NR;i++)
+  for(i=0;i<NR;i++){
     xi[i] = calc_corr_at_R(R[i],k,P,Nk,N,h);
-  
+  }
   return 0;
 }
