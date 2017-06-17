@@ -47,15 +47,7 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
     R[i] = exp(log(Rmin) + i*dlR);
   }
 
-  double time=0;
-  #ifdef TIMING
-  time=omp_get_wtime();
-  #endif
   calc_xi_nfw(R,NR,Mass,concentration,delta,xi_1halo,cosmo);
-#ifdef TIMING
-  printf("xi_nfw time = %f\n",omp_get_wtime()-time);fflush(stdout);
-  time=omp_get_wtime();
-#endif
   /*
     These two variables are for the hankel transformation
     They can be changed by hand, depending on how wacky the
@@ -65,93 +57,29 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
   int Nevals = 200;
   double h = 0.005;
   calc_xi_mm(R,NR,k,P,Nk,xi_mm,err,Nevals,h);
-#ifdef TIMING
-  printf("xi_mm time = %f\n",omp_get_wtime()-time);fflush(stdout);
-  time=omp_get_wtime();
-#endif  
-
   calc_xi_mm(R,NR,k_lin,P_lin,Nk_lin,xi_lin,err,Nevals,h);
-#ifdef TIMING
-  printf("xi_lin time = %f\n",omp_get_wtime()-time);fflush(stdout);
-  time=omp_get_wtime();
-#endif
-
   calc_tinker_bias(&Mass,1,k_lin,P_lin,Nk_lin,bias,nu,delta,cosmo);
-#ifdef TIMING
-  printf("tinker_bias time = %f\n",omp_get_wtime()-time);fflush(stdout);
-  time=omp_get_wtime();
-#endif
-
   calc_xi_2halo(NR,xi_mm,*bias,xi_2halo);
-#ifdef TIMING
-  printf("xi_2halo time = %f\n",omp_get_wtime()-time);fflush(stdout);
-  time=omp_get_wtime();
-#endif
-
   calc_xi_hm(NR,Mass,xi_1halo,xi_2halo,xi_hm);
-#ifdef TIMING
-  printf("xi_hm time = %f\n",omp_get_wtime()-time);fflush(stdout);
-  time=omp_get_wtime();
-#endif
-
   calc_sigma(R,Mass,concentration,delta,R,xi_hm,NR,sigma,err,cosmo);
-#ifdef TIMING
-  printf("sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
-  time=omp_get_wtime();
-#endif
-
   calc_delta_sigma(R,Mass,concentration,delta,R,sigma,NR,delta_sigma,err,cosmo);
-#ifdef TIMING
-  printf("delta_sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
-  time=omp_get_wtime();
-#endif
-
   if(averaging){
     calc_ave_delta_sigma(R,NR,delta_sigma,Nbins,R_bin_min,R_bin_max,Rbins,ave_delta_sigma);
-#ifdef TIMING
-    printf("ave_delta_sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
-    time=omp_get_wtime();
-#endif
   }
 
   if(single_miscentering){
     calc_sigma_mis(R,Mass,concentration,delta,Rmis,R,sigma,NR,sigma_mis,err,cosmo);
-#ifdef TIMING
-    printf("sigma_mis time = %f\n",omp_get_wtime()-time);fflush(stdout);
-    time=omp_get_wtime();
-#endif
-
     calc_delta_sigma_mis(R,Mass,concentration,delta,Rmis,R,sigma,sigma_mis,NR,delta_sigma_mis,err,cosmo);
-#ifdef TIMING
-    printf("delta_sigma_mis time = %f\n",omp_get_wtime()-time);fflush(stdout);
-    time=omp_get_wtime();
-#endif
     if(averaging){
       calc_ave_miscentered_delta_sigma(R,NR,delta_sigma_mis,Nbins,R_bin_min,R_bin_max,Rbins,ave_delta_sigma_mis);
-#ifdef TIMING
-      printf("ave_delta_sigma_mis time = %f\n",omp_get_wtime()-time);fflush(stdout);
-      time=omp_get_wtime();
-#endif
     }
   }
 
   if(miscentering){
     calc_miscentered_sigma(R,Mass,concentration,delta,Rmis,R,sigma,NR,miscentered_sigma,err,cosmo);
-#ifdef TIMING
-    printf("miscentered_sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
-    time=omp_get_wtime();
-#endif
     calc_miscentered_delta_sigma(R,Mass,concentration,delta,Rmis,R,sigma,miscentered_sigma,NR,miscentered_delta_sigma,err,cosmo);
-#ifdef TIMING
-    printf("miscentered_delta_sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
-    time=omp_get_wtime();
-#endif
     if(averaging){
       calc_ave_miscentered_delta_sigma(R,NR,miscentered_delta_sigma,Nbins,R_bin_min,R_bin_max,Rbins,ave_miscentered_delta_sigma);
-#ifdef TIMING
-      printf("ave_miscentered_delta_sigma time = %f\n",omp_get_wtime()-time);fflush(stdout);
-      time=omp_get_wtime();
-#endif
     }
   }
 
