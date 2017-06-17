@@ -89,16 +89,15 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
     miscentering, single_miscentering = params['miscentering'], params['single_miscentering']
     if miscentering or single_miscentering:
         Rmis,fmis = params["Rmis"], params["fmis"]
-    else:
+    else: #Default value to pass to C
         Rmis = 0.0
-        fmis = 0.25
 
     averaging = params['averaging']
     if averaging:
         Nbins = params['Nbins']
         R_bin_min = params['R_bin_min']
         R_bin_max = params['R_bin_max']
-    else:
+    else: #Default values to pass to C
         Nbins = 2
         R_bin_min = Rmin
         R_bin_max = Rmax
