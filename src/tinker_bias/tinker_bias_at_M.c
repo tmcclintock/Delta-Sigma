@@ -1,14 +1,5 @@
 #include "tinker_bias_at_M.h"
 
-#define TOL 1e-8
-#define workspace_size 8000
-#define PI 3.141592653589793 //apple flavored
-
-//These are physical constants
-#define G 4.517e-48//Newton's G in Mpc^3/s^2/Solar Mass
-#define Mpcperkm 3.241e-20//Mpc/km used to convert H0 to per seconds
-#define delta_c 1.686 //Critical collapse density
-
 typedef struct integrand_params{
   gsl_spline *spline;
   gsl_interp_accel *acc;
@@ -26,8 +17,7 @@ int tinker_bias_at_M(double M,double*k,double*P,int N,double*bias,double*nu,int 
 
   double h = cosmo.h, om = cosmo.om;
   double H0 = h*100.;
-  double rhom = om*3.*(H0*Mpcperkm*H0*Mpcperkm)/(8.*PI*G)
-    /(h*h);//SM h^2/Mpc^3
+  double rhom = om*3.*(H0*Mpcperkm*H0*Mpcperkm)/(8.*PI*G)/(h*h);//SM h^2/Mpc^3
   double R=pow(3.*M/(4.*PI*rhom),1./3.);//Lagrangian radius Mpc/h
 
   double y = log10(delta);
@@ -61,7 +51,6 @@ int tinker_bias_at_M(double M,double*k,double*P,int N,double*bias,double*nu,int 
   gsl_spline_free(spline),gsl_interp_accel_free(acc);
   gsl_integration_workspace_free(workspace);
   free(params);
-
   return 0;
 }
 
@@ -75,8 +64,7 @@ int do_integral(double*nu,integrand_params*params){
   gsl_integration_workspace*workspace=params->workspace;
 
   double result,abserr;
-  int status = gsl_integration_qag(&F,lkmin,lkmax,TOL,TOL/10.,workspace_size,6,
-				   workspace,&result,&abserr);
+  int status = gsl_integration_qag(&F,lkmin,lkmax,BIAS_TOL,BIAS_TOL/10.,workspace_size,6,workspace,&result,&abserr);
   *nu = delta_c/sqrt(result/(2.*PI*PI));
   return status;
 }

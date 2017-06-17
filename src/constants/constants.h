@@ -2,6 +2,7 @@
 #ifndef TOLERANCES
 #define TOLERANCES
 #define AVE_TOL 1e-8
+#define BIAS_TOL 1e-8
 #define TOL 1e-5
 #endif
 
