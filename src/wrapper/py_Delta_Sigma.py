@@ -11,7 +11,7 @@ import os
 library_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))+"/Delta_Sigma.so"
 dslib = cdll.LoadLibrary(library_path)
 
-def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
+def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
     """Calculates the DeltaSigma profile given some cosmology, matter power spectra, and input parameters (e.g. mass, concentraton, etc.)
 
     Note: Mass units are Msun/h. Distances are Mpc/h comoving.
@@ -21,7 +21,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
     k_nl (array_like): Wavenumbers of input nonlinear matter power spectrum; h/Mpc.
     P_nl (array_like): Nonlinear matter power spectrum; (h/Mpc)^3.
     cosmo_dict (dictionary): Contains key-value pairs of cosmological parameters. Required parameters: h, om, and ode.
-    input_params (dictionary): Contains key-value pairs of halo parameters, including: Mass, delta, Rmis, fmis, concentration, NR, Rmin, Rmax, Nbins, R_bin_min, R_bin_max, miscentering, averaging.
+    params (dictionary): Contains key-value pairs of halo parameters, including: Mass, delta, Rmis, fmis, concentration, NR, Rmin, Rmax, Nbins, R_bin_min, R_bin_max, miscentering, averaging.
 
     Returns:
         return_dict (dictionary): Contains key-value pairs of all possible quantities assosciated with the halo.
@@ -83,15 +83,25 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,input_params):
     k_nl_in = k_nl.ctypes.data_as(POINTER(c_double))
     P_nl_in = P_nl.ctypes.data_as(POINTER(c_double))
 
-    Mass,concentration,NR,Rmin,Rmax,Nbins,R_bin_min,R_bin_max,\
-        delta,Rmis,fmis,miscentering,\
-        averaging, single_miscentering = input_params["Mass"],input_params["concentration"],\
-        input_params["NR"],input_params["Rmin"],\
-        input_params["Rmax"],input_params["Nbins"],\
-        input_params["R_bin_min"],input_params["R_bin_max"],\
-        input_params["delta"],input_params["Rmis"],\
-        input_params["fmis"],\
-        input_params["miscentering"],input_params["averaging"],input_params["single_miscentering"]
+    Mass,concentration,delta = params["Mass"],params["concentration"],params['delta']
+    NR,Rmin,Rmax = params["NR"],params["Rmin"],params["Rmax"]
+
+    miscentering, single_miscentering = params['miscentering'], params['single_miscentering']
+    if miscentering or single_miscentering:
+        Rmis,fmis = params["Rmis"], params["fmis"]
+    else:
+        Rmis = 0.0
+        fmis = 0.25
+
+    averaging = params['averaging']
+    if averaging:
+        Nbins = params['Nbins']
+        R_bin_min = params['R_bin_min']
+        R_bin_max = params['R_bin_max']
+    else:
+        Nbins = 2
+        R_bin_min = Rmin
+        R_bin_max = Rmax
 
     h,om,ode,ok = cosmo_dict['h'],cosmo_dict['om'],cosmo_dict['ode'],cosmo_dict['ok']
 
