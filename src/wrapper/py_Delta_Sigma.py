@@ -168,15 +168,24 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
                    "xi_lin":xi_lin,
                    "xi_2halo":xi_2halo,"xi_hm":xi_hm,
                    "sigma":sigma,"delta_sigma":delta_sigma,
-                   "sigma_mis":sigma_mis,
-                   "delta_sigma_mis":delta_sigma_mis,
-                   "miscentered_sigma":miscentered_sigma,
-                   "miscentered_delta_sigma":miscentered_delta_sigma,
-                   "Rbins":Rbins,"bias":bias,"nu":nu,
-                   "ave_delta_sigma":ave_delta_sigma,
-                   "ave_miscentered_delta_sigma":ave_miscentered_delta_sigma,
-                   "ave_delta_sigma_mis":ave_delta_sigma_mis,
-                   "full_delta_sigma":(1-fmis)*delta_sigma+fmis*miscentered_delta_sigma,
-                   "full_ave_delta_sigma":(1-fmis)*ave_delta_sigma+fmis*ave_miscentered_delta_sigma
+                   "bias":bias,"nu":nu
                    }
+    
+    if single_miscentering:
+        return_dict["sigma_mis"] = sigma_mis
+        return_dict["delta_sigma_mis"] = delta_sigma_mis
+    
+    if miscentering:
+        return_dict["miscentered_sigma"] = miscentered_sigma
+        return_dict["miscentered_delta_sigma"] = miscentered_delta_sigma
+
+    if averaging:
+        return_dict["Rbins"] = Rbins
+        return_dict["ave_delta_sigma"] = ave_delta_sigma
+        if miscentering:
+            return_dict["ave_miscentered_delta_sigma"] = ave_miscentered_delta_sigma
+            return_dict["full_delta_sigma"] = (1-fmis)*delta_sigma+fmis*miscentered_delta_sigma
+            return_dict["full_ave_delta_sigma"] = (1-fmis)*ave_delta_sigma+fmis*ave_miscentered_delta_sigma
+        if single_miscentering:
+            return_dict["ave_delta_sigma_mis"] = ave_delta_sigma_mis
     return return_dict
