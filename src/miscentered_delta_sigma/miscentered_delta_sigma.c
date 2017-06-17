@@ -1,8 +1,5 @@
 #include "miscentered_delta_sigma.h"
 
-#define TOL 1e-5
-#define workspace_size 8000
-
 typedef struct integrand_params{
   double lrmin;
   cosmology cosmo;
@@ -41,7 +38,7 @@ int calc_miscentered_delta_sigma(double*Rp,double Mass,double concentration,
   double lrmin = log(Rp[0]);
   double inner_result=0,abserr1=0;
 
-  if(R[0]/Rmis > 0.1){
+  if(R[0]/Rmis > 0.05){
     integrand_params*params=malloc(sizeof(integrand_params));
     params->lrmin=log(R[0]);
     params->cosmo=cosmo;
@@ -53,26 +50,19 @@ int calc_miscentered_delta_sigma(double*Rp,double Mass,double concentration,
     params->sigma=sigma;
     params->NR=NR;
     
-    gsl_integration_workspace * workspace
+    gsl_integration_workspace*workspace
       = gsl_integration_workspace_alloc(workspace_size);
     gsl_function F;
     F.params=params;
     F.function=&integrand_inner;
-    double time=0;
-    //time=omp_get_wtime();
     status |= gsl_integration_qag(&F,lrmin-10,lrmin,TOL,TOL/10.,workspace_size,6,workspace,&inner_result,&abserr1);
-    //printf("inner time = %f\n",omp_get_wtime()-time);fflush(stdout);
-    //inner_result contains the numerator of Sigma(<R), which is the costly
-    //integral over the non-spline region
   }else{
-    //If Rmin ~< Rmis then we can use a power law approximation pretty well
-    double alpha = (log(miscentered_sigma[0])-log(miscentered_sigma[1]))
-      /(log(Rp[0])-log(Rp[1]));
+    //If Rmin ~< Rmis then we can use a power law approximationd
+    double alpha = (log(miscentered_sigma[0])-log(miscentered_sigma[1]))/(log(Rp[0])-log(Rp[1]));
     double A = miscentered_sigma[0]/pow(Rp[0],alpha);
     inner_result = A/(alpha+2.0)*(pow(Rp[0],alpha+2.0)-pow(exp(lrmin-10),alpha+2.0));
   }
-    
-#pragma omp parallel for shared(R,sigma,NR,miscentered_sigma,miscentered_delta_sigma,err,status)
+  
   for(i = 0; i < NR; i++){
     status |= calc_miscentered_delta_sigma_at_r(Rp[i],Mass,concentration,delta,
 						Rmis,R,sigma,
@@ -80,7 +70,5 @@ int calc_miscentered_delta_sigma(double*Rp,double Mass,double concentration,
 						NR,&miscentered_delta_sigma[i],
 						&err[i],cosmo);
   }
-
-  //Success
   return status;
 }

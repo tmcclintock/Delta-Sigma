@@ -1,13 +1,5 @@
 #include "delta_sigma_mis_at_r.h"
 
-#define TOL 1e-3
-#define workspace_size 8000
-#define PI 3.141592653589793
-
-//These are physical constants
-#define G 4.517e-48//Newton's G in Mpc^3/s^2/Solar Mass
-#define Mpcperkm 3.241e-20//Mpc/km used to convert H0 to per seconds
-
 /* These are the parameters passed into the integrand.
    A spline and accelerator for interpolation and the radius 
    we are evaluating sigma_mis at.*/

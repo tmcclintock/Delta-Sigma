@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "../constants/constants.h"
 
 int calc_ave_miscentered_delta_sigma_in_bin(double*R,int NR,
 					    double*miscentered_delta_sigma,

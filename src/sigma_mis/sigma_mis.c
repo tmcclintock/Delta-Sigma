@@ -6,8 +6,6 @@ int calc_sigma_mis(double*Rp,double Mass,double concentration,
 		   double*err,
 		   cosmology cosmo){
   int i, status=0;
-
-#pragma omp parallel for shared(R,sigma,NR,sigma_mis,err,status)
   for(i = 0; i < NR; i++){
     status |= calc_sigma_mis_at_r(Rp[i],Mass,concentration,delta,Rmis,
 				  R,sigma,NR,&sigma_mis[i],&err[i],cosmo);

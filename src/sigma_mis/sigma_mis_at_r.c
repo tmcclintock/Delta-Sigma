@@ -1,14 +1,5 @@
 #include "sigma_mis_at_r.h"
 
-#define TOL1 1e-2
-#define workspace_size 8000
-#define PI 3.141592653589793
-#define invPI 0.318309886183790 // 1/PI
-
-//These are physical constants
-#define G 4.517e-48//Newton's G in Mpc^3/s^2/Solar Mass
-#define Mpcperkm 3.241e-20//Mpc/km used to convert H0 to per seconds
-
 /* These are the parameters passed into the integrand.
    A spline and accelerator for interpolation and the radius 
    we are evaluating xi at.*/
@@ -93,7 +84,7 @@ int do_integral(double*mis_sigma,double*err,integrand_params*params){
 
   double result,abserr;
 
-  status = gsl_integration_qag(&F,0,PI,TOL1,TOL1/10.,workspace_size,6,workspace,&result,&abserr);
+  status = gsl_integration_qag(&F,0,PI,MISCENTERED_TOL,MISCENTERED_TOL2,workspace_size,6,workspace,&result,&abserr);
   
   *mis_sigma = result; 
   *err = abserr;

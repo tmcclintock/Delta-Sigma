@@ -3,7 +3,6 @@
   a piece of code that can pass in a cosmology and 
   a power spectrum.
 */
-#include "../mc_relation/mc_relation.h"
 #include "../delta_sigma/delta_sigma.h"
 #include "../sigma/sigma.h"
 #include "../xi_hm/xi_hm.h"

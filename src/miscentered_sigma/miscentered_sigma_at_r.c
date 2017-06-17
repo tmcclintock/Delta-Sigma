@@ -1,15 +1,5 @@
 #include "miscentered_sigma_at_r.h"
 
-#define TOL1 1e-2
-#define TOL2 1e-3
-#define workspace_size 8000
-#define PI 3.141592653589793
-
-//These are physical constants
-#define G 4.517e-48//Newton's G in Mpc^3/s^2/Solar Mass
-#define Mpcperkm 3.241e-20//Mpc/km used to convert H0 to per seconds
-#define rhomconst 3.0162e11//1e4*3.*Mpcperkm*Mpcperkm/(8.*PI*G); units are SM h^2/Mpc^3
-
 /* These are the parameters passed into the integrand.
    A spline and accelerator for interpolation and the radius 
    we are evaluating xi at.*/
@@ -95,7 +85,7 @@ int do_integral(double*mis_sigma,double*err,integrand_params*params){
 
   double result,abserr;
 
-  status = gsl_integration_qag(&F,0,PI,TOL1,TOL2,workspace_size,6,workspace,&result,&abserr);
+  status = gsl_integration_qag(&F,0,PI,MISCENTERED_TOL,MISCENTERED_TOL2,workspace_size,6,workspace,&result,&abserr);
   
   *mis_sigma = result; 
   *err = abserr;
@@ -119,7 +109,7 @@ double integrand_outer(double theta,void*params){
 
   double result,abserr;
   int status = 0;
-  status = gsl_integration_qag(&F,lrmin-10,lrmax,TOL1,TOL2,workspace_size,6,workspace,&result,&abserr);
+  status = gsl_integration_qag(&F,lrmin-10,lrmax,MISCENTERED_TOL,MISCENTERED_TOL2,workspace_size,6,workspace,&result,&abserr);
 
   return result;
 }
@@ -146,8 +136,7 @@ double integrand_inner(double lRc, void*params){
     double Mass = pars->Mass;
     double conc = pars->concentration;
     cosmology cosmo = pars->cosmo;
-    return Rcsq_Rmissq*exp(-0.5*Rcsq_Rmissq)*sigma_1halo_analytic(arg, Mass, conc,
-								  cosmo.om, cosmo.H0, pars->delta);
+    return Rcsq_Rmissq*exp(-0.5*Rcsq_Rmissq)*sigma_1halo_analytic(arg, Mass, conc, cosmo.om, cosmo.H0, pars->delta);
   }else if(arg < rmax){
     gsl_spline*spline = pars->spline;
     gsl_interp_accel*acc = pars->acc;

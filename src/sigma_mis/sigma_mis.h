@@ -1,6 +1,5 @@
 #include "sigma_mis_at_r.h"
 #include "../cosmology/cosmology.h"
-#include <omp.h>
 
 int calc_sigma_mis(double*Rp,double Mass,double concentration,
 		   int delta,double Rmis,double*R,double*sigma,
