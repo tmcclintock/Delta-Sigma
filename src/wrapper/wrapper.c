@@ -42,8 +42,8 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
   int averaging=params->averaging;
   int single_miscentering=params->single_miscentering;
 
+  double dlR = (log(Rmax) - log(Rmin))/(float)(NR-1.);
   for(i = 0; i < NR; i++){
-    double dlR = (log(Rmax) - log(Rmin))/(float)(NR-1.);
     R[i] = exp(log(Rmin) + i*dlR);
   }
 
@@ -123,7 +123,7 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
   params->Rmis=Rmis;
   params->miscentering=miscentering;//1 is true
   params->averaging=averaging; //1 is true
-  params->single_miscentering=single_miscentering;
+  params->single_miscentering=single_miscentering; //1 is true
   params->Nbins=Nbins;
   params->R_bin_min=R_bin_min;
   params->R_bin_max=R_bin_max;

@@ -25,16 +25,13 @@ DFLAGS =
 all : $(EXEC)
 	@echo "Compilation complete."
 
-timing : DFLAGS +=-DTIMING 
-timing : $(EXEC)
-
 %.o: %.c
 	$(CC) $(CFLAGS) $(DFLAGS) $(INCL) -c $^ -o $@
 
 $(EXEC) : $(OBJS)
 	$(CC) $(OFLAGS) $^ $(LIBS) -o $(EXEC)
 
-.PHONY : clean all timing
+.PHONY : clean all
 
 clean:
 	@rm -f $(OBJS) main.o $(CEXEC) $(PYEXEC)
