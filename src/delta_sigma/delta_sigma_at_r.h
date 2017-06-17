@@ -1,5 +1,6 @@
 #include "gsl/gsl_spline.h"
 #include "gsl/gsl_integration.h"
+#include "../constants/constants.h"
 #include "../cosmology/cosmology.h"
 #include "../sigma/sigma.h"
 #include <math.h>

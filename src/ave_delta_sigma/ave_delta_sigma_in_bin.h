@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "../constants/constants.h"
 
 int calc_ave_delta_sigma_in_bin(double*R,int NR,double*delta_sigma,
 				double lRlow,double lRhigh,

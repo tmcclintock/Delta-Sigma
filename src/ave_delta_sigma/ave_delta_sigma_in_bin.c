@@ -1,9 +1,5 @@
 #include "ave_delta_sigma_in_bin.h"
 
-#define TOL 1e-8
-#define workspace_size 8000
-#define PI 3.141592653589793
-
 /* These are the parameters passed into the integrand.
    A spline and accelerator for interpolation
    of delta_sigma.*/
@@ -57,8 +53,7 @@ int do_integral(double*ave_delta_sigma,double lRlow,double lRhigh,
 
   double result,abserr;
 
-  status |= gsl_integration_qag(&F,lRlow,lRhigh,TOL,TOL/10.,workspace_size,6,
-				workspace,&result,&abserr);
+  status |= gsl_integration_qag(&F,lRlow,lRhigh,AVE_TOL,AVE_TOL/10.,workspace_size,6,workspace,&result,&abserr);
 
   *ave_delta_sigma = result;
 
