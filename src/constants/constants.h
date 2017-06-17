@@ -10,6 +10,7 @@
 #define PHYSICAL_CONSTANTS
 #define G 4.517e-48//Newton's G in Mpc^3/s^2/Solar Mass
 #define Mpcperkm 3.241e-20//Mpc/km used to convert H0 to per seconds
+#define delta_c 1.686 //Critical collapse density
 #endif
 
 //Now define constants
