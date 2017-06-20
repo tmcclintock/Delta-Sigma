@@ -1,3 +1,8 @@
+//Libraries that every file should have
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
 //First define tolerances for integrations
 #ifndef TOLERANCES
 #define TOLERANCES

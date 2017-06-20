@@ -1,4 +1,5 @@
 #include "sigma_at_r.h"
+#include "../constants/constants.h"
 #include "../cosmology/cosmology.h"
 #include "../xi_nfw/xi_nfw.h"
 

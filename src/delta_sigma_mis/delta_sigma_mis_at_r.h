@@ -2,9 +2,6 @@
 #include "gsl/gsl_integration.h"
 #include "../constants/constants.h"
 #include "../cosmology/cosmology.h"
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 int calc_delta_sigma_mis_at_r(double Rp,double Mass,double concentration,
 			      int delta,double Rmis,double*R,double*sigma,

@@ -15,6 +15,7 @@
 #include "../miscentered_delta_sigma/miscentered_delta_sigma.h"
 #include "../ave_delta_sigma/ave_delta_sigma.h"
 #include "../ave_miscentered_delta_sigma/ave_miscentered_delta_sigma.h"
+#include "../constants/constants.h"
 #include "../cosmology/cosmology.h"
 
 #ifndef INTERFACE
