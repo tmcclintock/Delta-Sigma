@@ -27,7 +27,7 @@ static int do_integral(double*sigmar,double*err,integrand_params*params);
 
 static double integrand(double theta,void*params);
 
-static double sigma_1halo_analytic(double R,double Mass,double concentration,double om,double H0,int delta);
+static double sigma_1halo_analytic(double R,double Mass,double concentration,double om,int delta);
 
 int calc_sigma_mis_at_r(double Rp,double Mass,double concentration,
 				  int delta,double Rmis,double*R,double*sigma,
@@ -105,8 +105,7 @@ double integrand(double theta,void*params){
     int delta = pars->delta;
     cosmology cosmo = pars->cosmo;
     double om = cosmo.om;
-    double h = cosmo.h;
-    return sigma_1halo_analytic(arg,Mass,concentration,om,h*100.,delta);
+    return sigma_1halo_analytic(arg,Mass,concentration,om,delta);
   }else if(arg < rmax){
     gsl_spline*spline = pars->spline;
     gsl_interp_accel*acc = pars->acc;
@@ -121,7 +120,7 @@ double integrand(double theta,void*params){
   The analytic form of Sigma(R) for an NFW profile.
  */
 double sigma_1halo_analytic(double R,double Mass,double concentration,
-			      double om,double H0,int delta){
+			      double om,int delta){
   double c = concentration;
   double rhom = om*rhomconst; //SM h^2/Mpc^3
   double deltac = (delta/3.)*c*c*c/(log(1.+c)-c/(1.+c));

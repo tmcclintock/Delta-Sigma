@@ -22,7 +22,7 @@ static double integrand1(double R, void*params);
 static double integrand2(double R, void*params);
 
 static double sigma_1halo_analytic(double R,double Mass,double concentration,
-				   double om,double H0,int delta);
+				   double om,int delta);
 
 int calc_delta_sigma_at_r(double Rp,double Mass,double concentration,
 			  int delta,double*R,double*sigma,int NR,
@@ -88,8 +88,7 @@ double integrand1(double lR, void*params){
   double concentration = pars.concentration;
   int delta = pars.delta;
   double om = cosmo.om;
-  double h = cosmo.h;
-  return R*R*sigma_1halo_analytic(R,Mass,concentration,om,h*100.,delta);
+  return R*R*sigma_1halo_analytic(R,Mass,concentration,om,delta);
 }
 
 double integrand2(double lR, void*params){
@@ -101,11 +100,11 @@ double integrand2(double lR, void*params){
 }
 
 double sigma_1halo_analytic(double R,double Mass,double concentration,
-			    double om,double H0,int delta){
+			    double om,int delta){
   double c = concentration;
   double rhom = om*rhomconst;//SM h^2/Mpc^3
-  double deltac = (delta/3.)*c*c*c/(log(1.+c)-c/(1.+c));
-  double rdelta = pow(Mass/(4./3.*PI*rhom*delta),1./3.);//Mpc/h
+  double deltac = (delta*0.3333333333)*c*c*c/(log(1.+c)-c/(1.+c));
+  double rdelta = pow(Mass/(1.333333333*PI*rhom*delta),0.333333333);//Mpc/h
   double rscale = rdelta/c;
   double x = R/rscale;
   double gx = 0;

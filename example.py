@@ -85,7 +85,6 @@ plt.clf()
 delta_sigma = return_dict['delta_sigma']
 miscentered_delta_sigma = return_dict['miscentered_delta_sigma']
 delta_sigma_mis = return_dict['delta_sigma_mis']
-print delta_sigma_mis[120]
 plt.loglog(R,delta_sigma,label=r"$\Delta\Sigma_{\rm centered}$")
 plt.loglog(R,miscentered_delta_sigma,label=r"$\Delta\Sigma_{\rm mis}$",ls='--')
 plt.loglog(R,delta_sigma_mis,label=r"$\Delta\Sigma(R|R_{\rm mis})$")

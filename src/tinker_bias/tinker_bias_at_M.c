@@ -15,10 +15,9 @@ static double integrand(double lk,void*params);
 
 int tinker_bias_at_M(double M,double*k,double*P,int N,double*bias,double*nu,int delta,cosmology cosmo){
 
-  double h = cosmo.h, om = cosmo.om;
-  double H0 = h*100.;
-  double rhom = om*3.*(H0*Mpcperkm*H0*Mpcperkm)/(8.*PI*G)/(h*h);//SM h^2/Mpc^3
-  double R=pow(3.*M/(4.*PI*rhom),1./3.);//Lagrangian radius Mpc/h
+  double om = cosmo.om;
+  double rhom = om*rhomconst;//SM h^2/Mpc^3
+  double R=pow(M/(1.33333333333*PI*rhom),0.3333333333);//Lagrangian radius Mpc/h
 
   double y = log10(delta);
   double xp = exp(-1.0*pow(4./y,4.));

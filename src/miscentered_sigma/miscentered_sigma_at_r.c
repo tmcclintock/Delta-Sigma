@@ -29,7 +29,7 @@ static int do_integral(double*sigmar_r,double*err,integrand_params*params);
 static double integrand_outer(double theta,void*params);
 static double integrand_inner(double lRc,void*params);
 
-static double sigma_1halo_analytic(double R,double Mass,double concentration,double om,double H0,int delta);
+static double sigma_1halo_analytic(double R,double Mass,double concentration,double om,int delta);
 
 int calc_miscentered_sigma_at_r(double Rp,double Mass,double concentration,
 				int delta,double Rmis,double*R,double*sigma,
@@ -136,7 +136,7 @@ double integrand_inner(double lRc, void*params){
     double Mass = pars->Mass;
     double conc = pars->concentration;
     cosmology cosmo = pars->cosmo;
-    return Rcsq_Rmissq*exp(-0.5*Rcsq_Rmissq)*sigma_1halo_analytic(arg, Mass, conc, cosmo.om, cosmo.H0, pars->delta);
+    return Rcsq_Rmissq*exp(-0.5*Rcsq_Rmissq)*sigma_1halo_analytic(arg, Mass, conc, cosmo.om, pars->delta);
   }else if(arg < rmax){
     gsl_spline*spline = pars->spline;
     gsl_interp_accel*acc = pars->acc;
@@ -146,7 +146,7 @@ double integrand_inner(double lRc, void*params){
   }
 }
 
-double sigma_1halo_analytic(double R, double Mass, double concentration, double om, double H0, int delta){
+double sigma_1halo_analytic(double R, double Mass, double concentration, double om, int delta){
   double c = concentration;
   double rhom = om*rhomconst;//SM h^2/Mpc^3
   double deltac = delta*0.333333333333*c*c*c/(log(1.+c)-c/(1.+c));
