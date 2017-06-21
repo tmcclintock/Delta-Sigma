@@ -103,8 +103,7 @@ double integrand2(double lR, void*params){
 double sigma_1halo_analytic(double R,double Mass,double concentration,
 			    double om,double H0,int delta){
   double c = concentration;
-  double rhom = om*3.*(H0*H0*Mpcperkm*Mpcperkm)/(8.*PI*G)/(H0/100.*H0/100.);//SM h^2/Mpc^3
-  //double rhom = om*rhomconst;//SM h^2/Mpc^3
+  double rhom = om*rhomconst;//SM h^2/Mpc^3
   double deltac = (delta/3.)*c*c*c/(log(1.+c)-c/(1.+c));
   double rdelta = pow(Mass/(4./3.*PI*rhom*delta),1./3.);//Mpc/h
   double rscale = rdelta/c;

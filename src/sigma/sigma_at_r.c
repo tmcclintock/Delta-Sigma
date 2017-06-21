@@ -26,9 +26,8 @@ int calc_sigma_at_r(double Rp,double Mass,double concentration,
 
   double h = cosmo.h, om = cosmo.om;
   double H0 = h*100.;
-  double rhom = om*3.*(H0*Mpcperkm*H0*Mpcperkm)/(8.*PI*G)
-    /(h*h*1e12);//SM h^2/pc^2/Mpc
-
+  double rhom = om*rhomconst*1e-12; //SM h^2/pc^2/Mpc
+  //note, this isn't ACTUALLY rhom, but it contains the integration constants
   gsl_spline*spline = gsl_spline_alloc(gsl_interp_cspline,NR);
   gsl_spline_init(spline,R,xi,NR);
   gsl_interp_accel*acc= gsl_interp_accel_alloc();
