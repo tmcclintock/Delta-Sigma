@@ -67,7 +67,6 @@ Nomenclature:
 """
 R = return_dict["R"]
 
-"""
 sigma = return_dict['sigma']
 sigma_miscentered = return_dict['miscentered_sigma']
 sigma_m = return_dict['sigma_mis']
@@ -80,7 +79,6 @@ plt.ylabel(r"$\Sigma\ [{\rm M_\odot}\ h/{\rm pc^2}]$",fontsize=24)
 plt.subplots_adjust(bottom=0.15, left=0.15)
 plt.show()
 plt.clf()
-"""
 
 delta_sigma = return_dict['delta_sigma']
 miscentered_delta_sigma = return_dict['miscentered_delta_sigma']
