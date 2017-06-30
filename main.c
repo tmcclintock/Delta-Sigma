@@ -92,7 +92,7 @@ int main(){
 
   //Step 5: call the python interface function a bunch of times
   int i;
-  for(i = 0; i < 50; i++){
+  for(i = 0; i < 1; i++){
     python_interface(klin, Plin, Nklin,
 		     knl, Pnl, Nk,
 		     NR, Rmin, Rmax, 
