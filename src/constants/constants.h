@@ -8,8 +8,8 @@
 #define TOLERANCES
 #define TOL 1e-5
 #define AVE_TOL 1e-8 //Used for taking averages
-#define BIAS_TOL 1e-8 //Used for the tinker bias
-#define MISCENTERED_TOL 5e-2 // Used for miscentering
+#define BIAS_TOL 1e-6 //Used for the tinker bias
+#define MISCENTERED_TOL 1e-2 // Used for miscentering
 #define MISCENTERED_TOL2 MISCENTERED_TOL*0.1
 #endif
 

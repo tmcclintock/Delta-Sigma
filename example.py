@@ -18,10 +18,14 @@ In this example it's pre-computed, but one could use CAMB or CLASS
 3) Create a dictionary with the cosmology.
 For reference, fox has h=0.670435, om:0.31834
 """
-klin = np.loadtxt("./test_data/matter_power_lin/k_h.txt")
-Plin = np.loadtxt("./test_data/matter_power_lin/p_k.txt")
-knl  = np.loadtxt("./test_data/matter_power_nl/k_h.txt")
-Pnl  = np.loadtxt("./test_data/matter_power_nl/p_k.txt")
+klin = np.loadtxt("./test_data/k.txt")
+Plin = np.loadtxt("./test_data/plin_z0_l3.txt")
+Pnl = np.loadtxt("./test_data/pnl_z0_l3.txt")
+knl = np.copy(klin)
+#klin = np.loadtxt("./test_data/matter_power_lin/k_h.txt")
+#Plin = np.loadtxt("./test_data/matter_power_lin/p_k.txt")
+#knl  = np.loadtxt("./test_data/matter_power_nl/k_h.txt")
+#Pnl  = np.loadtxt("./test_data/matter_power_nl/p_k.txt")
 cosmo = {"h":0.7,"om":0.3,"ok":0.0}
 cosmo["ode"]=1.0-cosmo["om"]
 
@@ -48,6 +52,8 @@ input_params = {"Mass": 3*10**14,"NR":300,"Rmin":0.01,
                 "delta":200,"Rmis":0.25,"fmis":0.25,
                 "miscentering":1,"averaging":1,"single_miscentering":1}
 input_params["concentration"] = 5.0 #Arbitrary
+input_params["concentration"] = 4.916498 #Arbitrary
+
 
 """
 5) Call the calc_Delta_Sigma function, which returns a dictionary.
