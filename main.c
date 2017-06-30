@@ -53,10 +53,9 @@ int main(){
   double ok  = 0.0;
   double Mass = 1e14; //Msun/h
   double conc = 4*pow(Mass/5e14, -0.1); //Arbitrary
-  double fmis = 0.22;
   int delta = 200;
-  int*flow = (int*)malloc(sizeof(int));
   int miscentering = 1;
+  int single_mis = 1;
   int averaging    = 1;
   printf("Model defined.\n");
 
@@ -93,15 +92,16 @@ int main(){
 
   //Step 5: call the python interface function a bunch of times
   int i;
-  for(i = 0; i < 50; i++){
+  for(i = 0; i < 1; i++){
     python_interface(klin, Plin, Nklin,
 		     knl, Pnl, Nk,
 		     NR, Rmin, Rmax, 
 		     h, om, ode, ok, 
 		     Mass, conc,
-		     Rmis, fmis, delta,
-		     flow, miscentering,
-		     averaging, Nbins,
+		     Rmis, delta,
+		     miscentering,
+		     averaging, single_mis, 
+		     Nbins,
 		     R_bin_min, R_bin_max,
 		     R, xi1h, ximm, xilin,
 		     xi2h, xihm, sigma,
@@ -137,7 +137,6 @@ int main(){
   free(mis_deltasigma);
   free(ads_mis);
   free(mis_ads);
-  free(flow);
   printf("Allocated values freed.\n");
 
   return 0;
