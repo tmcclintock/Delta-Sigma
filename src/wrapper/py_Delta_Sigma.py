@@ -4,12 +4,60 @@ c function. This interfaces through c_types so that the user
 doesn't have to.
 """
 import numpy as np
-import ctypes
 from ctypes import c_double,c_int,POINTER,cdll
 import inspect
 import os
 library_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))+"/Delta_Sigma.so"
 dslib = cdll.LoadLibrary(library_path)
+interface = dslib.python_interface
+interface.restype = c_int
+"""
+Arguments to the interface are: 
+k_lin, P_lin, N_k_lin,
+k_nl, P_nl, N_k_nl,
+NR,Rmin,Rmax,
+h,om,ode,ok,
+Mass,concentration,
+Rmis,delta,
+miscentering,
+single_miscentering,
+averaging, Nbins,
+R_bin_min,R_bin_max,
+
+R,xi_1halo,xi_mm,xi_lin
+xi_2halo,xi_hm,sigma,
+
+delta_sigma,Rbins,
+ave_delta_sigma,
+bias,nu,
+sigma_mis,
+delta_sigma_mis
+miscentered_sigma,
+miscentered_delta_sigma,
+ave_miscentered_delta_sigma
+ave_delta_sigma_mis
+"""
+interface.argtypes=[POINTER(c_double),POINTER(c_double),c_int,
+                    POINTER(c_double),POINTER(c_double),c_int,
+                    c_int,c_double,c_double,
+                    c_double,c_double,c_double,c_double,
+                    c_double,c_double,
+                    c_double,c_int,
+                    c_int,
+                    c_int,
+                    c_int,c_int,
+                    c_double,c_double,
+                    POINTER(c_double),POINTER(c_double),POINTER(c_double),
+                    POINTER(c_double),POINTER(c_double),POINTER(c_double),
+                    POINTER(c_double),POINTER(c_double),
+                    POINTER(c_double),
+                    POINTER(c_double),POINTER(c_double),
+                    POINTER(c_double),
+                    POINTER(c_double),
+                    POINTER(c_double),
+                    POINTER(c_double),
+                    POINTER(c_double),
+                    POINTER(c_double)]
 
 def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
     """Calculates the DeltaSigma profile given some cosmology, matter power spectra, and input parameters (e.g. mass, concentraton, etc.)
@@ -25,57 +73,8 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
 
     Returns:
         output (dictionary): Contains key-value pairs of all possible quantities assosciated with the halo.
-    
     """
-    interface = dslib.python_interface
-    interface.restype = c_int
-    """
-    Arguments are: 
-    k_lin, P_lin, N_k_lin,
-    k_nl, P_nl, N_k_nl,
-    NR,Rmin,Rmax,
-    h,om,ode,ok,
-    Mass,concentration,
-    Rmis,delta,
-    miscentering,
-    single_miscentering,
-    averaging, Nbins,
-    R_bin_min,R_bin_max,
 
-    R,xi_1halo,xi_mm,xi_lin
-    xi_2halo,xi_hm,sigma,
-
-    delta_sigma,Rbins,
-    ave_delta_sigma,
-    bias,nu,
-    sigma_mis,
-    delta_sigma_mis
-    miscentered_sigma,
-    miscentered_delta_sigma,
-    ave_miscentered_delta_sigma
-    ave_delta_sigma_mis
-    """
-    interface.argtypes=[POINTER(c_double),POINTER(c_double),c_int,
-                        POINTER(c_double),POINTER(c_double),c_int,
-                        c_int,c_double,c_double,
-                        c_double,c_double,c_double,c_double,
-                        c_double,c_double,
-                        c_double,c_int,
-                        c_int,
-                        c_int,
-                        c_int,c_int,
-                        c_double,c_double,
-                        POINTER(c_double),POINTER(c_double),POINTER(c_double),
-                        POINTER(c_double),POINTER(c_double),POINTER(c_double),
-                        POINTER(c_double),POINTER(c_double),
-                        POINTER(c_double),
-                        POINTER(c_double),POINTER(c_double),
-                        POINTER(c_double),
-                        POINTER(c_double),
-                        POINTER(c_double),
-                        POINTER(c_double),
-                        POINTER(c_double),
-                        POINTER(c_double)]
     Nk_lin = len(k_lin)
     Nk_nl  = len(k_nl)
     k_lin_in = k_lin.ctypes.data_as(POINTER(c_double))
@@ -86,7 +85,8 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
     Mass,concentration,delta = params["Mass"],params["concentration"],params['delta']
     NR,Rmin,Rmax = params["NR"],params["Rmin"],params["Rmax"]
 
-    miscentering, single_miscentering = params['miscentering'], params['single_miscentering']
+    miscentering = params['miscentering']
+    single_miscentering = params['single_miscentering']
     if miscentering or single_miscentering:
         Rmis,fmis = params["Rmis"], params["fmis"]
     else: #Default value to pass to C
@@ -184,4 +184,10 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
             output["full_ave_delta_sigma"] = (1-fmis)*ave_delta_sigma+fmis*ave_miscentered_delta_sigma
         if single_miscentering:
             output["ave_delta_sigma_mis"] = ave_delta_sigma_mis
+
+    del k_lin_in
+    del P_lin_in
+    del k_nl_in
+    del P_nl_in
+
     return output
