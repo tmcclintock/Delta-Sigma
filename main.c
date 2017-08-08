@@ -49,8 +49,6 @@ int main(){
   //Step 2: define the model parameters
   double h   = 0.7; //km/s/Mpc/100
   double om  = 0.3;
-  double ode = 1.0 - om;
-  double ok  = 0.0;
   double Mass = 1e14; //Msun/h
   double conc = 4*pow(Mass/5e14, -0.1); //Arbitrary
   int delta = 200;
@@ -87,7 +85,7 @@ int main(){
     python_interface(klin, Plin, Nklin,
 		     knl, Pnl, Nk,
 		     NR, Rmin, Rmax, 
-		     h, om, ode, ok, 
+		     h, om,
 		     Mass, conc,
 		     delta,
 		     averaging,

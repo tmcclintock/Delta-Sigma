@@ -22,8 +22,7 @@ klin = np.loadtxt("./test_data/matter_power_lin/k_h.txt")
 Plin = np.loadtxt("./test_data/matter_power_lin/p_k.txt")
 knl  = np.loadtxt("./test_data/matter_power_nl/k_h.txt")
 Pnl  = np.loadtxt("./test_data/matter_power_nl/p_k.txt")
-cosmo = {"h":0.7,"om":0.3,"ok":0.0}
-cosmo["ode"]=1.0-cosmo["om"]
+cosmo = {"h":0.7,"om":0.3}
 
 """
 4) Create a dictionary with parameters specifying

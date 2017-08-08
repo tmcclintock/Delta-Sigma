@@ -16,7 +16,7 @@ Arguments to the interface are:
 k_lin, P_lin, N_k_lin,
 k_nl, P_nl, N_k_nl,
 NR,Rmin,Rmax,
-h,om,ode,ok,
+h,om,
 Mass,concentration,
 delta,
 averaging, Nbins,
@@ -32,7 +32,7 @@ bias,nu
 interface.argtypes=[POINTER(c_double),POINTER(c_double),c_int,
                     POINTER(c_double),POINTER(c_double),c_int,
                     c_int,c_double,c_double,
-                    c_double,c_double,c_double,c_double,
+                    c_double,c_double,
                     c_double,c_double,
                     c_int,
                     c_int,c_int,
@@ -52,7 +52,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
     P_lin (array_like): Linear matter power spectrum; (h/Mpc)^3.
     k_nl (array_like): Wavenumbers of input nonlinear matter power spectrum; h/Mpc.
     P_nl (array_like): Nonlinear matter power spectrum; (h/Mpc)^3.
-    cosmo_dict (dictionary): Contains key-value pairs of cosmological parameters. Required parameters: h, om, and ode.
+    cosmo_dict (dictionary): Contains key-value pairs of cosmological parameters. Required parameters: h and om.
     params (dictionary): Contains key-value pairs of halo parameters, including: Mass, delta, concentration, NR, Rmin, Rmax, Nbins, R_bin_min, R_bin_max, averaging.
 
     Returns:
@@ -79,7 +79,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
         R_bin_min = params['R_bin_min']
         R_bin_max = params['R_bin_max']
 
-    h,om,ode,ok = cosmo_dict['h'],cosmo_dict['om'],cosmo_dict['ode'],cosmo_dict['ok']
+    h,om = cosmo_dict['h'],cosmo_dict['om']
 
     R = np.zeros(NR)
     R_in = R.ctypes.data_as(POINTER(c_double))
@@ -111,7 +111,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
     result = interface(k_lin_in,P_lin_in,Nk_lin,
                        k_nl_in,P_nl_in,Nk_nl,
                        NR,Rmin,Rmax,
-                       h,om,ode,ok,
+                       h,om,
                        Mass,concentration,
                        delta,
                        averaging,

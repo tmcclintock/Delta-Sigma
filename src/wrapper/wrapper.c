@@ -65,7 +65,7 @@ int interface(double*k_lin,double*P_lin,int Nk_lin,
 int python_interface(double*k_lin,double*P_lin,int Nk_lin,
 		     double*k_nl,double*P_nl,int Nk_nl,
 		     int NR,double Rmin,double Rmax,
-		     double h,double om,double ode,double ok,
+		     double h,double om,
 		     double Mass, double concentration,
 		     int delta,
 		     int averaging,
@@ -81,8 +81,6 @@ int python_interface(double*k_lin,double*P_lin,int Nk_lin,
   cosmo->H0 = h*100.;
   cosmo->h = h;
   cosmo->om = om;
-  cosmo->ode = ode;
-  cosmo->ok = ok;
 
   interface_parameters*params=
     (interface_parameters*)malloc(sizeof(interface_parameters));
