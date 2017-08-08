@@ -18,9 +18,7 @@ k_nl, P_nl, N_k_nl,
 NR,Rmin,Rmax,
 h,om,ode,ok,
 Mass,concentration,
-Rmis,delta,
-miscentering,
-single_miscentering,
+delta,
 averaging, Nbins,
 R_bin_min,R_bin_max,
 
@@ -29,21 +27,13 @@ xi_2halo,xi_hm,sigma,
 
 delta_sigma,Rbins,
 ave_delta_sigma,
-bias,nu,
-sigma_mis,
-delta_sigma_mis
-miscentered_sigma,
-miscentered_delta_sigma,
-ave_miscentered_delta_sigma
-ave_delta_sigma_mis
+bias,nu
 """
 interface.argtypes=[POINTER(c_double),POINTER(c_double),c_int,
                     POINTER(c_double),POINTER(c_double),c_int,
                     c_int,c_double,c_double,
                     c_double,c_double,c_double,c_double,
                     c_double,c_double,
-                    c_double,c_int,
-                    c_int,
                     c_int,
                     c_int,c_int,
                     c_double,c_double,
@@ -51,13 +41,7 @@ interface.argtypes=[POINTER(c_double),POINTER(c_double),c_int,
                     POINTER(c_double),POINTER(c_double),POINTER(c_double),
                     POINTER(c_double),POINTER(c_double),
                     POINTER(c_double),
-                    POINTER(c_double),POINTER(c_double),
-                    POINTER(c_double),
-                    POINTER(c_double),
-                    POINTER(c_double),
-                    POINTER(c_double),
-                    POINTER(c_double),
-                    POINTER(c_double)]
+                    POINTER(c_double),POINTER(c_double)]
 
 def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
     """Calculates the DeltaSigma profile given some cosmology, matter power spectra, and input parameters (e.g. mass, concentraton, etc.)
@@ -69,7 +53,7 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
     k_nl (array_like): Wavenumbers of input nonlinear matter power spectrum; h/Mpc.
     P_nl (array_like): Nonlinear matter power spectrum; (h/Mpc)^3.
     cosmo_dict (dictionary): Contains key-value pairs of cosmological parameters. Required parameters: h, om, and ode.
-    params (dictionary): Contains key-value pairs of halo parameters, including: Mass, delta, Rmis, fmis, concentration, NR, Rmin, Rmax, Nbins, R_bin_min, R_bin_max, miscentering, averaging.
+    params (dictionary): Contains key-value pairs of halo parameters, including: Mass, delta, concentration, NR, Rmin, Rmax, Nbins, R_bin_min, R_bin_max, averaging.
 
     Returns:
         output (dictionary): Contains key-value pairs of all possible quantities assosciated with the halo.
@@ -85,24 +69,15 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
     Mass,concentration,delta = params["Mass"],params["concentration"],params['delta']
     NR,Rmin,Rmax = params["NR"],params["Rmin"],params["Rmax"]
 
-    if "miscentering" in params: miscentering = params['miscentering']
-    else: miscentering = 0
-    if "single_miscenering" in params: single_miscentering = params['single_miscentering']
-    else: single_miscentering = 0
-    if miscentering or single_miscentering:
-        Rmis,fmis = params["Rmis"], params["fmis"]
-    else: #Default value to pass to C
-        Rmis = 0.0
-
-    averaging = params['averaging']
-    if averaging:
+    #Default values to pass to C
+    Nbins = 2
+    R_bin_min = Rmin
+    R_bin_max = Rmax
+    if "averaging" in params: 
+        averaging = params['averaging']
         Nbins = params['Nbins']
         R_bin_min = params['R_bin_min']
         R_bin_max = params['R_bin_max']
-    else: #Default values to pass to C
-        Nbins = 2
-        R_bin_min = Rmin
-        R_bin_max = Rmax
 
     h,om,ode,ok = cosmo_dict['h'],cosmo_dict['om'],cosmo_dict['ode'],cosmo_dict['ok']
 
@@ -122,23 +97,11 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
     sigma_in = sigma.ctypes.data_as(POINTER(c_double))
     delta_sigma = np.zeros(NR)
     delta_sigma_in = delta_sigma.ctypes.data_as(POINTER(c_double))
-    sigma_mis = np.zeros(NR)
-    sigma_mis_in = sigma_mis.ctypes.data_as(POINTER(c_double))
-    delta_sigma_mis = np.zeros(NR)
-    delta_sigma_mis_in = delta_sigma_mis.ctypes.data_as(POINTER(c_double))
-    miscentered_sigma = np.zeros(NR)
-    miscentered_sigma_in = miscentered_sigma.ctypes.data_as(POINTER(c_double))
-    miscentered_delta_sigma = np.zeros(NR)
-    miscentered_delta_sigma_in = miscentered_delta_sigma.ctypes.data_as(POINTER(c_double))
 
     Rbins = np.zeros(Nbins)
     Rbins_in = Rbins.ctypes.data_as(POINTER(c_double))
     ave_delta_sigma = np.zeros(Nbins)
     ave_delta_sigma_in = ave_delta_sigma.ctypes.data_as(POINTER(c_double))
-    ave_miscentered_delta_sigma = np.zeros(Nbins)
-    ave_miscentered_delta_sigma_in = ave_miscentered_delta_sigma.ctypes.data_as(POINTER(c_double))
-    ave_delta_sigma_mis = np.zeros(Nbins)
-    ave_delta_sigma_mis_in = ave_delta_sigma_mis.ctypes.data_as(POINTER(c_double))
 
     bias = np.zeros(1)
     bias_in = bias.ctypes.data_as(POINTER(c_double))
@@ -150,46 +113,21 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
                        NR,Rmin,Rmax,
                        h,om,ode,ok,
                        Mass,concentration,
-                       Rmis,delta,
-                       miscentering,
-                       averaging,single_miscentering,
+                       delta,
+                       averaging,
                        Nbins,R_bin_min,R_bin_max,
                        R_in,xi_1halo_in,xi_mm_in,xi_lin_in,
                        xi_2halo_in,xi_hm_in,
                        sigma_in,delta_sigma_in,Rbins_in,
-                       ave_delta_sigma_in,bias_in,nu_in,
-                       sigma_mis_in,
-                       delta_sigma_mis_in,
-                       miscentered_sigma_in,miscentered_delta_sigma_in,
-                       ave_miscentered_delta_sigma_in,
-                       ave_delta_sigma_mis_in)
+                       ave_delta_sigma_in,bias_in,nu_in)
 
     #Now build a dictionary and return it
     output = {"R":R,"xi_1halo":xi_1halo,"xi_mm":xi_mm,"xi_lin":xi_lin,
               "xi_2halo":xi_2halo,"xi_hm":xi_hm,
               "sigma":sigma,"delta_sigma":delta_sigma,"bias":bias,"nu":nu}
     
-    if single_miscentering:
-        output["sigma_mis"] = sigma_mis
-        output["delta_sigma_mis"] = delta_sigma_mis
-    
-    if miscentering:
-        output["miscentered_sigma"] = miscentered_sigma
-        output["miscentered_delta_sigma"] = miscentered_delta_sigma
-
     if averaging:
         output["Rbins"] = Rbins
         output["ave_delta_sigma"] = ave_delta_sigma
-        if miscentering:
-            output["ave_miscentered_delta_sigma"] = ave_miscentered_delta_sigma
-            output["full_delta_sigma"] = (1-fmis)*delta_sigma+fmis*miscentered_delta_sigma
-            output["full_ave_delta_sigma"] = (1-fmis)*ave_delta_sigma+fmis*ave_miscentered_delta_sigma
-        if single_miscentering:
-            output["ave_delta_sigma_mis"] = ave_delta_sigma_mis
-
-    del k_lin_in
-    del P_lin_in
-    del k_nl_in
-    del P_nl_in
 
     return output

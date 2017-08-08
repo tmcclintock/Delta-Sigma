@@ -54,8 +54,6 @@ int main(){
   double Mass = 1e14; //Msun/h
   double conc = 4*pow(Mass/5e14, -0.1); //Arbitrary
   int delta = 200;
-  int miscentering = 1;
-  int single_mis = 1;
   int averaging    = 1;
   printf("Model defined.\n");
 
@@ -64,7 +62,6 @@ int main(){
   int Nbins = 15;
   double Rmin = 0.01;
   double Rmax = 200.0;
-  double Rmis = 0.24;
   double R_bin_min = 0.01;
   double R_bin_max = 200.0;
   printf("Radii and bins defined.\n");
@@ -82,12 +79,6 @@ int main(){
   double*ads=(double*)malloc(Nbins*sizeof(double));
   double*bias=(double*)malloc(sizeof(double));
   double*nu=(double*)malloc(sizeof(double));
-  double*sigma_mis=(double*)malloc(NR*sizeof(double));
-  double*deltasigma_mis=(double*)malloc(NR*sizeof(double));
-  double*mis_sigma=(double*)malloc(NR*sizeof(double));
-  double*mis_deltasigma=(double*)malloc(NR*sizeof(double));
-  double*ads_mis=(double*)malloc(Nbins*sizeof(double));
-  double*mis_ads=(double*)malloc(Nbins*sizeof(double));
   printf("Arrays allocated.\n");
 
   //Step 5: call the python interface function a bunch of times
@@ -98,18 +89,15 @@ int main(){
 		     NR, Rmin, Rmax, 
 		     h, om, ode, ok, 
 		     Mass, conc,
-		     Rmis, delta,
-		     miscentering,
-		     averaging, single_mis, 
+		     delta,
+		     averaging,
 		     Nbins,
 		     R_bin_min, R_bin_max,
 		     R, xi1h, ximm, xilin,
 		     xi2h, xihm, sigma,
 		     deltasigma, Rbins,
 		     ads, bias,
-		     nu, sigma_mis, deltasigma_mis, 
-		     mis_sigma, mis_deltasigma, 
-		     mis_ads, ads_mis);
+		     nu);
   }
   printf("Python interface called.\n");
 
@@ -131,12 +119,6 @@ int main(){
   free(ads);
   free(bias);
   free(nu);
-  free(sigma_mis);
-  free(deltasigma_mis);
-  free(mis_sigma);
-  free(mis_deltasigma);
-  free(ads_mis);
-  free(mis_ads);
   printf("Allocated values freed.\n");
 
   return 0;
