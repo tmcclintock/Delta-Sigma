@@ -1,5 +1,7 @@
-Delta-Sigma
+Delta-Sigma (WITH MISCENTERING)
 ===========
+This version is the DeltaSigma code that still has the miscentering routines in it. This branch was created on 8/8/17.
+
 A stand alone version of the Delta Sigma code currently used in CosmoSIS that doesn't require the use of the CosmoSIS data block.
 
 Compilation
