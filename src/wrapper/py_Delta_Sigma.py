@@ -85,8 +85,10 @@ def calc_Delta_Sigma(k_lin,P_lin,k_nl,P_nl,cosmo_dict,params):
     Mass,concentration,delta = params["Mass"],params["concentration"],params['delta']
     NR,Rmin,Rmax = params["NR"],params["Rmin"],params["Rmax"]
 
-    miscentering = params['miscentering']
-    single_miscentering = params['single_miscentering']
+    if "miscentering" in params: miscentering = params['miscentering']
+    else: miscentering = 0
+    if "single_miscenering" in params: single_miscentering = params['single_miscentering']
+    else: single_miscentering = 0
     if miscentering or single_miscentering:
         Rmis,fmis = params["Rmis"], params["fmis"]
     else: #Default value to pass to C
