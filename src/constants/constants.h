@@ -6,7 +6,7 @@
 //First define tolerances for integrations
 #ifndef TOLERANCES
 #define TOLERANCES
-#define TOL 1e-5
+#define TOL 1e-4
 #define AVE_TOL 1e-8 //Used for taking averages
 #define BIAS_TOL 1e-6 //Used for the tinker bias
 #endif

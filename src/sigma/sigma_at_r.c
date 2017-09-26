@@ -70,6 +70,7 @@ int do_integral(double*sigma,double*err,integrand_params*params){
   double result2=0,abserr2=0;
   double result3=0,abserr3=0;
 
+
   F.function=&integrand_small_scales;
   int status = gsl_integration_qag(&F,lrmin-10,lrmin,TOL,TOL/10.,workspace_size,6,workspace,&result1,&abserr1);
 
